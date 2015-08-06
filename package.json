@@ -1,0 +1,11 @@
+{
+  "name": "BombermanHTML5",
+  "version": "0.2.0",
+  "dependencies": {
+    "ent": "~0.1.0",
+    "express": "^3.3.8",
+    "socket.io": "^0.9.17"
+  },
+  "author": "Sylvain ROBERT <sylrob25@gmail.com>",
+  "description": "a simple game to play live on one same screen with your smartphone as a gamepad"
+}
