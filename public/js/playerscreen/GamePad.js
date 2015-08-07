@@ -6,13 +6,17 @@ var GamePad = (function($) {
 
         this.player = Player;
         this.elem = elem;
-        this.canvasElem;
-        this.directionCrossId = -1;
+        this.canvas;
         this.directionObj = {
-            initialPos : { x: 0, y: 0 },
+            id: -1,
+            initialPos: { x: 0, y: 0 },
             nowPos: { x: 0, y: 0 }
         }
-        this.canvas;
+        this.actionBtnObj = {
+            id: -1,
+            pos: { x: 0, y: 0 }
+        }
+        this.ctx;
         this.init();
         this.pageWidth = this.elem.width();
         this.pageHeight = this.elem.height();
@@ -21,6 +25,7 @@ var GamePad = (function($) {
             y : this.pageHeight/2
         }
         this.interval = false;
+        this.fps = 28;
     }
 
     /******************************
@@ -48,22 +53,34 @@ var GamePad = (function($) {
         }
 
 
-        //create the canvas element
-        this.canvasElem = document.createElement( 'canvas' );
-        this.canvasElem.style.width = this.canvasElem.style.height = "100%";
-        this.canvas = this.canvasElem.getContext( '2d' );
-
-        this.elem.get(0).appendChild( this.canvasElem );
-
-
-        //this.setting();
+        this.canvasInit();
         this.eventInit();
+
+        // init the interval that call the letsDraw function
+        this.letsDraw();
 
     }
 
     /******************************
      *
-     *  init
+     *  canvasInit
+     *  create the canvas and
+     *  assign it to the document
+     *
+     ******************************/
+    GamePad.prototype.canvasInit = function() {
+        //create the canvas element
+        this.canvas = document.createElement( 'canvas' );
+        this.canvas.width = screen.width;
+        this.canvas.height = screen.height;
+        this.ctx = this.canvas.getContext( '2d' );
+
+        this.elem.get(0).appendChild( this.canvas );
+    }
+
+    /******************************
+     *
+     *  eventInit
      *  assign the event to the
      *  approriate function
      *  and pass it to the player
@@ -78,41 +95,18 @@ var GamePad = (function($) {
         });
         window.dispatchEvent(new Event('resize'));
 
-        this.canvasElem.addEventListener('touchstart', this.touchStartHandeler);
-
-        this.canvasElem.addEventListener('touchmove', this.touchMouveHandeler);
-
-        this.canvasElem.addEventListener('touchend', this.touchEndHandeler);
-
-        /*
-        this.elem.off('touchstart touchmove mousemove').on('touchstart touchmove mousemove', function(event) {
-
-            var passingObJ = _this.wrapResults( _this.myDirection(event), _this.mySpeed(event) );
-
-            if( event.type == 'touchstart') {
-                if( _this.interval === false ) {
-                    (function(passingObJ){
-                        _this.interval = setInterval(function() {
-                            _this.player.whatIsMyDirection(passingObJ);
-                        }, 30);
-                    }(passingObJ));
-                }
-            } else {
-                if( _this.interval !== false ) {
-                    clearInterval(_this.interval);
-                    _this.interval = false;
-                }
-                _this.player.whatIsMyDirection(passingObJ);
-            }
-
-
-            event.preventDefault();
+        this.canvas.addEventListener('touchstart', function(event){
+            _this.touchStartHandeler.call(_this, event);
         });
 
-        this.elem.off('touchend').on('touchend', function(event) {
-            clearInterval(_this.interval); _this.interval = false;
+        this.canvas.addEventListener('touchmove', function(event){
+            _this.touchMouveHandeler.call(_this, event);
         });
-        */
+
+        this.canvas.addEventListener('touchend', function(event){
+            _this.touchEndHandeler.call(_this, event);
+        });
+
     }
 
     /******************************
@@ -122,9 +116,24 @@ var GamePad = (function($) {
      *
      ******************************/
 
-    GamePad.prototype.touchStartHandeler = function( event ) {
+    GamePad.prototype.touchStartHandeler = function( eventS ) {
+        var _this = this;
+        var max = eventS.changedTouches.length;
 
-        //if( this.directionCrossId == event. )
+
+        for( var i=0; i < max; i++ ) {
+            var _event = eventS.changedTouches[i];
+            //crossID ?
+            if( _this.directionObj.id === -1 ) {
+                _this.addDirectionPad( _event )
+            }
+            //button ?
+            else if( _this.actionBtnObj.id === -1 ) {
+                //_this.addActionBtn( _event )
+            }
+
+
+        }
 
     }
 
@@ -135,19 +144,53 @@ var GamePad = (function($) {
       *
       ******************************/
 
-     GamePad.prototype.touchMouveHandeler = function( event ) {
+     GamePad.prototype.touchMouveHandeler = function( eventS ) {
          event.preventDefault();
+
+        var _this = this;
+         var max = eventS.changedTouches.length;
+
+         for( var i=0; i < max; i++ ) {
+             var _event = eventS.changedTouches[i];
+             console.log(_this.directionObj)
+             //crossID ?
+             if( _this.directionObj.id === _event.identifier ) {
+                 _this.directionObj.nowPos = {
+                     x: _event.clientX,
+                     y: _event.clientY
+                 }
+             }
+
+
+         }
+
      }
 
      /******************************
       *
-      *  touchStartHandeler
+      *  touchEndHandeler
       *  assign new touch event
       *
       ******************************/
 
-     GamePad.prototype.touchEndHandeler = function( event ) {
-         console.log('touchEnd')
+     GamePad.prototype.touchEndHandeler = function( eventS ) {
+         var _this = this;
+         var max = eventS.changedTouches.length;
+
+         for( var i=0; i < max; i++ ) {
+             var _event = eventS.changedTouches[i];
+             //crossID ?
+             if( _this.directionObj.id === _event.identifier ) {
+                 _this.removeDirectionPad()
+             }//button ?
+             else if( _this.actionBtnObj.id === _event.identifier ) {
+
+             }
+
+
+
+         }
+
      }
 
     /******************************
@@ -162,6 +205,74 @@ var GamePad = (function($) {
 
     GamePad.prototype.mySpeed = function(event) {
         return 0.5;
+    }
+
+    /******************************
+     *
+     *  addDirectionPad
+     *  create direction pad
+     *
+     ******************************/
+
+    GamePad.prototype.addDirectionPad = function( posObj ) {
+
+        this.directionObj.id = posObj.identifier;
+        this.directionObj.initialPos = this.directionObj.nowPos = {
+            x: posObj.clientX,
+            y: posObj.clientY
+        };
+
+    }
+
+    /******************************
+     *
+     *  removeDirectionPad
+     *  reset direction pad
+     *
+     ******************************/
+
+    GamePad.prototype.removeDirectionPad = function() {
+
+        this.directionObj.id = -1;
+        this.directionObj.initialPos = this.directionObj.nowPos = {
+            x: 0,
+            y: 0
+        };
+
+    }
+
+    /******************************
+     *
+     *  letsDraw
+     *  draw the canvas
+     *
+     ******************************/
+    GamePad.prototype.letsDraw = function() {
+        var _this = this;
+
+        this.interval = setInterval( function(){
+
+            _this.ctx.clearRect( 0, 0, _this.canvas.width, _this.canvas.height );
+
+            //crossPad drawing
+            if( _this.directionObj.id !== -1 ) {
+                _this.ctx.beginPath();
+                _this.ctx.arc(_this.directionObj.initialPos.x,_this.directionObj.initialPos.y,50,0,Math.PI*2,true);
+                _this.ctx.strokeStyle = _this.player.avatar.secondaryColor;
+                _this.ctx.stroke();
+
+                _this.ctx.beginPath();
+                _this.ctx.arc(_this.directionObj.nowPos.x, _this.directionObj.nowPos.y, 30, 0, Math.PI*2, true);
+                _this.ctx.strokeStyle = _this.player.avatar.secondaryColor;
+                _this.ctx.stroke();
+            }
+
+            //actionBtn drawing
+            if( _this.actionBtnObj.id != -1 ) {
+
+            }
+        }, this.fps );
+
     }
 
     /******************************

@@ -38,6 +38,7 @@ jQuery(document).ready(function() {
         if(!gamepad) gamepad = new GamePad($('#tactilBlock'), player);
 
         player.countingTo(3, function(){
+            
 
         });
 
