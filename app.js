@@ -31,10 +31,6 @@ io.sockets.on('connection', function (socket) {
         socket.broadcast.to('playerSide').emit('timeToStart');
     });
 
-    socket.on('touchEvent', function (dsz) {
-            console.log('touchStart');
-    })
-
     socket.on('newPlayer', function(Player) {
         //redirect if no id
         if( undefined === Player.id || null == Player.id ) {
@@ -103,7 +99,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     //player movements
-    socket.on('touched', function(playerPos) {
+    socket.on('playerTouched', function(playerPos) {
         socket.broadcast.to('playground').emit('updatePlayerPos', playerPos);
     });
 

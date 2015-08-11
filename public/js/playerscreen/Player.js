@@ -53,19 +53,22 @@ var Player = (function() {
     }
 
     Player.prototype.initGamePad = function(elem) {
-        elem.css({
-            backgroundColor : this.avatar.primaryColor,
-            position : 'relative'
-        })
     }
 
     Player.prototype.whatIsMyDirection = function(passingObj) {
 
         passingObj.playerId = this.id;
 
-        socket.emit('touched', passingObj);
-
     }
+
+    Player.prototype.wrapResults = function() {
+        return {
+            'id' : this.id,
+            'avatar' : this.avatarList,
+            'pseudo' : this.pseudo
+        }
+    }
+
 
     Player.prototype.iAmDead = function() {
 
@@ -151,6 +154,7 @@ var Player = (function() {
 
             if( until <= accumulateTime ) {
                 clearInterval( timer );
+                setTimeout(function(){elem.html('')}, 1000);
                 callback();
             }
 

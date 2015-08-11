@@ -35,10 +35,10 @@ jQuery(document).ready(function() {
 
         $('#whatIsYourNickname').fadeOut('fast');
 
-        if(!gamepad) gamepad = new GamePad($('#tactilBlock'), player);
+        if(!gamepad) gamepad = new GamePad( document.getElementById('tactilBlock'), player);
 
         player.countingTo(3, function(){
-            
+
 
         });
 
@@ -91,8 +91,12 @@ jQuery(document).ready(function() {
 
     });
 
+var i=0;
+    window.addEventListener('gamePad.draw', function(event) {
+        var gamePadData = event.detail.gamePadData;
+        var playerData = player.wrapResults();
 
-
+    })
 
 
 

@@ -1,31 +1,43 @@
 
 
-var GamePad = (function($) {
+var GamePad = (function() {
 
     function GamePad(elem, Player) {
 
         this.player = Player;
         this.elem = elem;
         this.canvas;
-        this.directionObj = {
+        this.directionPadObj = {
             id: -1,
             initialPos: { x: 0, y: 0 },
-            nowPos: { x: 0, y: 0 }
+            nowPos: { x: 0, y: 0 },
+            r: 90,
+            r2: 30,
+            strokeWidth: 10,
+            strokeWidth2: 3,
+            color: this.player.avatar.primaryColor,
+            deg: 0,
+            velocity: 0
         }
         this.actionBtnObj = {
             id: -1,
-            pos: { x: 0, y: 0 }
+            pos: { x: 0, y: 0 },
+            r: 30,
+            strokeWidth: 3,
+            color: '#ff0000',//this.player.avatar.secondaryColor,
+            actionned: false
         }
         this.ctx;
-        this.init();
-        this.pageWidth = this.elem.width();
-        this.pageHeight = this.elem.height();
+        this.pageWidth = this.elem.width;
+        this.pageHeight = this.elem.height;
         this.middlePoint = {
             x : this.pageWidth/2,
             y : this.pageHeight/2
         }
         this.interval = false;
         this.fps = 28;
+        this.gamePadDrawEventName = 'gamePad.draw';
+        this.init();
     }
 
     /******************************
@@ -52,7 +64,6 @@ var GamePad = (function($) {
             return false;
         }
 
-
         this.canvasInit();
         this.eventInit();
 
@@ -71,11 +82,11 @@ var GamePad = (function($) {
     GamePad.prototype.canvasInit = function() {
         //create the canvas element
         this.canvas = document.createElement( 'canvas' );
-        this.canvas.width = screen.width;
-        this.canvas.height = screen.height;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
         this.ctx = this.canvas.getContext( '2d' );
 
-        this.elem.get(0).appendChild( this.canvas );
+        this.elem.appendChild( this.canvas );
     }
 
     /******************************
@@ -124,12 +135,12 @@ var GamePad = (function($) {
         for( var i=0; i < max; i++ ) {
             var _event = eventS.changedTouches[i];
             //crossID ?
-            if( _this.directionObj.id === -1 ) {
+            if( _this.directionPadObj.id === -1 ) {
                 _this.addDirectionPad( _event )
             }
             //button ?
             else if( _this.actionBtnObj.id === -1 ) {
-                //_this.addActionBtn( _event )
+                _this.addActionBtn( _event )
             }
 
 
@@ -148,20 +159,23 @@ var GamePad = (function($) {
          event.preventDefault();
 
         var _this = this;
-         var max = eventS.changedTouches.length;
+        var max = eventS.changedTouches.length;
+        var tooFar = function( obj ) {
+
+
+
+            return this.directionPadObj.r + this.directionPadObj.r2;
+        }
 
          for( var i=0; i < max; i++ ) {
              var _event = eventS.changedTouches[i];
-             console.log(_this.directionObj)
              //crossID ?
-             if( _this.directionObj.id === _event.identifier ) {
-                 _this.directionObj.nowPos = {
-                     x: _event.clientX,
-                     y: _event.clientY
-                 }
-             }
-
-
+             if( _this.directionPadObj.id === _event.identifier ) {
+                _this.directionPadPos( _event );
+            } else if( _this.actionBtnObj.id === _event.identifier ) {
+                _this.actionBtnObj.pos.x = _event.clientX;
+                _this.actionBtnObj.pos.y = _event.clientY;
+            }
          }
 
      }
@@ -180,32 +194,16 @@ var GamePad = (function($) {
          for( var i=0; i < max; i++ ) {
              var _event = eventS.changedTouches[i];
              //crossID ?
-             if( _this.directionObj.id === _event.identifier ) {
-                 _this.removeDirectionPad()
+             if( _this.directionPadObj.id === _event.identifier ) {
+                 _this.removeDirectionPad(_event)
              }//button ?
              else if( _this.actionBtnObj.id === _event.identifier ) {
-
+                 _this.removeActionBtn()
              }
-
-
 
          }
 
      }
-
-    /******************************
-     *
-     *  mySpeed
-     *  calcul the speed given
-     *  from the position of the
-     *  cursor compare to the center
-     *  of the page
-     *
-     ******************************/
-
-    GamePad.prototype.mySpeed = function(event) {
-        return 0.5;
-    }
 
     /******************************
      *
@@ -216,8 +214,26 @@ var GamePad = (function($) {
 
     GamePad.prototype.addDirectionPad = function( posObj ) {
 
-        this.directionObj.id = posObj.identifier;
-        this.directionObj.initialPos = this.directionObj.nowPos = {
+        this.directionPadObj.id = posObj.identifier;
+        this.directionPadObj.initialPos = this.directionPadObj.nowPos = {
+            x: posObj.clientX,
+            y: posObj.clientY
+        };
+
+    }
+
+    /******************************
+     *
+     *  addActionBtn
+     *  create button
+     *
+     ******************************/
+
+    GamePad.prototype.addActionBtn = function( posObj ) {
+
+        this.actionBtnObj.id = posObj.identifier;
+        this.actionBtnObj.actionned = true;
+        this.actionBtnObj.pos = {
             x: posObj.clientX,
             y: posObj.clientY
         };
@@ -233,13 +249,63 @@ var GamePad = (function($) {
 
     GamePad.prototype.removeDirectionPad = function() {
 
-        this.directionObj.id = -1;
-        this.directionObj.initialPos = this.directionObj.nowPos = {
+        this.directionPadObj.id = -1;
+        this.directionPadObj.initialPos = this.directionPadObj.nowPos = {
             x: 0,
             y: 0
         };
 
     }
+
+    /******************************
+     *
+     *  removeActionBtn
+     *  reset direction pad
+     *
+     ******************************/
+
+    GamePad.prototype.removeActionBtn = function() {
+
+        this.actionBtnObj.id = -1;
+        this.actionBtnObj.actionned = false;
+        this.actionBtnObj.pos = {
+            x: 0,
+            y: 0
+        };
+
+    }
+
+    /******************************
+     *
+     *  directionPadPos
+     *  set new pos for the
+     *  cercle to display
+     *  and set the limite
+     *
+     ******************************/
+
+    GamePad.prototype.directionPadPos = function( _event ) {
+        var _this = this;
+
+        var maxFar = this.directionPadObj.r;
+        var actualLength = Math.sqrt( Math.pow(_event.clientX-this.directionPadObj.initialPos.x, 2) + Math.pow(_event.clientY-this.directionPadObj.initialPos.y, 2) );
+
+        if( actualLength > maxFar ) {
+
+            this.directionPadObj.nowPos = {
+                x: ( (_event.clientX - this.directionPadObj.initialPos.x) * ( maxFar / actualLength ) ) + this.directionPadObj.initialPos.x,
+                y: ( (_event.clientY - this.directionPadObj.initialPos.y) * ( maxFar / actualLength ) ) + this.directionPadObj.initialPos.y
+            }
+
+        } else {
+            this.directionPadObj.nowPos = {
+                x: _event.clientX,
+                y: _event.clientY
+            }
+        }
+
+    }
+
 
     /******************************
      *
@@ -254,23 +320,37 @@ var GamePad = (function($) {
 
             _this.ctx.clearRect( 0, 0, _this.canvas.width, _this.canvas.height );
 
-            //crossPad drawing
-            if( _this.directionObj.id !== -1 ) {
+            //directionPad drawing
+            if( _this.directionPadObj.id !== -1 ) {
                 _this.ctx.beginPath();
-                _this.ctx.arc(_this.directionObj.initialPos.x,_this.directionObj.initialPos.y,50,0,Math.PI*2,true);
-                _this.ctx.strokeStyle = _this.player.avatar.secondaryColor;
+                _this.ctx.arc(_this.directionPadObj.initialPos.x,_this.directionPadObj.initialPos.y, _this.directionPadObj.r, 0, Math.PI*2, true);
+                _this.ctx.lineWidth = _this.directionPadObj.strokeWidth;
+                _this.ctx.strokeStyle = _this.directionPadObj.color;
                 _this.ctx.stroke();
 
+                //console.log(_this.directionPadObj);
+
                 _this.ctx.beginPath();
-                _this.ctx.arc(_this.directionObj.nowPos.x, _this.directionObj.nowPos.y, 30, 0, Math.PI*2, true);
-                _this.ctx.strokeStyle = _this.player.avatar.secondaryColor;
+                _this.ctx.arc(_this.directionPadObj.nowPos.x, _this.directionPadObj.nowPos.y, _this.directionPadObj.r2, 0, Math.PI*2, true);
+                _this.ctx.strokeStyle = _this.directionPadObj.color;
+                _this.ctx.lineWidth = _this.directionPadObj.strokeWidth2;
                 _this.ctx.stroke();
             }
 
             //actionBtn drawing
             if( _this.actionBtnObj.id != -1 ) {
+                _this.ctx.beginPath();
+                _this.ctx.arc(_this.actionBtnObj.pos.x, _this.actionBtnObj.pos.y, _this.actionBtnObj.r, 0, Math.PI*2, true);
+                _this.ctx.strokeStyle = _this.actionBtnObj.pos.color;
+                _this.ctx.lineWidth = _this.actionBtnObj.pos.strokeWidth2;
+                _this.ctx.stroke();
 
             }
+
+            //and finaly, lets pass the results and trigger the event
+            var eventToDispatch = new CustomEvent( _this.gamePadDrawEventName, {'detail' : _this.wrapResults()} );
+            window.dispatchEvent( eventToDispatch)
+
         }, this.fps );
 
     }
@@ -344,13 +424,41 @@ var GamePad = (function($) {
      *  gather the speed and direction
      *
      ******************************/
-    GamePad.prototype.wrapResults = function(obj1, obj2) {
+    GamePad.prototype.wrapResults = function() {
+
+        var dpo = this.directionPadObj;
+        var ab = this.actionBtnObj
+
+        dpo.velocity = this.mySpeed();
 
         return {
-            degree : obj1,
-            speed : obj2
+            'gamePadData' : {
+                'dpo' : dpo,
+                'ab'  : ab
+            }
         }
 
+    }
+
+
+    /******************************
+     *
+     *  mySpeed
+     *  calcul the speed given
+     *  from the position of the
+     *  cursor compare to the center
+     *  of the directionPad
+     *
+     *  return int (pourcentage 0-100)
+     *
+     ******************************/
+
+    GamePad.prototype.mySpeed = function() {
+
+        var maxSpeed = this.directionPadObj.r;
+        var actualSpeed = Math.sqrt( Math.pow(this.directionPadObj.nowPos.x - this.directionPadObj.initialPos.x, 2) + Math.pow(this.directionPadObj.nowPos.y - this.directionPadObj.initialPos.y, 2) );
+
+        return (maxSpeed / actualSpeed) * 100;
     }
 
     /******************************
@@ -364,14 +472,15 @@ var GamePad = (function($) {
      *
      ******************************/
     GamePad.prototype.assignPageSize = function() {
-        this.pageWidth = this.elem.width();
-        this.pageHeight = this.elem.height();
+
+        this.pageWidth = this.canvas.width = window.innerWidth;
+        this.pageHeight = this.canvas.height = window.innerHeight;
         this.middlePoint = {
             x : this.pageWidth/2,
             y : this.pageHeight/2
         }
-    }
 
+    }
 
     /******************************
      *
@@ -399,4 +508,4 @@ var GamePad = (function($) {
 
     return GamePad;
 
-}(jQuery));
+})();
