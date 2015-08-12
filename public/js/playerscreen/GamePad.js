@@ -135,7 +135,7 @@ var GamePad = (function() {
         for( var i=0; i < max; i++ ) {
             var _event = eventS.changedTouches[i];
             //crossID ?
-            if( _this.directionPadObj.id === -1 ) {
+            if( _this.directionPadObj.id === -1 && _event.clientX < this.middlePoint.x ) {
                 _this.addDirectionPad( _event )
             }
             //button ?
@@ -341,10 +341,11 @@ var GamePad = (function() {
             if( _this.actionBtnObj.id != -1 ) {
                 _this.ctx.beginPath();
                 _this.ctx.arc(_this.actionBtnObj.pos.x, _this.actionBtnObj.pos.y, _this.actionBtnObj.r, 0, Math.PI*2, true);
-                _this.ctx.strokeStyle = _this.actionBtnObj.pos.color;
-                _this.ctx.lineWidth = _this.actionBtnObj.pos.strokeWidth2;
-                _this.ctx.stroke();
-
+                _this.ctx.fillStyle = "red";
+                _this.ctx.fill();
+                /*_this.ctx.lineWidth = _this.actionBtnObj.pos.strokeWidth;
+                _this.ctx.strokeStyle = "blue";
+                _this.ctx.stroke();*/
             }
 
             //and finaly, lets pass the results and trigger the event

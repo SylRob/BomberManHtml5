@@ -1,202 +1,156 @@
 
 
 var Game = (function() {
-    
-   
-    function Game(svgElem, parent) {
-        
-        this.svgElem = svgElem;
-        this.svgWraper = parent;
-        
+
+
+    function Game(elem) {
+
+        this.elem = elem;
         this.playerAvatar = {
-            size : 50,
-            shape : 'circle',
-            userMaxSpeed : 5
+
         }
-        
+
         this.gameScript;
-        this.elemSvg;
-        this.playerFeature;
-        
-        this.elemStatus = {};
+        this.renderer;
+        this.scene;
+        this.camera;
+        this.pan;
+
         this.playerList = [];
         this.interval = [];
-        this.startInvicibleTime = 4000;
-        this.g = 0;
-        this.init();        
+        this.init();
     }
-    
+
     /******************************
      *
      *  init
-     *  
+     *
      *  warn the players
      *
      ******************************/
     Game.prototype.init = function() {
         var _this = this;
+
+        if(
+            !isCanvasSupported()
+        ) {
+            this.notSupported();
+            return false;
+        }
+
         socket.emit('thePlayGroundHasArrive');
-        
-        var globalRect = this.svgElem.rect( 0, 0, this.svgWraper.width(), this.svgWraper.height() )
-        .attr({
-            fill: '#FFFFFF',
-            stroke: "#000",
-            strokeWidth: 5
-        });
-        
-        $(window).on('resize', function() {
-            globalRect.attr({
-                width : _this.svgWraper.width(),
-                height : _this.svgWraper.height()
-            })
-        });
-        
-        // init these variable here are important for the posisition of the element in the DOM
+        this.canvasSetup();
+
+        this.initEvent();
         this.gameScript = new GameScript(this);
-        this.elemSvg = new ElementsSvg(this.svgElem, this.svgWraper);
-        this.playerFeature = new PlayerFeature(this.svgElem, this.svgWraper);
-        
-        
+        this.playerFeature = new PlayerFeature();
+
+
         this.start();
     }
-    
+
+    /******************************
+     *
+     *  canvasSetup
+     *
+     *
+     ******************************/
+    Game.prototype.canvasSetup = function() {
+        var _this = this;
+
+        this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+        this.camera.position.set(500, 800, 1300);
+        this.camera.lookAt( new THREE.Vector3() );
+        this.scene = new THREE.Scene();
+
+        this.pan = new Plan( this.scene, this.ctx );
+
+        this.renderer = new THREE.WebGLRenderer( { antialias: true } );
+		this.renderer.setClearColor( 0xf0f0f0 );
+		this.renderer.setPixelRatio( window.devicePixelRatio );
+		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.elem.appendChild( this.renderer.domElement );
+
+    }
+
+    /******************************
+     *
+     *  initEvent
+     *
+     *  init the SVG
+     *  and set the main loop
+     *
+     ******************************/
+    Game.prototype.initEvent = function() {
+        var _this = this;
+
+        window.addEventListener('resize', function() {
+            _this.assignNewPageSize();
+        });
+        window.dispatchEvent(new Event('resize'));
+
+    }
+
+
     /******************************
      *
      *  start
-     *  
+     *
      *  init the SVG
      *  and set the main loop
      *
      ******************************/
     Game.prototype.start = function() {
         var _this = this;
-        
-        this.elemStatus = this.elemSvg.start();
+
         this.gameScript.start();
-        
-        this.interval = setInterval(function() {            
-            
-            //time to move !!
-            for(elem in _this.elemStatus) {
-                if(_this.elemStatus.hasOwnProperty(elem) && undefined != _this.elemStatus[elem]){
-                    
-                    if( _this.elemSvg.movingElem(_this.elemStatus[elem]) === 'deleted') {
-                        delete _this.elemStatus[elem];
-                        _this.elemSvg.randomElemGenerator();
-                        continue;
-                    }
-                    
-                    if(Object.keys(_this.playerList).length > 0 && undefined !== elem) _this.didIKillSomeone(elem);
-                    
-                } else clearInterval(_this.interval);
-                
-            }
-            
-        }, 30);
-        
-        
+        this.render();
+
     }
-    
+
+
+    /******************************
+     *
+     *  render
+     *
+     *  create the canvas element
+     *  and display it
+     *
+     ******************************/
+    Game.prototype.render = function() {
+
+        this.renderer.render( this.scene, this.camera );
+
+    }
+
     /******************************
      *
      *  didIKillSomeone
-     *  
+     *
      *  check if a player touch
      *  an element
      *
      ******************************/
     Game.prototype.didIKillSomeone = function(elem) {
         var _this = this;
-        
-        var myElem = this.elemStatus[elem];
-        
-        if( undefined === myElem ) return false;
-        
-        var imgType     = myElem.body.type == 'image' ? true : false;
-        var imgTypeX    = imgType ? 'x' : 'cx';
-        var imgTypeY    = imgType ? 'y' : 'cy';
-        
-        var elemX = +myElem.body.attr(imgTypeX);
-        var elemY = +myElem.body.attr(imgTypeY);
-        var elemR = +myElem.body.attr('r');
-        
-        
-        
-        for(var playerId in this.playerList) {
-           
-            var player = _this.playerList[playerId];
-            
-            if( undefined === player || undefined === player.svgAvatar || player.invicible ) continue;
-            
-            
-            
-            var playerType     = player.svgAvatar.type == 'image' ? true : false;
-            var playerTypeX    = playerType ? 'x' : 'cx';
-            var playerTypeY    = playerType ? 'y' : 'cy';
-            
-            var playerX = +player.svgAvatar.attr(playerTypeX);
-            var playerY = +player.svgAvatar.attr(playerTypeY);
-            var playerR = +player.svgAvatar.attr('r');
-            
-            //string length AB² = (Bx - Ax)² + (By - Ay)²
-            
-            var stringLength = Math.round( Math.sqrt( Math.pow( ( playerX-elemX ),2) + Math.pow( ( playerY-elemY ),2 ) ) *100 ) / 100;
-            stringLength = stringLength < 0 ? stringLength*-1 : stringLength;
-            
-            //if the addition of half of the length of the player avatar and the element are longer than the length of the string -> dead
-            if( ( playerR+elemR ) > stringLength ) {
-                
-                //special event when touch ?
-                if(myElem.callBack !== undefined) myElem.callBack('touch', playerId);
-                //no ? then you are DEAD !
-                else _this.youAreDead(playerId);
-            }
-            
-        }
-        
+
+
+
     }
-    
+
     /******************************
      *
      *  youNeedABeer
-     *  
+     *
      *  gice a free beer to the player
      *
      ******************************/
     Game.prototype.youNeedABeer = function(playerId) {
-        
+
         socket.emit('youNeedABeer', playerId);
-        
+
     }
-    
-    /******************************
-     *
-     *  getElementsList
-     *  
-     *  get the element list from
-     *  Game
-     *
-     ******************************/
-    Game.prototype.getElementsList = function() {
-        
-        return this.elemStatus;
-        
-    }
-    
-    /******************************
-     *
-     *  getElementsList
-     *  
-     *  get the element list from
-     *  Game
-     *
-     ******************************/
-    Game.prototype.deleteElem = function(elem) {
-           
-        delete this.elemStatus[elem];
-        
-    }
-    
+
     /******************************
      *
      *  youAreDead
@@ -204,13 +158,12 @@ var Game = (function() {
      *  a player lost
      *
      ******************************/
-    Game.prototype.youAreDead = function(playerId) {   
+    Game.prototype.youAreDead = function(playerId) {
         socket.emit('youAreDead', playerId);
-        this.playerList[playerId].svgAvatar.remove();
         delete this.playerList[playerId];
     }
-    
-    
+
+
     /******************************
      *
      *  addNewPlayer
@@ -224,14 +177,14 @@ var Game = (function() {
      *
      ******************************/
     Game.prototype.addNewPlayer = function( Player ) {
-        
+
         if( typeof(Player) != 'object' || Player.id == '' ) {
             throw new Error('a problem happpend with this player');
             return false;
         }
-        
+
         var iid = Player.id;
-        
+
         if(this.playerList.length > 1) {
             for(otherPlayer in this.playerList) {
                 if(otherPlayer.id == Player.id) {
@@ -240,51 +193,24 @@ var Game = (function() {
                 }
             }
         }
-        
+
         this.playerList[iid] = Player;
-        
-        this.playerList[iid].svgAvatar = this.playerFeature.initAvatar(Player);
-        this.playerList[iid].invicible = false;
-        
-        this.youAreInvicible( this.playerList[iid] );
-        
+
     }
-    
-    /******************************
-     *
-     *  youAreInvicible
-     *  
-     *  add 3 secondes of invicibility
-     *  to the player
-     *
-     ******************************/
-    Game.prototype.youAreInvicible = function( Player ) {
-        
-        Player.invicible = true;
-        
-        this.playerFeature.iAmInvicible(Player, this.startInvicibleTime);
-        
-        setTimeout(function() {
-            
-            Player.invicible = false;
-            
-        }, this.startInvicibleTime);
-        
-    }
-    
-    
+
+
     Game.prototype.updatePlayerPos = function( playerPos ) {
-        
+
         var myPlayer = this.playerList[playerPos.playerId];
-        
+
         if( undefined === myPlayer ) {
             delete this.playerList[playerPos.playerId];
             return false;
         }
-        
+
         this.playerFeature.updatePlayerPos( myPlayer, playerPos );
     }
-    
+
     /******************************
      *
      *  removePlayer
@@ -296,32 +222,72 @@ var Game = (function() {
      *  playerList
      *
      ******************************/
-    
+
     Game.prototype.removePlayer = function( id ) {
         var _this = this;
-        
+
         if(id == null) return false;
-        
-        
+
+
         if(undefined == id || id == '' || Object.keys(this.playerList).length < 1) {
             /*throw new Error('no player found');
-            return false;*/            
+            return false;*/
         } else {
             for(var i = 0 ; i < Object.keys(this.playerList).length ; i++) {
-                
+
                 if(_this.playerList[id]) {
-                    
-                    _this.playerList[id].svgAvatar.remove();
-                    
+
                     delete _this.playerList[id];
-                    
+
                     return false;
                 }
             }
         }
-        
+
     }
-   
+
+    /******************************
+     *
+     *  assignPageSize
+     *  triggered when the page
+     *  is resize, orientation
+     *  change, and reasign
+     *  the widh/heigth, center
+     *  point of the GamePad
+     *
+     ******************************/
+    Game.prototype.assignNewPageSize = function() {
+
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.updateProjectionMatrix();
+
+        this.renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
+    /******************************
+     *
+     *  notSupported
+     *  add a visual element
+     *  that inform the user that
+     *  the gamepad will not work correctly
+     *
+     ******************************/
+
+    Game.prototype.notSupported = function() {
+        var elem = document.createElement('div');
+        elem.style.position = 'fixed';
+        elem.style.top = '0px';
+        elem.style.left = '0px';
+        elem.style.background = 'red';
+        elem.style.color = '#FFFFFF';
+        elem.style.padding = '3%';
+        elem.style.width = '94%'
+
+        elem.innerHTML = 'This device does NOT support the mandatory features to make the Game work correctly';
+        document.getElementsByTagName('body')[0].appendChild(elem);
+    }
+
     return Game;
-   
-}());
+
+}(THREE));
