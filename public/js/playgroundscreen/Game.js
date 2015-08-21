@@ -11,10 +11,7 @@ var Game = (function() {
         }
 
         this.gameScript;
-        this.renderer;
-        this.scene;
-        this.camera;
-        this.pan;
+        this.plan;
 
         this.playerList = [];
         this.interval = [];
@@ -58,18 +55,7 @@ var Game = (function() {
     Game.prototype.canvasSetup = function() {
         var _this = this;
 
-        this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
-        this.camera.position.set(500, 800, 1300);
-        this.camera.lookAt( new THREE.Vector3() );
-        this.scene = new THREE.Scene();
-
-        this.pan = new Plan( this.scene, this.ctx );
-
-        this.renderer = new THREE.WebGLRenderer( { antialias: true } );
-		this.renderer.setClearColor( 0xf0f0f0 );
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
-		this.elem.appendChild( this.renderer.domElement );
+        this.plan = new Plan(this.elem);
 
     }
 
@@ -83,12 +69,6 @@ var Game = (function() {
      ******************************/
     Game.prototype.initEvent = function() {
         var _this = this;
-
-        window.addEventListener('resize', function() {
-            _this.assignNewPageSize();
-        });
-        window.dispatchEvent(new Event('resize'));
-
     }
 
 
@@ -104,24 +84,9 @@ var Game = (function() {
         var _this = this;
 
         this.gameScript.start();
-        this.render();
 
     }
 
-
-    /******************************
-     *
-     *  render
-     *
-     *  create the canvas element
-     *  and display it
-     *
-     ******************************/
-    Game.prototype.render = function() {
-
-        this.renderer.render( this.scene, this.camera );
-
-    }
 
     /******************************
      *
@@ -243,25 +208,6 @@ var Game = (function() {
                 }
             }
         }
-
-    }
-
-    /******************************
-     *
-     *  assignPageSize
-     *  triggered when the page
-     *  is resize, orientation
-     *  change, and reasign
-     *  the widh/heigth, center
-     *  point of the GamePad
-     *
-     ******************************/
-    Game.prototype.assignNewPageSize = function() {
-
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-		this.camera.updateProjectionMatrix();
-
-        this.renderer.setSize( window.innerWidth, window.innerHeight );
 
     }
 
