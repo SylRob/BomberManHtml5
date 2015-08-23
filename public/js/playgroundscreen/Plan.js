@@ -82,8 +82,8 @@ var Plan = (function() {
     Plan.prototype.setCamera = function() {
 
         this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 5000 );
-        this.camera.position.set( 0, 1000, this.references.plane.d);
-        this.camera.lookAt( new THREE.Vector3(0 ,0, 0) );
+        this.camera.position.set( 0, 1400, 600);
+        this.camera.lookAt( new THREE.Vector3( 0, -800, 0 ) );
 
     }
 
@@ -126,6 +126,7 @@ var Plan = (function() {
      ******************************/
     Plan.prototype.letsPaint = function() {
 
+        // Plane
         var planeGeo = new THREE.PlaneGeometry( 5000, 5000, 32 );
         var planeMaterial = new THREE.MeshPhongMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
         var plane = new THREE.Mesh( planeGeo, planeMaterial );
@@ -134,6 +135,7 @@ var Plan = (function() {
         plane.position.set( 0, -20, 0 );
         this.scene.add( plane );
 
+        //Ground
         var groundGroup = new THREE.Object3D();
 
         var groundGeo = new THREE.BoxGeometry( this.references.plane.w, this.references.plane.h, this.references.plane.d );
@@ -145,7 +147,8 @@ var Plan = (function() {
 
         groundGroup.add( ground );
         //this.scene.add( ground );
-       
+        
+        //Boxes
         var boxWidth = this.references.plane.w/this.references.boxPerLine;
         var boxHeight = this.references.plane.w/this.references.boxPerLine;
         var boxDepth = this.references.plane.d/this.references.boxPerLine;
@@ -186,7 +189,7 @@ var Plan = (function() {
 
             boxXpos -= boxWidth;
 
-            if(boxXpos <= -1) {
+            if(boxXpos < boxWidth) {
                 line++;
                 boxZpos -= boxDepth;
                 boxXpos = this.references.plane.w;
