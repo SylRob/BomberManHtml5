@@ -91,9 +91,10 @@ jQuery(document).ready(function() {
 
     });
 
-var i=0;
+    var i=0;
     window.addEventListener('gamePad.draw', function(event) {
         var gamePadData = event.detail.gamePadData;
+        console.log( gamePadData )
         var playerData = player.wrapResults();
 
     })

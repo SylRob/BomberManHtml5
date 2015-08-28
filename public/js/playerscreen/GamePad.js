@@ -2,6 +2,16 @@
 
 var GamePad = (function() {
 
+    /******************************
+     *
+     *  GamePad
+     *
+     *  @param {HTMLElement}  elem  where to create the GamePad
+     *  @param {Object.Player}  Player  the player infos
+     *
+     *  @return {Object} GamePad
+     *
+     ******************************/
     function GamePad(elem, Player) {
 
         this.player = Player;
@@ -43,6 +53,7 @@ var GamePad = (function() {
     /******************************
      *
      *  init
+     *
      *  test if the device is touchable
      *  and can use canvas
      *
@@ -75,6 +86,7 @@ var GamePad = (function() {
     /******************************
      *
      *  canvasInit
+     *
      *  create the canvas and
      *  assign it to the document
      *
@@ -92,6 +104,7 @@ var GamePad = (function() {
     /******************************
      *
      *  eventInit
+     *
      *  assign the event to the
      *  approriate function
      *  and pass it to the player
@@ -123,6 +136,7 @@ var GamePad = (function() {
     /******************************
      *
      *  touchStartHandeler
+     *
      *  assign new touch event
      *
      ******************************/
@@ -151,7 +165,10 @@ var GamePad = (function() {
      /******************************
       *
       *  touchMouveHandeler
+      *
       *  handle mouvement
+      *
+      *  @param {event}  eventS  the event containing the finger position
       *
       ******************************/
 
@@ -183,7 +200,10 @@ var GamePad = (function() {
      /******************************
       *
       *  touchEndHandeler
+      *
       *  assign new touch event
+      *
+      *  @param {event}  eventS  the event containing the finger position
       *
       ******************************/
 
@@ -208,7 +228,10 @@ var GamePad = (function() {
     /******************************
      *
      *  addDirectionPad
+     *
      *  create direction pad
+     *
+     *  @param {Object}  posObj  an object containing finger position
      *
      ******************************/
 
@@ -225,7 +248,10 @@ var GamePad = (function() {
     /******************************
      *
      *  addActionBtn
+     *
      *  create button
+     *
+     *  @param {Object}  posObj  an object containing finger position
      *
      ******************************/
 
@@ -243,6 +269,7 @@ var GamePad = (function() {
     /******************************
      *
      *  removeDirectionPad
+     *
      *  reset direction pad
      *
      ******************************/
@@ -260,6 +287,7 @@ var GamePad = (function() {
     /******************************
      *
      *  removeActionBtn
+     *
      *  reset direction pad
      *
      ******************************/
@@ -278,9 +306,12 @@ var GamePad = (function() {
     /******************************
      *
      *  directionPadPos
+     *
      *  set new pos for the
      *  cercle to display
-     *  and set the limite
+     *  and set the limit
+     *
+     *  @param {event}  _event  the event containing the finger position
      *
      ******************************/
 
@@ -310,6 +341,7 @@ var GamePad = (function() {
     /******************************
      *
      *  letsDraw
+     *
      *  draw the canvas
      *
      ******************************/
@@ -364,7 +396,7 @@ var GamePad = (function() {
      *  of the screen and give the
      *  angle in degree
      *
-     *  return float
+     *  return {float}
      *
      ******************************/
     GamePad.prototype.myDirection = function(event) {
@@ -422,7 +454,10 @@ var GamePad = (function() {
     /******************************
      *
      *  wrapResults
+     *
      *  gather the speed and direction
+     *
+     *  @return {Object}  an object wich contain the new position data
      *
      ******************************/
     GamePad.prototype.wrapResults = function() {
@@ -445,12 +480,13 @@ var GamePad = (function() {
     /******************************
      *
      *  mySpeed
+     *
      *  calcul the speed given
      *  from the position of the
      *  cursor compare to the center
      *  of the directionPad
      *
-     *  return int (pourcentage 0-100)
+     *  return {int} pourcentage 0-100
      *
      ******************************/
 
@@ -465,6 +501,7 @@ var GamePad = (function() {
     /******************************
      *
      *  assignPageSize
+     *
      *  triggered when the page
      *  is resize, orientation
      *  change, and reasign
@@ -486,6 +523,7 @@ var GamePad = (function() {
     /******************************
      *
      *  notSupported
+     *
      *  add a visual element
      *  that inform the user that
      *  the gamepad will not work correctly

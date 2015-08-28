@@ -2,13 +2,23 @@
 
 var Game = (function() {
 
-
+    /******************************
+     *
+     *  PlayerController
+     *
+     *  @param {HTMLElement}  elem  game container
+     *
+     *  @return {Object}  Game
+     *
+     ******************************/
     function Game(elem) {
 
-        this.elem = elem;
-        this.playerAvatar = {
+        //Contstants
+        this.PLAYER_SPEED = 5;
+        this.PLAYER_MAX_SPEED = 10;
+        this.MIN_PLAYER = 1;
 
-        }
+        this.elem = elem;
 
         this.gameScript;
         this.plan;
@@ -16,6 +26,7 @@ var Game = (function() {
         this.playerList = [];
         this.interval = [];
         this.init();
+
     }
 
     /******************************
@@ -40,10 +51,7 @@ var Game = (function() {
 
         this.initEvent();
         this.gameScript = new GameScript(this);
-        this.playerFeature = new PlayerFeature();
 
-
-        this.start();
     }
 
     /******************************
@@ -76,14 +84,17 @@ var Game = (function() {
      *
      *  start
      *
-     *  init the SVG
-     *  and set the main loop
+     *  init the players avatar
      *
      ******************************/
     Game.prototype.start = function() {
         var _this = this;
 
-        this.gameScript.start();
+        for ( playerId in this.playerList ) {
+
+            this.playerList[playerId].avatar.initAvatar();
+
+        }
 
     }
 
@@ -132,13 +143,11 @@ var Game = (function() {
     /******************************
      *
      *  addNewPlayer
-     *  is called every "newPlayer"
-     *  event
-     *  take a Player object as
-     *  parameter and compare the
-     *  id to the other player
-     *  if new ID then add the player
-     *  to the playerList array
+     *
+     *  is called every "newPlayer" event take a Player object as parameter and compare the
+     *  id to the other player if new ID then add the player to the playerList array
+     *
+     *  @param {Object}  Player
      *
      ******************************/
     Game.prototype.addNewPlayer = function( Player ) {
@@ -159,11 +168,20 @@ var Game = (function() {
             }
         }
 
-        this.playerList[iid] = Player;
+        this.playerList[iid] = new PlayerController( this, Player );
 
     }
 
 
+    /******************************
+     *
+     *  updatePlayerPos
+     *
+     *  update the player position
+     *
+     *  @param {Object} playerPos got new position of the player and his id
+     *
+     ******************************/
     Game.prototype.updatePlayerPos = function( playerPos ) {
 
         var myPlayer = this.playerList[playerPos.playerId];
@@ -173,18 +191,30 @@ var Game = (function() {
             return false;
         }
 
-        this.playerFeature.updatePlayerPos( myPlayer, playerPos );
+        this.myPlayer.updatePlayerPos( myPlayer, playerPos );
+    }
+
+
+    /******************************
+     *
+     *  enoughPlayer
+     *
+     *  check if there is the minimum number of players
+     *
+     *  @return {boolean} yes or no
+     *
+     ******************************/
+    Game.prototype.enoughPlayer = function() {
+        return Object.keys(this.playerList).length >= this.MIN_PLAYER;
     }
 
     /******************************
      *
      *  removePlayer
-     *  is called every "playerLeft"
-     *  event
-     *  take a id string
-     *  look for the ID in the player
-     *  list and remove it from the
-     *  playerList
+     *  is called every "playerLeft" event take a id string
+     *  look for the ID in the player list and remove it from the playerList
+     *
+     *  @param {integer} id of the player
      *
      ******************************/
 
@@ -214,9 +244,9 @@ var Game = (function() {
     /******************************
      *
      *  notSupported
-     *  add a visual element
-     *  that inform the user that
-     *  the gamepad will not work correctly
+     *
+     *  if canvas or a mandatory game's feature is not supported,
+     *  add a visual element that inform the user that the gamepad will not work correctly
      *
      ******************************/
 

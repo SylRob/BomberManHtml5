@@ -2,7 +2,15 @@
 
 var Plan = (function() {
 
-
+    /******************************
+     *
+     *  Plan
+     *
+     *  @param {HTMLElement}  elemParents
+     *
+     *  @return {Object}  Plan
+     *
+     ******************************/
     function Plan(elemParents) {
 
         this.scene;
@@ -11,9 +19,10 @@ var Plan = (function() {
         this.elemParents = elemParents;
 
         this.references = {
-            plane: { w: 1000, h: 20, d: 1000 },
+            world: { w: 1000, h: 20, d: 1000 },
             boxPerLine: 13
         }
+        this.cubesList = [];
 
         this.generate();
 
@@ -25,16 +34,16 @@ var Plan = (function() {
      *  init the scene, camera, light2
      *  and all the elements
      *
-     *  return void
+     *  @return {void}
      *
      ******************************/
     Plan.prototype.generate = function() {
         var _this = this;
 
-
         this.setScene();
         this.setCamera();
         this.setLight();
+        this.world = new World( this.scene, this.references.world );
         this.letsPaint();
 
         this.scene.add( this.axisPaint() );
@@ -49,7 +58,7 @@ var Plan = (function() {
      *
      *  create and set the Scene
      *
-     *  return void
+     *  @return {void}
      *
      ******************************/
     Plan.prototype.setScene = function() {
@@ -76,14 +85,14 @@ var Plan = (function() {
      *
      *  create and set the camera
      *
-     *  return void
+     *  @return {void}
      *
      ******************************/
     Plan.prototype.setCamera = function() {
 
         this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 5000 );
-        this.camera.position.set( 0, 1400, 600);
-        this.camera.lookAt( new THREE.Vector3( 0, -800, 0 ) );
+        this.camera.position.set( 0, 1200, 500);
+        this.camera.lookAt( new THREE.Vector3( 0, 0, 100 ) );
 
     }
 
@@ -93,7 +102,7 @@ var Plan = (function() {
      *
      *  create and set the light
      *
-     *  return void
+     *  @return {void}
      *
      ******************************/
     Plan.prototype.setLight = function() {
@@ -121,7 +130,7 @@ var Plan = (function() {
      *
      *  create elements
      *
-     *  return void
+     *  @return {void}
      *
      ******************************/
     Plan.prototype.letsPaint = function() {
@@ -135,73 +144,141 @@ var Plan = (function() {
         plane.position.set( 0, -20, 0 );
         this.scene.add( plane );
 
-        //Ground
-        var groundGroup = new THREE.Object3D();
-
-        var groundGeo = new THREE.BoxGeometry( this.references.plane.w, this.references.plane.h, this.references.plane.d );
-        var groundMaterial = new THREE.MeshPhongMaterial( {color: 0x00ff00} );
-        var ground = new THREE.Mesh( groundGeo, groundMaterial );
-        ground.castShadow = true;
-        ground.receiveShadow = false;
-        ground.position.set( this.references.plane.w/2, -this.references.plane.h/2, this.references.plane.d/2 );
-
-        groundGroup.add( ground );
-        //this.scene.add( ground );
-        
         //Boxes
-        var boxWidth = this.references.plane.w/this.references.boxPerLine;
-        var boxHeight = this.references.plane.w/this.references.boxPerLine;
-        var boxDepth = this.references.plane.d/this.references.boxPerLine;
+        var boxWidth = this.references.world.w/this.references.boxPerLine;
+        var boxHeight = this.references.world.w/this.references.boxPerLine;
+        var boxDepth = this.references.world.d/this.references.boxPerLine;
         var occurences = this.references.boxPerLine*this.references.boxPerLine;
-        var boxGeo = new THREE.BoxGeometry( 
-            boxWidth
-            ,boxHeight
-            ,boxDepth
-        );
-        
-        var boxXpos = this.references.plane.d;
-        var boxZpos = this.references.plane.w;
-        var boxMaterial = new THREE.MeshPhongMaterial( {color: 0x000FFF} );
-        var box = new THREE.Mesh( boxGeo, boxMaterial );
+
+        var boxXpos = this.references.world.d;
+        var boxZpos = this.references.world.w;
+
         var line = 0;
 
         for( var i=0; i<occurences; i++ ) {
-            
+            // not destructible
             if( !(i%2) && !(line%2) ) {
-
-                var boxClone = box.clone();
-                var boxGroup = new THREE.Object3D().add( boxClone );
-                boxClone.position.set( 
-                    -(this.references.plane.w/this.references.boxPerLine)/2
-                    , (this.references.plane.w/this.references.boxPerLine)/2
-                    , -(this.references.plane.d/this.references.boxPerLine)/2  );
-                boxGroup.position.set(
+                var box = new Box( boxWidth, boxHeight, boxDepth, 0x000FFF, false );
+                box.getObj().position.set(
                     boxXpos,
                     0,
                     boxZpos
                 );
+                box.getObj().add( this.axisPaint() )
+                //push the cube in the list to remember it
+                this.cubesList.push( box );
 
-                boxGroup.add( this.axisPaint() );
-
-                groundGroup.add( boxGroup );
+            } else {
+            // destructible
+                var box = new Box( boxWidth, boxHeight, boxDepth, 0x8A2BE2, true );
+                box.getObj().position.set(
+                    boxXpos,
+                    0,
+                    boxZpos
+                );
+                this.cubesList.push( box );
             }
 
-
+            this.world.addElem( box.getObj() );
             boxXpos -= boxWidth;
 
             if(boxXpos < boxWidth) {
                 line++;
                 boxZpos -= boxDepth;
-                boxXpos = this.references.plane.w;
+                boxXpos = this.references.world.w;
             }
+        }
 
+        this.world.addElem( this.axisPaint() );
+        this.scene.add( this.world.getGround() );
+
+        this.setStartPosition();
+
+    }
+
+    /******************************
+     *
+     *  setStartPosition
+     *
+     *  set the 4 corners to
+     *  empty cube
+     *
+     *
+     ******************************/
+    Plan.prototype.setStartPosition = function() {
+
+        var boxWidth = this.references.world.w/this.references.boxPerLine;
+        var boxDepth = this.references.world.d/this.references.boxPerLine;
+        var boxWidthX4 = boxWidth*4;
+        var boxDepthX4 = boxDepth*4;
+
+        var squareGeo = new THREE.BoxGeometry( boxWidth*4, boxDepth*4, 1 );
+        var squareMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        var squareMesh = new THREE.Mesh( squareGeo, squareMaterial );
+        squareMesh.rotation.x = 90*(Math.PI/180);
+        squareMesh.position.set( boxWidthX4/2, 0, boxDepthX4/2 );
+
+        var squareTL = new THREE.Object3D().add( squareMesh );
+        squareTL.position.set( 0, 2, 0 );
+        this.world.addElem( squareTL );
+
+        var squareTR = new THREE.Object3D().add( squareMesh.clone() );
+        squareTR.position.set( this.references.world.w - boxWidthX4, 2, 0 );
+        this.world.addElem( squareTR );
+
+        var squareBL = new THREE.Object3D().add( squareMesh.clone() );
+        squareBL.position.set( 0, 2, this.references.world.d - boxDepthX4 );
+        this.world.addElem( squareBL );
+
+        var squareBR = new THREE.Object3D().add( squareMesh.clone() );
+        squareBR.position.set( this.references.world.w - boxWidthX4, 2, this.references.world.d - boxDepthX4 );
+        this.world.addElem( squareBR );
+
+
+        //colision detection
+        var caster = new THREE.Raycaster();
+        var collisions = [];
+
+        var rays = [
+          new THREE.Vector3(0, 0, 1),
+          new THREE.Vector3(1, 0, 1),
+          new THREE.Vector3(1, 0, 0),
+          new THREE.Vector3(1, 0, -1),
+          new THREE.Vector3(0, 0, -1),
+          new THREE.Vector3(-1, 0, -1),
+          new THREE.Vector3(-1, 0, 0),
+          new THREE.Vector3(-1, 0, 1)
+        ];
+
+        for ( var i = 0; i < rays.length; i += 1 ) {
+            caster.set( squareTL.position, rays[i] );
+
+            for( var boxId in this.cubesList ) {
+                var boxObj = this.cubesList[boxId];
+
+                boxObj.getObj().children[0].geometry.computeFaceNormals();
+                collisions = caster.intersectObject( boxObj.getObj(), true );
+
+                if ( collisions.length ) {
+                    console.log(collisions);
+                } else console.log("no colision");
+            }
 
         }
 
-        groundGroup.position.set( -this.references.plane.w/2, 0, -this.references.plane.d/2 );
 
-        this.scene.add( groundGroup );
-        
+    }
+
+
+    /******************************
+     *
+     *  playerUpdate
+     *
+     *
+     *
+     ******************************/
+    Plan.prototype.playerUpdate = function() {
+
 
 
     }
@@ -212,7 +289,7 @@ var Plan = (function() {
      *
      *  paint the axis x,y,z
      *
-     *  return Object3D
+     *  @return {Object3D}
      *
      ******************************/
     Plan.prototype.axisPaint = function() {
@@ -254,7 +331,7 @@ var Plan = (function() {
      *
      *  set the canvas
      *
-     *  return void
+     *  return {void}
      *
      ******************************/
     Plan.prototype.renderer = function() {
@@ -267,8 +344,8 @@ var Plan = (function() {
         this.renderer.shadowMapSoft = true;
 		this.elemParents.appendChild( this.renderer.domElement );
 
-        this.cameraControls = new THREE.OrbitAndPanControls(this.camera, this.renderer.domElement);
-        this.cameraControls.target.set(0,200,0);
+        this.cameraControls = new THREE.OrbitAndPanControls( this.camera, this.renderer.domElement );
+        this.cameraControls.target.set( 0, 0, 50);
 
     }
 
@@ -278,7 +355,7 @@ var Plan = (function() {
      *
      *  lauch the interval
      *
-     *  return void
+     *  return {void}
      *
      ******************************/
     Plan.prototype.animate = function() {
@@ -292,13 +369,13 @@ var Plan = (function() {
      *
      *  render the scene
      *
-     *  return void
+     *  return {void}
      *
      ******************************/
     Plan.prototype.render = function() {
         this.cameraControls.update();
         this.renderer.render( this.scene, this.camera );
-
+        this.playerUpdate();
     }
 
 
