@@ -46,7 +46,17 @@ var Player = (function() {
 
     }
 
-
+    /******************************
+     *
+     *  myAvatar
+     *
+     *  set player color/image setting
+     *
+     *  @param {Object}  option  player color choice
+     *
+     *  @return {void}
+     *
+     ******************************/
     Player.prototype.myAvatar = function( option ) {
         this.avatar = this.avatarList[option];
 
@@ -55,17 +65,28 @@ var Player = (function() {
     Player.prototype.initGamePad = function(elem) {
     }
 
+
     Player.prototype.whatIsMyDirection = function(passingObj) {
 
         passingObj.playerId = this.id;
 
     }
 
-    Player.prototype.wrapResults = function() {
+    /******************************
+     *
+     *  wrapResults
+     *
+     *  wrap results
+     *
+     *  @param {Object}  gamePadData  object that contain the button datas
+     *
+     *  @return {Object} all the data that we want to pass to the server
+     *
+     ******************************/
+    Player.prototype.wrapResults = function( gamePadData ) {
         return {
             'id' : this.id,
-            'avatar' : this.avatarList,
-            'pseudo' : this.pseudo
+            'data'  : gamePadData
         }
     }
 

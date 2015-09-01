@@ -26,7 +26,7 @@ var GamePad = (function() {
             strokeWidth: 10,
             strokeWidth2: 3,
             color: this.player.avatar.primaryColor,
-            deg: 0,
+            direction: 0,
             velocity: 0
         }
         this.actionBtnObj = {
@@ -140,7 +140,6 @@ var GamePad = (function() {
      *  assign new touch event
      *
      ******************************/
-
     GamePad.prototype.touchStartHandeler = function( eventS ) {
         var _this = this;
         var max = eventS.changedTouches.length;
@@ -171,7 +170,6 @@ var GamePad = (function() {
       *  @param {event}  eventS  the event containing the finger position
       *
       ******************************/
-
      GamePad.prototype.touchMouveHandeler = function( eventS ) {
          event.preventDefault();
 
@@ -206,7 +204,6 @@ var GamePad = (function() {
       *  @param {event}  eventS  the event containing the finger position
       *
       ******************************/
-
      GamePad.prototype.touchEndHandeler = function( eventS ) {
          var _this = this;
          var max = eventS.changedTouches.length;
@@ -234,7 +231,6 @@ var GamePad = (function() {
      *  @param {Object}  posObj  an object containing finger position
      *
      ******************************/
-
     GamePad.prototype.addDirectionPad = function( posObj ) {
 
         this.directionPadObj.id = posObj.identifier;
@@ -254,7 +250,6 @@ var GamePad = (function() {
      *  @param {Object}  posObj  an object containing finger position
      *
      ******************************/
-
     GamePad.prototype.addActionBtn = function( posObj ) {
 
         this.actionBtnObj.id = posObj.identifier;
@@ -273,7 +268,6 @@ var GamePad = (function() {
      *  reset direction pad
      *
      ******************************/
-
     GamePad.prototype.removeDirectionPad = function() {
 
         this.directionPadObj.id = -1;
@@ -291,7 +285,6 @@ var GamePad = (function() {
      *  reset direction pad
      *
      ******************************/
-
     GamePad.prototype.removeActionBtn = function() {
 
         this.actionBtnObj.id = -1;
@@ -314,7 +307,6 @@ var GamePad = (function() {
      *  @param {event}  _event  the event containing the finger position
      *
      ******************************/
-
     GamePad.prototype.directionPadPos = function( _event ) {
         var _this = this;
 
@@ -390,69 +382,6 @@ var GamePad = (function() {
 
     /******************************
      *
-     *  myDirection
-     *  take the user position
-     *  draw a triangle with the center
-     *  of the screen and give the
-     *  angle in degree
-     *
-     *  return {float}
-     *
-     ******************************/
-    GamePad.prototype.myDirection = function(event) {
-
-        var pointerEventToXY = function(e){
-            var out = {x:0, y:0};
-            if(e.type == 'touchstart' || e.type == 'touchmove' || e.type == 'touchend' || e.type == 'touchcancel'){
-              var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-              out.x = touch.pageX;
-              out.y = touch.pageY;
-            } else if (e.type == 'mousedown' || e.type == 'mouseup' || e.type == 'mousemove' || e.type == 'mouseover'|| e.type=='mouseout' || e.type=='mouseenter' || e.type=='mouseleave') {
-              out.x = e.pageX;
-              out.y = e.pageY;
-            }
-            return out;
-        };
-
-        var posUser = {
-            x   : pointerEventToXY(event).x,
-            y   : pointerEventToXY(event).y
-        }
-
-        // lets make the 3 point of the triangle
-        var thirdPoint = {
-            x   : posUser.x,
-            y   : this.middlePoint.y
-        }
-
-        //triangle part length
-        var AB = ( this.middlePoint.x - posUser.x > 0 ? this.middlePoint.x - posUser.x : posUser.x - this.middlePoint.x );
-        var AC = ( this.middlePoint.y - posUser.y > 0 ? this.middlePoint.y - posUser.y : posUser.y - this.middlePoint.y );
-        //Hypotenuse
-        var BC = Math.round( Math.sqrt( Math.pow(AC, 2) + Math.pow(AB, 2) ) );
-
-        var Bangle = Math.acos( AB/BC )* (180 / Math.PI);
-
-        //on the x axe
-        if(this.middlePoint.x - posUser.x == 0 && this.middlePoint.y - posUser.y > 0) Bangle = 90;
-        else if(this.middlePoint.x - posUser.x == 0 && this.middlePoint.y - posUser.y < 0) Bangle = 270;
-
-        //on the y axe
-        else if(this.middlePoint.y - posUser.y == 0 && this.middlePoint.x - posUser.x > 0) Bangle = 180;
-        else if(this.middlePoint.y - posUser.y == 0 && this.middlePoint.x - posUser.x < 0) Bangle = 0;
-
-        //other cases
-        else if(this.middlePoint.x - posUser.x > 0 && this.middlePoint.y - posUser.y > 0) Bangle = 180-Bangle;
-        else if(this.middlePoint.x - posUser.x < 0 && this.middlePoint.y - posUser.y > 0) Bangle = Bangle;
-        else if(this.middlePoint.x - posUser.x > 0 && this.middlePoint.y - posUser.y < 0) Bangle = Bangle+180;
-        else if(this.middlePoint.x - posUser.x < 0 && this.middlePoint.y - posUser.y < 0) Bangle = 360-Bangle;
-
-        //round to the first decimal
-        return Math.round(Bangle * 10) / 10;
-    }
-
-    /******************************
-     *
      *  wrapResults
      *
      *  gather the speed and direction
@@ -466,16 +395,40 @@ var GamePad = (function() {
         var ab = this.actionBtnObj
 
         dpo.velocity = this.mySpeed();
+        dpo.direction = this.myDirection();
+
+        //console.log( dpo.direction );
+        //console.log( dpo.direction * 180/Math.PI );
 
         return {
             'gamePadData' : {
-                'dpo' : dpo,
-                'ab'  : ab
+                'direction' : {
+                    radian: dpo.direction,
+                    velocity: dpo.velocity
+                },
+                'ab'  : ab.actionned
             }
         }
 
     }
 
+    /******************************
+     *
+     *  myDirection
+     *
+     *
+     *  @return {float} in radian
+     *
+     ******************************/
+    GamePad.prototype.myDirection = function() {
+
+        //direction vector
+        var x = (this.directionPadObj.initialPos.x - this.directionPadObj.nowPos.x)*-1;
+        var y = (this.directionPadObj.initialPos.y - this.directionPadObj.nowPos.y)*-1;
+
+        return Math.atan2( y, x );
+
+    }
 
     /******************************
      *
@@ -489,13 +442,16 @@ var GamePad = (function() {
      *  return {int} pourcentage 0-100
      *
      ******************************/
-
     GamePad.prototype.mySpeed = function() {
 
         var maxSpeed = this.directionPadObj.r;
-        var actualSpeed = Math.sqrt( Math.pow(this.directionPadObj.nowPos.x - this.directionPadObj.initialPos.x, 2) + Math.pow(this.directionPadObj.nowPos.y - this.directionPadObj.initialPos.y, 2) );
+        var actualSpeed = Math.sqrt(
+            Math.pow(this.directionPadObj.nowPos.x - this.directionPadObj.initialPos.x, 2)
+            +
+            Math.pow(this.directionPadObj.nowPos.y - this.directionPadObj.initialPos.y, 2)
+        );
 
-        return (maxSpeed / actualSpeed) * 100;
+        return Math.round( ( actualSpeed / maxSpeed ) * 100 );
     }
 
     /******************************
@@ -529,7 +485,6 @@ var GamePad = (function() {
      *  the gamepad will not work correctly
      *
      ******************************/
-
     GamePad.prototype.notSupported = function() {
         var elem = document.createElement('div');
         elem.style.position = 'fixed';

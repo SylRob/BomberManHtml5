@@ -10,18 +10,49 @@ var PlayerController = (function() {
      *  @return {Object}  PlayerController
      *
      ******************************/
-    function PlayerController(GameController, palyerOption) {
+    function PlayerController(Game, playerOption) {
 
-        this.palyerOption = palyerOption;
-        this.gameController = GameController;
-        this.speed = GameController.PLAYER_SPEED;
-        this.maxSpeed = GameController.PLAYER_MAX_SPEED;
+        this.playerOption = playerOption;
+        this.game = Game;
+        this.speed = Game.PLAYER_SPEED;
+        this.maxSpeed = Game.PLAYER_MAX_SPEED;
 
-        this.plan = GameController.plan;
+        this.plan = Game.plan;
+        this.playerAvatar;
+        this.id = 0;
 
-        this.avatar = new PlayerAvatar( palyerOption );
+        this.initPlayer();
 
-        this.plan.add( this.avatar );
+    }
+
+    /******************************
+     *
+     *  initPlayer
+     *
+     *  @return {void}
+     *
+     ******************************/
+    PlayerController.prototype.initPlayer = function() {
+
+        if( undefined === this.playerOption.pseudo || this.playerOption.pseudo != '' ) {
+            this.pseudo = this.playerOption.pseudo;
+        } else this.pseudo = 'Player'+playerOption.id;
+
+        this.id = this.playerOption.id;
+
+    }
+
+    /******************************
+     *
+     *  initPlayerAvatar
+     *
+     *  @return {void}
+     *
+     ******************************/
+    PlayerController.prototype.initPlayerAvatar = function() {
+
+        this.playerAvatar = new PlayerAvatar( this.playerOption );
+        this.game.plan.initPlayer( this.playerAvatar.initAvatar() );
 
     }
 
@@ -29,22 +60,29 @@ var PlayerController = (function() {
      *
      *  updatePlayerPos
      *
-     *  @param {Object.PlayerController}  myPlayer  the player instance we want to update the position
-     *  @param {Oject}  playerPos  an object with the new position informations
+     *  @param {Oject}  playerData  an object with the direction and velocity informations
      *
-     *  @return {Object.PlayerController} the updated player instance
+     *  @return {Object.PlayerController}  the updated player instance
      *
      ******************************/
-    PlayerController.prototype.updatePlayerPos = function( myPlayer, playerPos ) {
+    PlayerController.prototype.updatePlayerPos = function( playerData ) {
 
-        /*var nowPos = {
-            x   : myPlayer.pos.x
-            ,y  : myPlayer.pos.y
-        }*/
+        var direction = playerData.direction;
+        var nowPos = this.playerAvatar.getPos();
+        var scalar = direction.velocity * (this.speed/100);
 
-        console.log( playerPos, myPlayer );
+        var newPos = {
+            x: Math.cos( direction.radian ) * scalar,
+            y: Math.sin( direction.radian ) * scalar
+        };
 
-        return myPlayer;
+        newPos.x += nowPos.x;
+        newPos.y += nowPos.y;
+
+        this.checkForOOB( newPos );
+        /*newPos = */this.plan.lookForCollision( this.playerAvatar.getAvatar() );
+
+        this.playerAvatar.setPos( newPos );
 
     }
 
@@ -55,35 +93,49 @@ var PlayerController = (function() {
      *  @param {Object.PlayerController}  myPlayer  the player instance we want to update the position
      *  @param {integer}  newSpeed  the new speed
      *
-     *  @return {Object.PlayerController} the updated player instance
+     *  @return {void}
      *
      ******************************/
-    PlayerController.prototype.setPlayerSpeed = function( myPlayer, newSpeed ) {
+    PlayerController.prototype.setPlayerSpeed = function( newSpeed ) {
 
-        var nowPos = {
-            x   : myPlayer.pos.x
-            ,y  : myPlayer.pos.y
-        }
 
-        return myPlayer;
 
     }
 
     /******************************
      *
-     *  resetPlayerPos
+     *  checkForOOB
      *
-     *  @param {Object.PlayerController}  myPlayer  the player instance we want to update the position
+     *  check that the given coordinates are not
+     *  outside of the plan
      *
-     *  @return {Object.PlayerController} the updated player instance
+     *  @param {Object}  coordinates  containing an x and a y
+     *
+     *  @return {Object}  the same object with new values
      *
      ******************************/
-    PlayerController.prototype.updatePlayerPos = function( myPlayer ) {
+    PlayerController.prototype.checkForOOB = function( coordinates ) {
 
-        myPlayer.pos.x = myPlayer.pos.y = 0;
-        myPlayer.actionBtn = false;
+        if( coordinates.x > this.plan.references.world.w - this.playerAvatar.getSize().w )
+            coordinates.x = this.plan.references.world.w - this.playerAvatar.getSize().w;
+        else if( coordinates.x < 0 ) coordinates.x = 0;
 
-        return myPlayer;
+        if( coordinates.y > this.plan.references.world.d - this.playerAvatar.getSize().d )
+            coordinates.y = this.plan.references.world.d - this.playerAvatar.getSize().d;
+        else if( coordinates.y < 0 ) coordinates.y = 0;
+
+    }
+
+    /******************************
+     *
+     *  removePlayer
+     *
+     *  remove the player
+     *
+     ******************************/
+    PlayerController.prototype.removePlayer = function() {
+
+        this.plan.world.removeElem( this.playerAvatar.getAvatar() );
 
     }
 

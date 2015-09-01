@@ -7,7 +7,7 @@ var express = require('express'),
 var playerListServerSide = {};
 var playGroundId = null;
 var scores = {};
-var maxPlayer = 5;
+var maxPlayer = 4;
 
 console.log('connected');
 app.use(express.static(__dirname + '/public'))
@@ -64,6 +64,21 @@ io.sockets.on('connection', function (socket) {
         //pass the new player to the game
         socket.broadcast.to('playground').emit('newPlayerEnterTheGame', Player);
 
+    });
+
+    //a player disconnect ?
+    socket.on( 'playerLeft', function( playerId ) {
+
+        for(socketId in playerListServerSide) {
+
+            if( playerListServerSide[socketId] == playerId ) {
+                delete playerListServerSide[socketId];
+                break;
+            }
+
+        }
+
+        socket.broadcast.to('playground').emit('playerDisconnect', playerId);
     });
 
     //a player just lost

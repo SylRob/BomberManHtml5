@@ -92,7 +92,7 @@ var Game = (function() {
 
         for ( playerId in this.playerList ) {
 
-            this.playerList[playerId].avatar.initAvatar();
+            this.playerList[playerId].initPlayerAvatar();
 
         }
 
@@ -184,14 +184,14 @@ var Game = (function() {
      ******************************/
     Game.prototype.updatePlayerPos = function( playerPos ) {
 
-        var myPlayer = this.playerList[playerPos.playerId];
+        var myPlayer = this.playerList[playerPos.id];
 
         if( undefined === myPlayer ) {
-            delete this.playerList[playerPos.playerId];
+            delete this.playerList[playerPos.id];
             return false;
         }
 
-        this.myPlayer.updatePlayerPos( myPlayer, playerPos );
+        myPlayer.updatePlayerPos( playerPos.data );
     }
 
 
@@ -232,6 +232,7 @@ var Game = (function() {
 
                 if(_this.playerList[id]) {
 
+                    _this.playerList[id].removePlayer();
                     delete _this.playerList[id];
 
                     return false;

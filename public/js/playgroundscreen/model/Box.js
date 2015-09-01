@@ -31,7 +31,7 @@ var Box = (function() {
             this.size.d
         );
 
-        if( this.destructible ) var boxMaterial = new THREE.MeshPhongMaterial( {color: this.color, transparent: true, opacity: 1} );
+        if( this.destructible ) var boxMaterial = new THREE.MeshPhongMaterial( {color: this.color, transparent: true, opacity: 0.5} );
         else var boxMaterial = new THREE.MeshPhongMaterial( {color: this.color} );
 
         this.mesh.geometry = boxGeo

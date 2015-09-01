@@ -46,7 +46,7 @@ var Plan = (function() {
         this.world = new World( this.scene, this.references.world );
         this.letsPaint();
 
-        this.scene.add( this.axisPaint() );
+        //this.scene.add( this.axisPaint() );
 
         this.renderer();
         this.animate();
@@ -71,7 +71,7 @@ var Plan = (function() {
      *
      *  getScene
      *
-     *  return (THREE.Scene()) this.scene
+     *  return (THREE.Scene)  this.scene
      *
      ******************************/
     Plan.prototype.getScene = function() {
@@ -109,13 +109,13 @@ var Plan = (function() {
 
         var ambientLight = new THREE.AmbientLight( 0x222222 );
         var light = new THREE.DirectionalLight( 0xFFFFFF, 0.5 );
-    	light.position.set( 250, 400, -500 );
+    	light.position.set( -250, 400, -500 );
         light.castShadow = true;
         light.target.position.set( 0, 0, 0 );
 
     	var light2 = new THREE.DirectionalLight( 0xFFFFFF, 0.5 );
         light2.castShadow = true;
-    	light2.position.set( -250, 400, -500 );
+    	light2.position.set( 250, 400, 500 );
         light2.target.position.set( 0, 0, 0 );
 
     	this.scene.add(ambientLight);
@@ -134,15 +134,6 @@ var Plan = (function() {
      *
      ******************************/
     Plan.prototype.letsPaint = function() {
-
-        // Plane
-        var planeGeo = new THREE.PlaneGeometry( 5000, 5000, 32 );
-        var planeMaterial = new THREE.MeshPhongMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
-        var plane = new THREE.Mesh( planeGeo, planeMaterial );
-        plane.receiveShadow = true;
-        plane.rotation.x = 90*( Math.PI/180 );
-        plane.position.set( 0, -20, 0 );
-        this.scene.add( plane );
 
         //Boxes
         var boxWidth = this.references.world.w/this.references.boxPerLine;
@@ -164,7 +155,7 @@ var Plan = (function() {
                     0,
                     boxZpos
                 );
-                box.getObj().add( this.axisPaint() )
+                //box.getObj().add( this.axisPaint() )
                 //push the cube in the list to remember it
                 this.cubesList.push( box );
 
@@ -212,7 +203,7 @@ var Plan = (function() {
         var boxWidthX4 = boxWidth*4;
         var boxDepthX4 = boxDepth*4;
 
-        var squareGeo = new THREE.BoxGeometry( boxWidth*4, boxDepth*4, 1 );
+        var squareGeo = new THREE.BoxGeometry( boxWidth*4-20, boxDepth*4-20, 1 );
         var squareMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00} );
         var squareMesh = new THREE.Mesh( squareGeo, squareMaterial );
         squareMesh.rotation.x = 90*(Math.PI/180);
@@ -227,7 +218,8 @@ var Plan = (function() {
         this.world.addElem( squareTR );
 
         var squareBL = new THREE.Object3D().add( squareMesh.clone() );
-        squareBL.position.set( 0, 2, this.references.world.d - boxDepthX4 );
+        //var squareBL = squareMesh.clone();
+        squareBL.position.set( 0, 50, this.references.world.d - boxDepthX4 );
         this.world.addElem( squareBL );
 
         var squareBR = new THREE.Object3D().add( squareMesh.clone() );
@@ -250,13 +242,46 @@ var Plan = (function() {
           new THREE.Vector3(-1, 0, 1)
         ];
 
-        for ( var i = 0; i < rays.length; i += 1 ) {
+        var ln = squareBL.children[0].geometry.vertices.length;
+
+
+
+        for(var i = 0; i < ln; i++){
+            var pr_vertex = squareBL.children[0].geometry.vertices[i].clone();
+            var gl_vertex = pr_vertex.applyMatrix4(squareBL.matrix);
+            var dr_vector = gl_vertex.sub(squareBL.position);
+
+            var ray = new THREE.Raycaster(squareBL.position, dr_vector.clone().normalize());
+
+            for( var boxId in this.cubesList ) {
+                var boxObj = this.cubesList[boxId];
+
+                boxObj.getObj().updateMatrixWorld();
+
+                /*var vector = new THREE.Vector3();
+                vector.setFromMatrixPosition( boxObj.getObj().children[0].matrixWorld );*/
+                var intersects = ray.intersectObject(boxObj.getObj(), true);
+
+
+                //if there is intersection
+                if( intersects.length > 0 ){
+                    boxObj.getObj().children[0].material.opacity = 0;
+                    console.log( boxObj.getObj().position, ray );
+                } else console.log( 'no collisions???' )
+
+            }
+
+        }
+
+        /*for ( var i = 0; i < rays.length; i += 1 ) {
             caster.set( squareTL.position, rays[i] );
 
             for( var boxId in this.cubesList ) {
                 var boxObj = this.cubesList[boxId];
 
                 boxObj.getObj().children[0].geometry.computeFaceNormals();
+                var ln = boxObj.getObj().children[0].geometry.vertices.length;
+
                 collisions = caster.intersectObject( boxObj.getObj(), true );
 
                 if ( collisions.length ) {
@@ -264,7 +289,7 @@ var Plan = (function() {
                 } else console.log("no colision");
             }
 
-        }
+        }*/
 
 
     }
@@ -272,14 +297,66 @@ var Plan = (function() {
 
     /******************************
      *
-     *  playerUpdate
+     *  lookForCollision
      *
+     *  loop throught all the collisionable elemParents
      *
+     *  @param {THREE.Object3D}  playerAvatar
      *
      ******************************/
-    Plan.prototype.playerUpdate = function() {
+    Plan.prototype.lookForCollision = function( playerAvatar ) {
+
+        //colision detection
+        var ln = playerAvatar.children[0].geometry.vertices.length;
+
+        for(var i = 0; i < ln; i++){
+            var pr_vertex = playerAvatar.children[0].geometry.vertices[i].clone();
+            var gl_vertex = pr_vertex.applyMatrix4(playerAvatar.matrix);
+            var dr_vector = gl_vertex.sub(playerAvatar.position);
+
+            var ray = new THREE.Raycaster(playerAvatar.position, dr_vector.clone().normalize());
+
+            for( var boxId in this.cubesList ) {
+                var boxObj = this.cubesList[boxId];
+
+                boxObj.getObj().updateMatrixWorld();
+
+                /*var vector = new THREE.Vector3();
+                vector.setFromMatrixPosition( boxObj.getObj().children[0].matrixWorld );*/
+                var intersects = ray.intersectObject(boxObj.getObj(), true);
 
 
+                //if there is intersection
+                if( intersects.length > 0 ){
+                    boxObj.getObj().children[0].material.opacity = 0;
+                    console.log( boxObj.getObj().position, ray );
+                    break;
+                } else console.log( 'no collisions???' )
+
+            }
+
+        }
+
+    }
+
+    /******************************
+     *
+     *  initPlayer
+     *
+     *  add player avatar to the scene
+     *
+     *  @return {void}
+     *
+     ******************************/
+    Plan.prototype.initPlayer = function( playerAvatar ) {
+
+        var boxWidth = this.references.world.w/this.references.boxPerLine;
+        var boxHeight = this.references.world.w/this.references.boxPerLine;
+        var boxDepth = this.references.world.d/this.references.boxPerLine;
+
+        playerAvatar.position.set( boxWidth, 0, boxDepth );
+
+        this.world.addElem( playerAvatar );
 
     }
 
@@ -289,7 +366,7 @@ var Plan = (function() {
      *
      *  paint the axis x,y,z
      *
-     *  @return {Object3D}
+     *  @return {THREE.Object3D}
      *
      ******************************/
     Plan.prototype.axisPaint = function() {
@@ -375,7 +452,6 @@ var Plan = (function() {
     Plan.prototype.render = function() {
         this.cameraControls.update();
         this.renderer.render( this.scene, this.camera );
-        this.playerUpdate();
     }
 
 

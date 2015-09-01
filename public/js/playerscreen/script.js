@@ -37,6 +37,11 @@ jQuery(document).ready(function() {
 
         if(!gamepad) gamepad = new GamePad( document.getElementById('tactilBlock'), player);
 
+        window.onbeforeunload = function(){
+
+            socket.emit( 'playerLeft', player.id );
+        };
+
         player.countingTo(3, function(){
 
 
@@ -94,8 +99,10 @@ jQuery(document).ready(function() {
     var i=0;
     window.addEventListener('gamePad.draw', function(event) {
         var gamePadData = event.detail.gamePadData;
-        console.log( gamePadData )
-        var playerData = player.wrapResults();
+
+        var playerData = player.wrapResults( gamePadData );
+
+        socket.emit( 'playerTouched', playerData );
 
     })
 

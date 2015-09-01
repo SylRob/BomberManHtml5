@@ -12,7 +12,7 @@ socket.on( 'newPlayerEnterTheGame', function(Player) {
 
 });
 
-socket.on( 'playerLeft', function(id) {
+socket.on( 'playerDisconnect', function(id) {
     myGame.removePlayer(id);
 });
 
