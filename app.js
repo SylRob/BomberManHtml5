@@ -115,7 +115,7 @@ io.sockets.on('connection', function (socket) {
 
     //player movements
     socket.on('playerTouched', function(playerPos) {
-        socket.broadcast.to('playground').emit('updatePlayerPos', playerPos);
+        socket.broadcast.to('playground').emit('updatePlayerData', playerPos);
     });
 
 

@@ -11,12 +11,13 @@ var Plan = (function() {
      *  @return {Object}  Plan
      *
      ******************************/
-    function Plan(elemParents) {
+    function Plan(elemParents, game) {
 
         this.scene;
 		this.camera;
         this.cube;
         this.elemParents = elemParents;
+        this.game = game;
 
         this.references = {
             world: { w: 1000, h: 20, d: 1000 },
@@ -141,8 +142,8 @@ var Plan = (function() {
         var boxDepth = this.references.world.d/this.references.boxPerLine;
         var occurences = this.references.boxPerLine*this.references.boxPerLine;
 
-        var boxXpos = this.references.world.d;
-        var boxZpos = this.references.world.w;
+        var boxXpos = 0;
+        var boxZpos = 0;
 
         var line = 0;
 
@@ -155,6 +156,7 @@ var Plan = (function() {
                     0,
                     boxZpos
                 );
+
                 //box.getObj().add( this.axisPaint() )
                 //push the cube in the list to remember it
                 this.cubesList.push( box );
@@ -167,16 +169,17 @@ var Plan = (function() {
                     0,
                     boxZpos
                 );
+
                 this.cubesList.push( box );
             }
 
             this.world.addElem( box.getObj() );
-            boxXpos -= boxWidth;
+            boxXpos += boxWidth;
 
-            if(boxXpos < boxWidth) {
+            if(boxXpos >= this.references.world.w - boxWidth) {
                 line++;
-                boxZpos -= boxDepth;
-                boxXpos = this.references.world.w;
+                boxZpos += boxDepth;
+                boxXpos = 0;
             }
         }
 
@@ -203,93 +206,31 @@ var Plan = (function() {
         var boxWidthX4 = boxWidth*4;
         var boxDepthX4 = boxDepth*4;
 
-        var squareGeo = new THREE.BoxGeometry( boxWidth*4-20, boxDepth*4-20, 1 );
-        var squareMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-        var squareMesh = new THREE.Mesh( squareGeo, squareMaterial );
-        squareMesh.rotation.x = 90*(Math.PI/180);
-        squareMesh.position.set( boxWidthX4/2, 0, boxDepthX4/2 );
+        var squareTL = { x1 : 0, y1 : 0, x2 : boxWidthX4, y2 : boxDepthX4 };
+        var squareTR = { x1 : this.references.world.w - boxWidthX4, y1 : 0, x2 : this.references.world.w, y2 : boxDepthX4 };
+        var squareBL = { x1 : 0, y1 : this.references.world.d - boxDepthX4, x2 : boxDepthX4, y2 : this.references.world.d };
+        var squareBR = { x1 : this.references.world.w - boxWidthX4, y1 : this.references.world.d - boxWidthX4, x2 : this.references.world.w, y2 : this.references.world.d };
 
-        var squareTL = new THREE.Object3D().add( squareMesh );
-        squareTL.position.set( 0, 2, 0 );
-        this.world.addElem( squareTL );
+        var squaresStartPos = [ squareTL, squareTR, squareBL, squareBR ];
 
-        var squareTR = new THREE.Object3D().add( squareMesh.clone() );
-        squareTR.position.set( this.references.world.w - boxWidthX4, 2, 0 );
-        this.world.addElem( squareTR );
+        for( var i in this.cubesList ) {
+            var cubePosition = this.cubesList[i].get2DPosition();
 
-        var squareBL = new THREE.Object3D().add( squareMesh.clone() );
-        //var squareBL = squareMesh.clone();
-        squareBL.position.set( 0, 50, this.references.world.d - boxDepthX4 );
-        this.world.addElem( squareBL );
+            //undestrutible ? then skip
+            if( !this.cubesList[i].destructible ) continue;
 
-        var squareBR = new THREE.Object3D().add( squareMesh.clone() );
-        squareBR.position.set( this.references.world.w - boxWidthX4, 2, this.references.world.d - boxDepthX4 );
-        this.world.addElem( squareBR );
-
-
-        //colision detection
-        var caster = new THREE.Raycaster();
-        var collisions = [];
-
-        var rays = [
-          new THREE.Vector3(0, 0, 1),
-          new THREE.Vector3(1, 0, 1),
-          new THREE.Vector3(1, 0, 0),
-          new THREE.Vector3(1, 0, -1),
-          new THREE.Vector3(0, 0, -1),
-          new THREE.Vector3(-1, 0, -1),
-          new THREE.Vector3(-1, 0, 0),
-          new THREE.Vector3(-1, 0, 1)
-        ];
-
-        var ln = squareBL.children[0].geometry.vertices.length;
-
-
-
-        for(var i = 0; i < ln; i++){
-            var pr_vertex = squareBL.children[0].geometry.vertices[i].clone();
-            var gl_vertex = pr_vertex.applyMatrix4(squareBL.matrix);
-            var dr_vector = gl_vertex.sub(squareBL.position);
-
-            var ray = new THREE.Raycaster(squareBL.position, dr_vector.clone().normalize());
-
-            for( var boxId in this.cubesList ) {
-                var boxObj = this.cubesList[boxId];
-
-                boxObj.getObj().updateMatrixWorld();
-
-                /*var vector = new THREE.Vector3();
-                vector.setFromMatrixPosition( boxObj.getObj().children[0].matrixWorld );*/
-                var intersects = ray.intersectObject(boxObj.getObj(), true);
-
-
-                //if there is intersection
-                if( intersects.length > 0 ){
-                    boxObj.getObj().children[0].material.opacity = 0;
-                    console.log( boxObj.getObj().position, ray );
-                } else console.log( 'no collisions???' )
-
+            for( var j in squaresStartPos ) {
+                //squareTL
+                if(
+                    cubePosition.x1 < squaresStartPos[j].x2  &&
+                    cubePosition.x2 > squaresStartPos[j].x1 &&
+                    cubePosition.y1 < squaresStartPos[j].y2  &&
+                    cubePosition.y2 > squaresStartPos[j].y1
+                ) this.cubesList[i].destroyed();
             }
 
         }
 
-        /*for ( var i = 0; i < rays.length; i += 1 ) {
-            caster.set( squareTL.position, rays[i] );
-
-            for( var boxId in this.cubesList ) {
-                var boxObj = this.cubesList[boxId];
-
-                boxObj.getObj().children[0].geometry.computeFaceNormals();
-                var ln = boxObj.getObj().children[0].geometry.vertices.length;
-
-                collisions = caster.intersectObject( boxObj.getObj(), true );
-
-                if ( collisions.length ) {
-                    console.log(collisions);
-                } else console.log("no colision");
-            }
-
-        }*/
 
 
     }
@@ -306,57 +247,53 @@ var Plan = (function() {
      ******************************/
     Plan.prototype.lookForCollision = function( playerAvatar ) {
 
-        //colision detection
-        var ln = playerAvatar.children[0].geometry.vertices.length;
-
-        for(var i = 0; i < ln; i++){
-            var pr_vertex = playerAvatar.children[0].geometry.vertices[i].clone();
-            var gl_vertex = pr_vertex.applyMatrix4(playerAvatar.matrix);
-            var dr_vector = gl_vertex.sub(playerAvatar.position);
-
-            var ray = new THREE.Raycaster(playerAvatar.position, dr_vector.clone().normalize());
-
-            for( var boxId in this.cubesList ) {
-                var boxObj = this.cubesList[boxId];
-
-                boxObj.getObj().updateMatrixWorld();
-
-                /*var vector = new THREE.Vector3();
-                vector.setFromMatrixPosition( boxObj.getObj().children[0].matrixWorld );*/
-                var intersects = ray.intersectObject(boxObj.getObj(), true);
-
-
-                //if there is intersection
-                if( intersects.length > 0 ){
-                    boxObj.getObj().children[0].material.opacity = 0;
-                    console.log( boxObj.getObj().position, ray );
-                    break;
-                } else console.log( 'no collisions???' )
-
-            }
-
-        }
-
     }
 
     /******************************
      *
-     *  initPlayer
+     *  initPlayers
      *
      *  add player avatar to the scene
      *
      *  @return {void}
      *
      ******************************/
-    Plan.prototype.initPlayer = function( playerAvatar ) {
+    Plan.prototype.initPlayers = function() {
 
         var boxWidth = this.references.world.w/this.references.boxPerLine;
         var boxHeight = this.references.world.w/this.references.boxPerLine;
         var boxDepth = this.references.world.d/this.references.boxPerLine;
 
-        playerAvatar.position.set( boxWidth, 0, boxDepth );
+        var players = this.game.getPlayerList();
 
-        this.world.addElem( playerAvatar );
+        if( Object.keys(players).length < 1 ) throw new Error('the player list is empty');
+
+        for( var playerID in players ) {
+
+            players[ playerID ].playerAvatar = new PlayerAvatar( players[ playerID ].playerOption );
+            console.log( players[ playerID ].playerAvatar.getAvatar() );
+            this.world.addElem( players[ playerID ].playerAvatar.getAvatar() );
+        }
+
+    }
+
+    /******************************
+     *
+     *  addPlayer
+     *
+     *  add player avatar to the scene
+     *
+     *  @return {void}
+     *
+     ******************************/
+    Plan.prototype.addPlayer = function( playerController ) {
+
+        var boxWidth = this.references.world.w/this.references.boxPerLine;
+        var boxHeight = this.references.world.w/this.references.boxPerLine;
+        var boxDepth = this.references.world.d/this.references.boxPerLine;
+
+        playerController.playerAvatar = new PlayerAvatar( playerController.playerOption );
+        this.world.addElem( playerController.playerAvatar.getAvatar() );
 
     }
 
@@ -401,6 +338,39 @@ var Plan = (function() {
 
     }
 
+    /******************************
+     *
+     *  updatePlayerPos
+     *
+     *  update player position
+     *  and check fot colision
+     *
+     ******************************/
+    Plan.prototype.updatePlayerPos = function() {
+
+        var players = this.game.getPlayerList();
+
+        if( Object.keys(players).length < 1 ) return ;
+
+        for( var playerID in players ) {
+            var avatar = players[ playerID ].playerAvatar;
+            var avatarPos = avatar.getPos();
+            var newPosition = players[ playerID ].getPlayerPosition();
+
+            //console.log( 'Plan', players );
+
+            //same position as before? then skip
+            if(
+                avatarPos.x == newPosition.x &&
+                avatarPos.y == newPosition.y
+            ) continue;
+
+            avatar.setPos( newPosition );
+
+        }
+
+    }
+
 
     /******************************
      *
@@ -437,6 +407,7 @@ var Plan = (function() {
      ******************************/
     Plan.prototype.animate = function() {
         window.requestAnimationFrame(this.animate.bind(this));
+        this.updatePlayerPos();
         this.render();
     }
 

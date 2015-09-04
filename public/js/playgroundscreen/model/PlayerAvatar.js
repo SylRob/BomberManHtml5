@@ -12,9 +12,9 @@ var PlayerAvatar = (function() {
      ******************************/
     function PlayerAvatar( playerOption ) {
 
-        this.playerOption = playerOption;
+        this._playerOption = playerOption;
 
-        this.avatar = new THREE.Object3D();
+        this._avatar = new THREE.Object3D();
 
         this.init();
 
@@ -32,8 +32,8 @@ var PlayerAvatar = (function() {
     PlayerAvatar.prototype.init = function() {
 
         //transform the color in hex
-        this.playerOption.avatar.primaryColor = new THREE.Color( this.playerOption.avatar.primaryColor );
-        this.playerOption.avatar.secondaryColor = new THREE.Color( this.playerOption.avatar.secondaryColor );
+        this._playerOption.avatar.primaryColor = new THREE.Color( this._playerOption.avatar.primaryColor );
+        this._playerOption.avatar.secondaryColor = new THREE.Color( this._playerOption.avatar.secondaryColor );
 
 
     }
@@ -49,15 +49,15 @@ var PlayerAvatar = (function() {
      ******************************/
     PlayerAvatar.prototype.initAvatar = function() {
 
-        var sphereGeo = new THREE.SphereGeometry( 25, 32, 16 );
-        var sphereMaterial = new THREE.MeshPhongMaterial( {color: this.playerOption.avatar.primaryColor } );
+        var sphereGeo = new THREE.SphereGeometry( 80, 32, 16 );
+        var sphereMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
         var sphere = new THREE.Mesh( sphereGeo, sphereMaterial );
         sphere.position.set( 25, 25, 25 );
 
-        this.avatar.add( sphere );
-        this.avatar.add( this.axisPaint() );
+        this._avatar.add( sphere );
+        this._avatar.add( this.axisPaint() );
 
-        return this.avatar;
+        return this._avatar;
 
     }
 
@@ -112,8 +112,8 @@ var PlayerAvatar = (function() {
     PlayerAvatar.prototype.getPos = function() {
 
         return {
-            x: this.avatar.position.x,
-            y: this.avatar.position.z
+            x: this._avatar.position.x,
+            y: this._avatar.position.z
         };
 
     }
@@ -127,7 +127,7 @@ var PlayerAvatar = (function() {
      ******************************/
     PlayerAvatar.prototype.setPos = function( pos ) {
 
-        this.avatar.position.set( pos.x, 0, pos.y );
+        this._avatar.position.set( pos.x, 0, pos.y );
 
     }
 
@@ -157,7 +157,7 @@ var PlayerAvatar = (function() {
      ******************************/
     PlayerAvatar.prototype.getAvatar = function() {
 
-        return this.avatar;
+        return this._avatar;
 
     }
 

@@ -25,6 +25,8 @@ var Game = (function() {
 
         this.playerList = [];
         this.interval = [];
+        this.gameStarted = false;
+
         this.init();
 
     }
@@ -47,23 +49,10 @@ var Game = (function() {
         }
 
         socket.emit('thePlayGroundHasArrive');
-        this.canvasSetup();
+        this.plan = new Plan( this.elem, this );
 
         this.initEvent();
         this.gameScript = new GameScript(this);
-
-    }
-
-    /******************************
-     *
-     *  canvasSetup
-     *
-     *
-     ******************************/
-    Game.prototype.canvasSetup = function() {
-        var _this = this;
-
-        this.plan = new Plan(this.elem);
 
     }
 
@@ -92,9 +81,11 @@ var Game = (function() {
 
         for ( playerId in this.playerList ) {
 
-            this.playerList[playerId].initPlayerAvatar();
+            this.plan.initPlayers();
 
         }
+
+        this.gameStarted = true;
 
     }
 
@@ -170,30 +161,45 @@ var Game = (function() {
 
         this.playerList[iid] = new PlayerController( this, Player );
 
+        if( !this.gameStarted ) { this.start(); }
+        else this.plan.addPlayer( this.playerList[iid] )
+
     }
 
 
     /******************************
      *
-     *  updatePlayerPos
+     *  updatePlayerData
      *
      *  update the player position
      *
      *  @param {Object} playerPos got new position of the player and his id
      *
      ******************************/
-    Game.prototype.updatePlayerPos = function( playerPos ) {
+    Game.prototype.updatePlayerData = function( playerPos ) {
 
         var myPlayer = this.playerList[playerPos.id];
-
         if( undefined === myPlayer ) {
             delete this.playerList[playerPos.id];
             return false;
         }
 
-        myPlayer.updatePlayerPos( playerPos.data );
+        myPlayer.updatePlayerTempPos( playerPos.data );
     }
 
+
+    /******************************
+     *
+     *  getPlayerList
+     *
+     *  check if there is the minimum number of players
+     *
+     *  @return {Array}
+     *
+     ******************************/
+    Game.prototype.getPlayerList = function() {
+        return this.playerList;
+    }
 
     /******************************
      *

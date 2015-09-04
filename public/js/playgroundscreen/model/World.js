@@ -67,7 +67,7 @@ var World = (function() {
     World.prototype.addElem = function( object3D ){
 
         this.groundGroup.add( object3D );
-
+        
     }
 
     /******************************

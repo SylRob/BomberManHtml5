@@ -36,7 +36,7 @@ var Box = (function() {
 
         this.mesh.geometry = boxGeo
         this.mesh.material = boxMaterial;
-        this.mesh.position.set( -this.size.w/2, this.size.h/2, -this.size.d/2 );
+        this.mesh.position.set( this.size.w/2, this.size.h/2, this.size.d/2 );
 
         this.obj.add( this.mesh );
 
@@ -53,7 +53,7 @@ var Box = (function() {
      ******************************/
      Box.prototype.destroyed = function() {
 
-         if( this.destructible ) this.material.mesh.opacity = 0;
+         if( this.destructible ) this.mesh.material.opacity = 0;
 
      }
 
@@ -69,6 +69,26 @@ var Box = (function() {
       Box.prototype.getObj = function() {
           return this.obj;
       }
+
+      /******************************
+       *
+       *  get2DPosition
+       *
+       *  get box object3D
+       *
+       *  @return {Object}  {x1, y1, x2, y2}
+       *
+       ******************************/
+       Box.prototype.get2DPosition = function() {
+           //this.obj.updateMatrixWorld();
+
+           return {
+               x1: this.obj.position.x,
+               y1: this.obj.position.z,
+               x2: this.obj.position.x + this.size.w,
+               y2: this.obj.position.z + this.size.d
+           }
+       }
 
 
     return Box;

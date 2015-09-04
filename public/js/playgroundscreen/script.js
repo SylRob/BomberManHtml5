@@ -7,15 +7,12 @@ socket.emit('thePlayGroundHasArrive');
 
 socket.on( 'newPlayerEnterTheGame', function(Player) {
     myGame.addNewPlayer(Player);
-
-    if( myGame.enoughPlayer() ) myGame.start();
-
 });
 
 socket.on( 'playerDisconnect', function(id) {
     myGame.removePlayer(id);
 });
 
-socket.on( 'updatePlayerPos', function(playerPos) {
-    myGame.updatePlayerPos(playerPos);
+socket.on( 'updatePlayerData', function(playerPos) {
+    myGame.updatePlayerData(playerPos);
 });
