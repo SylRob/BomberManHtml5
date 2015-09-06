@@ -58,6 +58,22 @@ var Box = (function() {
      }
 
      /******************************
+     *
+     *  isDestroyed
+     *
+     *  set the destroyed material
+     *
+     *  @return {Boolean}  true or false
+     *
+     ******************************/
+     Box.prototype.isDestroyed = function() {
+
+         if( this.mesh.material.opacity == 0 ) return true;
+         return false;
+
+     }
+
+     /******************************
       *
       *  getObj
       *

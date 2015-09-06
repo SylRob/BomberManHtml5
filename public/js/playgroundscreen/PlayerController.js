@@ -52,8 +52,6 @@ var PlayerController = (function() {
      *
      *  @param {Oject}  playerData  an object with the direction and velocity informations
      *
-     *  @return {Object.PlayerController}  the updated player instance
-     *
      ******************************/
     PlayerController.prototype.updatePlayerTempPos = function( playerData ) {
 
@@ -71,17 +69,22 @@ var PlayerController = (function() {
 
         this._playerTempPos = newPos;
 
+        this._playerTempPos.directionVector = {
+            x: Math.cos( direction.radian ),
+            y: Math.sin( direction.radian )
+        }
+
     }
 
     /******************************
      *
-     *  getPlayerPosition
+     *  getPlayerTempPosition
      *
      *
-     *  @return {Object}  x and y
+     *  @return {Object}  x, y and direction( vector coordinate )
      *
      ******************************/
-    PlayerController.prototype.getPlayerPosition = function() {
+    PlayerController.prototype.getPlayerTempPosition = function() {
 
         return this._playerTempPos;
 

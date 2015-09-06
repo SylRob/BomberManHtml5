@@ -49,7 +49,7 @@ var PlayerAvatar = (function() {
      ******************************/
     PlayerAvatar.prototype.initAvatar = function() {
 
-        var sphereGeo = new THREE.SphereGeometry( 80, 32, 16 );
+        var sphereGeo = new THREE.SphereGeometry( 25, 32, 16 );
         var sphereMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
         var sphere = new THREE.Mesh( sphereGeo, sphereMaterial );
         sphere.position.set( 25, 25, 25 );

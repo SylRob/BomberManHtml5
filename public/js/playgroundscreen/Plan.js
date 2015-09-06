@@ -18,6 +18,7 @@ var Plan = (function() {
         this.cube;
         this.elemParents = elemParents;
         this.game = game;
+        this.collisionDetection;
 
         this.references = {
             world: { w: 1000, h: 20, d: 1000 },
@@ -45,6 +46,7 @@ var Plan = (function() {
         this.setCamera();
         this.setLight();
         this.world = new World( this.scene, this.references.world );
+        this.collisionDetection = new TwoDBoxCollisionDetectionEngine( this.world.getGroundCoordinates() );
         this.letsPaint();
 
         //this.scene.add( this.axisPaint() );
@@ -220,13 +222,8 @@ var Plan = (function() {
             if( !this.cubesList[i].destructible ) continue;
 
             for( var j in squaresStartPos ) {
-                //squareTL
-                if(
-                    cubePosition.x1 < squaresStartPos[j].x2  &&
-                    cubePosition.x2 > squaresStartPos[j].x1 &&
-                    cubePosition.y1 < squaresStartPos[j].y2  &&
-                    cubePosition.y2 > squaresStartPos[j].y1
-                ) this.cubesList[i].destroyed();
+
+                if( this.collisionDetection.isColliding( squaresStartPos[j], cubePosition ) ) this.cubesList[i].destroyed();
             }
 
         }
@@ -235,19 +232,6 @@ var Plan = (function() {
 
     }
 
-
-    /******************************
-     *
-     *  lookForCollision
-     *
-     *  loop throught all the collisionable elemParents
-     *
-     *  @param {THREE.Object3D}  playerAvatar
-     *
-     ******************************/
-    Plan.prototype.lookForCollision = function( playerAvatar ) {
-
-    }
 
     /******************************
      *
@@ -271,8 +255,13 @@ var Plan = (function() {
         for( var playerID in players ) {
 
             players[ playerID ].playerAvatar = new PlayerAvatar( players[ playerID ].playerOption );
-            console.log( players[ playerID ].playerAvatar.getAvatar() );
-            this.world.addElem( players[ playerID ].playerAvatar.getAvatar() );
+            var avatarMesh = players[ playerID ].playerAvatar.initAvatar();
+                avatarMesh.position.x = 75;
+                avatarMesh.position.z = 75;
+            this.world.addElem( avatarMesh );
+
+
+
         }
 
     }
@@ -293,7 +282,10 @@ var Plan = (function() {
         var boxDepth = this.references.world.d/this.references.boxPerLine;
 
         playerController.playerAvatar = new PlayerAvatar( playerController.playerOption );
-        this.world.addElem( playerController.playerAvatar.getAvatar() );
+        var avatarMesh = playerController.playerAvatar.initAvatar();
+            avatarMesh.position.x = 75;
+            avatarMesh.position.z = 75;
+        this.world.addElem( avatarMesh );
 
     }
 
@@ -340,13 +332,13 @@ var Plan = (function() {
 
     /******************************
      *
-     *  updatePlayerPos
+     *  updatePlayersPos
      *
      *  update player position
      *  and check fot colision
      *
      ******************************/
-    Plan.prototype.updatePlayerPos = function() {
+    Plan.prototype.updatePlayersPos = function() {
 
         var players = this.game.getPlayerList();
 
@@ -355,21 +347,95 @@ var Plan = (function() {
         for( var playerID in players ) {
             var avatar = players[ playerID ].playerAvatar;
             var avatarPos = avatar.getPos();
-            var newPosition = players[ playerID ].getPlayerPosition();
-
-            //console.log( 'Plan', players );
+            var newPosition = players[ playerID ].getPlayerTempPosition();
 
             //same position as before? then skip
             if(
                 avatarPos.x == newPosition.x &&
                 avatarPos.y == newPosition.y
-            ) continue;
+            ) continue
 
             avatar.setPos( newPosition );
 
         }
 
     }
+
+    /******************************
+     *
+     *  updatePlayerPos
+     *
+     *  update player position
+     *  and check fot colision
+     *
+     *  @param {PlayerController}  player  player instance
+     *
+     *  @return {Boolean}  can return false if same position as before
+     *
+     ******************************/
+    Plan.prototype.updatePlayerPos = function( player ) {
+        var avatar = player.playerAvatar;
+        var avatarPos = avatar.getPos();
+        var avatarSize = avatar.getSize();
+        var newPosition = player.getPlayerTempPosition();
+
+            //same position as before? then skip
+        if(
+            avatarPos.x == newPosition.x &&
+            avatarPos.y == newPosition.y
+        ) return false;
+
+        var collisionCoodinates = {};
+        collisionCoodinates.x1 = newPosition.x;
+        collisionCoodinates.x2 = newPosition.x + avatarSize.w;
+        collisionCoodinates.y1 = newPosition.y;
+        collisionCoodinates.y2 = newPosition.y + avatarSize.d;
+
+        newPosition = this.lookForCollision( collisionCoodinates, newPosition.directionVector );
+
+        avatar.setPos( newPosition );
+        
+    }
+
+    /******************************
+     *
+     *  lookForCollision
+     *
+     *  loop throught all the collisionable elemParents
+     *
+     *  @param {Object}  {x1, y1, x2, y2}  position  collisionable Coodinates
+     *
+     *  @return {Object}  {x, y}  corrected Coodinates
+     *
+     ******************************/
+    Plan.prototype.lookForCollision = function( position, directionVector ) {
+
+        // OOB ?
+        if( this.collisionDetection.isOOB( position.x1, position.y1, position.x2, position.y2 ) ) 
+            position = this.collisionDetection.correctedOOB( position.x1, position.y1, position.x2, position.y2 );
+
+
+        //collison with obeject ?
+        for( var objId in this.cubesList ) {
+
+            var cube = this.cubesList[ objId ];
+
+            if( cube.isDestroyed() ) continue;
+
+            var objectCoodinates = cube.get2DPosition();
+            
+            position = this.collisionDetection.canceledCollision( position, directionVector, objectCoodinates );
+
+
+        }
+
+        return {
+            x: position.x1,
+            y: position.y1
+        };
+
+    }
+
 
 
     /******************************
@@ -407,7 +473,7 @@ var Plan = (function() {
      ******************************/
     Plan.prototype.animate = function() {
         window.requestAnimationFrame(this.animate.bind(this));
-        this.updatePlayerPos();
+        //this.updatePlayersPos();
         this.render();
     }
 

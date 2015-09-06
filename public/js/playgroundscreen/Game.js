@@ -14,8 +14,8 @@ var Game = (function() {
     function Game(elem) {
 
         //Contstants
-        this.PLAYER_SPEED = 5;
-        this.PLAYER_MAX_SPEED = 10;
+        this.PLAYER_SPEED = 10;
+        this.PLAYER_MAX_SPEED = 20;
         this.MIN_PLAYER = 1;
 
         this.elem = elem;
@@ -166,7 +166,6 @@ var Game = (function() {
 
     }
 
-
     /******************************
      *
      *  updatePlayerData
@@ -185,6 +184,8 @@ var Game = (function() {
         }
 
         myPlayer.updatePlayerTempPos( playerPos.data );
+
+        this.plan.updatePlayerPos( myPlayer );
     }
 
 
@@ -238,7 +239,7 @@ var Game = (function() {
 
                 if(_this.playerList[id]) {
 
-                    _this.playerList[id].removePlayer();
+                    /*_this.playerList[id].playerAvatar.removePlayer();*/
                     delete _this.playerList[id];
 
                     return false;

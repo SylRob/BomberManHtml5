@@ -45,7 +45,7 @@ var GamePad = (function() {
             y : this.pageHeight/2
         }
         this.interval = false;
-        this.fps = 28;
+        this.fps = 60;
         this.gamePadDrawEventName = 'gamePad.draw';
         this.init();
     }

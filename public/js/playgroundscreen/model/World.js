@@ -57,6 +57,26 @@ var World = (function() {
 
     /******************************
      *
+     *  getGroundCoordinates
+     *
+     *  get ground coordiantes( normaly from 0 to size )
+     *
+     *  @return {Object}  { x1, y1, x2, y2 }
+     *
+     ******************************/
+    World.prototype.getGroundCoordinates = function(){
+        
+        return {
+            x1: 0, 
+            y1: 0,
+            x2: this.setup.w,
+            y2: this.setup.d
+        }
+
+    }
+
+    /******************************
+     *
      *  addElem
      *
      *  add Object to the ground object3D
