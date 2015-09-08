@@ -139,6 +139,8 @@ var GamePad = (function() {
      *
      *  assign new touch event
      *
+     *  @param {event}  eventS  get the touchs event
+     *
      ******************************/
     GamePad.prototype.touchStartHandeler = function( eventS ) {
         var _this = this;
@@ -167,7 +169,7 @@ var GamePad = (function() {
       *
       *  handle mouvement
       *
-      *  @param {event}  eventS  the event containing the finger position
+      *  @param {event}  eventS  get the touchs event
       *
       ******************************/
      GamePad.prototype.touchMouveHandeler = function( eventS ) {
@@ -201,7 +203,7 @@ var GamePad = (function() {
       *
       *  assign new touch event
       *
-      *  @param {event}  eventS  the event containing the finger position
+      *  @param {event}  eventS  get the touchs event
       *
       ******************************/
      GamePad.prototype.touchEndHandeler = function( eventS ) {

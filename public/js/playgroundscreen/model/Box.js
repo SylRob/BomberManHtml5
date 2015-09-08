@@ -90,14 +90,12 @@ var Box = (function() {
        *
        *  get2DPosition
        *
-       *  get box object3D
+       *  get point A and C coordinates of the ABCD cube
        *
        *  @return {Object}  {x1, y1, x2, y2}
        *
        ******************************/
        Box.prototype.get2DPosition = function() {
-           //this.obj.updateMatrixWorld();
-
            return {
                x1: this.obj.position.x,
                y1: this.obj.position.z,

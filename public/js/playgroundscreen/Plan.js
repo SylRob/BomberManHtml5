@@ -394,7 +394,7 @@ var Plan = (function() {
         newPosition = this.lookForCollision( collisionCoodinates, newPosition.directionVector );
 
         avatar.setPos( newPosition );
-        
+
     }
 
     /******************************
@@ -411,7 +411,7 @@ var Plan = (function() {
     Plan.prototype.lookForCollision = function( position, directionVector ) {
 
         // OOB ?
-        if( this.collisionDetection.isOOB( position.x1, position.y1, position.x2, position.y2 ) ) 
+        if( this.collisionDetection.isOOB( position.x1, position.y1, position.x2, position.y2 ) )
             position = this.collisionDetection.correctedOOB( position.x1, position.y1, position.x2, position.y2 );
 
 
@@ -423,7 +423,7 @@ var Plan = (function() {
             if( cube.isDestroyed() ) continue;
 
             var objectCoodinates = cube.get2DPosition();
-            
+
             position = this.collisionDetection.canceledCollision( position, directionVector, objectCoodinates );
 
 
