@@ -128,7 +128,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      ******************************/
     TwoDBoxCollisionDetectionEngine.prototype.canceledCollision = function( objectPos, directionVector, obstacle ) {
 
-		var objectPoints = this._boxPoints( objectPos );
+		//var objectPoints = this._boxPoints( objectPos );
 		var obstaclePoints = this._boxPoints( obstacle );
         var intersectPoint = {
 			x : null,
@@ -172,22 +172,43 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 			{x: null, y: null}//D
 		];
 
-		//AC line equations
-		var a = (points[2].y - points[0].y) / (points[2].x - points[0].x);
-		var b =  points[2].y - (a*points[0].x);
-		var coefAC;
+
 		//AC = racine( (xb-xa)carre + (yb-ya)carre )
 		var AClength = Math.sqrt( Math.pow((points[2].x - points[0].x), 2) + Math.pow((points[2].y - points[0].y), 2)  );
 
 		//because its a square AB = BC = CD = CA
 		var ABlength = AClength / Math.sqrt(2);
+		var ADlength = ABlength;
 
 
 
 		/*
-		* equation cercle
-		* ( x-a )square + ( y-b )square = (r)square
+		* equation cercle ( X et Y sont le centre du cercle )
+		* ( x-X )square + ( y-Y )square = (r)square
 		*/
+		var a, h;
+		var rayon = ABlength;
+		var distance = AClength;
+		var Qpoint = {x:null, y:null};
+
+		a = Math.pow(distance, 2) / ( 2* distance);
+		h = Math.sqrt( Math.pow(rayon, 2) - Math.pow(a, 2) );
+
+		Qpoint.x = points[0].x + ( a*( points[2].x - points[0].x ) / distance );
+		Qpoint.y = points[0].y + ( a*( points[2].y - points[0].y ) / distance );
+
+		points[1].x = Qpoint.x + ( h*( points[2].y - points[0].y ) / distance );
+		points[1].y = Qpoint.x - ( h*( points[2].x - points[0].x ) / distance );
+
+		points[3].x = Qpoint.x - ( h*( points[2].y - points[0].y ) / distance );
+		points[3].y = Qpoint.x + ( h*( points[2].x - points[0].x ) / distance );
+
+		/*if( points[0].x === 0 ) {
+			console.log( '-------------------------------' );
+			console.log( points[1] );
+			console.log( points[3] );
+			console.log( '-------------------------------' );
+		}*/
 
 		return points;
 
