@@ -128,7 +128,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      ******************************/
     TwoDBoxCollisionDetectionEngine.prototype.canceledCollision = function( objectPos, directionVector, obstacle ) {
 
-		//var objectPoints = this._boxPoints( objectPos );
+		var objectPoints = this._boxPoints( objectPos );
 		var obstaclePoints = this._boxPoints( obstacle );
         var intersectPoint = {
 			x : null,
@@ -166,15 +166,18 @@ var TwoDBoxCollisionDetectionEngine = (function() {
     TwoDBoxCollisionDetectionEngine.prototype._boxPoints = function( obj ) {
 
 		var points = [
-			{x: obj.x1, y: obj.y1},//A
-			{x: null, y: null},//B
-			{x: obj.x2, y: obj.y2},//C
-			{x: null, y: null}//D
+			new THREE.Vector2( obj.x1, obj.y1 ),//A
+			new THREE.Vector2(),//B
+			new THREE.Vector2( obj.x2, obj.y2 ),//C
+			new THREE.Vector2()//D
 		];
+
+        var X = 0;
+        var Y = 1;
 
 
 		//AC = racine( (xb-xa)carre + (yb-ya)carre )
-		var AClength = Math.sqrt( Math.pow((points[2].x - points[0].x), 2) + Math.pow((points[2].y - points[0].y), 2)  );
+		var AClength = Math.sqrt( Math.pow((points[2].getComponent(X) - points[0].getComponent(X)), 2) + Math.pow((points[2].getComponent(Y) - points[0].getComponent(Y)), 2)  );
 
 		//because its a square AB = BC = CD = CA
 		var ABlength = AClength / Math.sqrt(2);
@@ -189,26 +192,30 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 		var a, h;
 		var rayon = ABlength;
 		var distance = AClength;
-		var Qpoint = {x:null, y:null};
+		var vector = new THREE.Vector2();
+        var dummyVect = points[2].clone();
 
-		a = Math.pow(distance, 2) / ( 2* distance);
+		a = Math.pow(distance, 2) / ( 2*distance);
 		h = Math.sqrt( Math.pow(rayon, 2) - Math.pow(a, 2) );
 
-		Qpoint.x = points[0].x + ( a*( points[2].x - points[0].x ) / distance );
-		Qpoint.y = points[0].y + ( a*( points[2].y - points[0].y ) / distance );
+        //P2 = P1.sub(P0).scale(a/d).add(P0);
+        dummyVect.sub( points[0] ).multiplyScalar(a/distance).add(points[0])
+        console.log( dummyVect, vector );
+        vector.copy( dummyVect );
+		//vector.position.x = points[0].x + ( a*( points[2].x - points[0].x ) / distance );
+		//vector.position.y = points[0].y + ( a*( points[2].y - points[0].y ) / distance );
 
-		points[1].x = Qpoint.x + ( h*( points[2].y - points[0].y ) / distance );
-		points[1].y = Qpoint.x - ( h*( points[2].x - points[0].x ) / distance );
+		points[1].setX( vector.getComponent(X) + ( h*( points[2].getComponent(Y) - points[0].getComponent(Y) ) / distance ) );
+		points[1].setY( vector.getComponent(X) - ( h*( points[2].getComponent(X) - points[0].getComponent(X) ) / distance ) );
 
-		points[3].x = Qpoint.x - ( h*( points[2].y - points[0].y ) / distance );
-		points[3].y = Qpoint.x + ( h*( points[2].x - points[0].x ) / distance );
+		points[3].setX( vector.getComponent(X) - ( h*( points[2].getComponent(Y) - points[0].getComponent(Y) ) / distance ) );
+		points[3].setY( vector.getComponent(X) + ( h*( points[2].getComponent(X) - points[0].getComponent(X) ) / distance ) );
 
-		/*if( points[0].x === 0 ) {
+		if( points[0].getComponent(X) == 0 ) {
 			console.log( '-------------------------------' );
-			console.log( points[1] );
-			console.log( points[3] );
+			console.log( points[1].getComponent(X), points[1].getComponent(Y) );
 			console.log( '-------------------------------' );
-		}*/
+		}
 
 		return points;
 
