@@ -148,6 +148,27 @@ var PlayerAvatar = (function() {
 
     }
 
+
+    /******************************
+     *
+     *  get2DpositionFromTemp
+     *
+     *  @return {Object}  with the 4 square corner coordinates
+     *
+     ******************************/
+    PlayerAvatar.prototype.get2DpositionFromTemp = function( tempPos ) {
+
+        var size = this.getSize();
+
+        return [
+            { x: tempPos.x, y: tempPos.y },
+            { x: tempPos.x + size.w, y: tempPos.y },
+            { x: tempPos.x + size.w, y: tempPos.y + size.d },
+            { x: tempPos.x, y: tempPos.y + size.d }
+        ];
+
+    }
+
     /******************************
      *
      *  getAvatar

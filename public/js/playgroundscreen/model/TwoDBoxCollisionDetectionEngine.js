@@ -21,13 +21,13 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *  @return {Boolean}
      *
      ******************************/
-    TwoDBoxCollisionDetectionEngine.prototype.isOOB = function( x, y, x2, y2 ) {
+    TwoDBoxCollisionDetectionEngine.prototype.isOOB = function( position ) {
 
         var objectPos = {
-            x1: x,
-            y1: y,
-            x2: x2,
-            y2: y2
+            x1: position[0].x,
+            y1: position[0].y,
+            x2: position[2].x,
+            y2: position[2].y
         };
 
         return ( objectPos.x1 < this._oobCoordinates.x1 ||
@@ -44,21 +44,18 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  the oob object is return with rectified Values
      *
-     *  @param {int}  x  x position
-     *  @param {int}  y  y position
-     *  @param {int}  w  width
-     *  @param {int}  d  depth
+     *  @param {Array}  position  shape like [ {x,y}, {x,y}, etc... ]
      *
-     *  @return {Object}  shape like {x1,y1,x2,y2}
+     *  @return {Object}  position  (corrected)
      *
      ******************************/
-    TwoDBoxCollisionDetectionEngine.prototype.correctedOOB = function( x1, y1, x2, y2 ) {
+    TwoDBoxCollisionDetectionEngine.prototype.correctedOOB = function( position ) {
 
         var objectPos = {
-            x1: x1,
-            y1: y1,
-            x2: x2,
-            y2: y2
+            x1: position[0].x,
+            y1: position[0].y,
+            x2: position[2].x,
+            y2: position[2].y
         };
 
         var objectW = Math.abs( objectPos.x1 - objectPos.x2 );
@@ -82,7 +79,10 @@ var TwoDBoxCollisionDetectionEngine = (function() {
             objectPos.y2 = objectD;
         }
 
-        return objectPos;
+		position[0] = { x: objectPos.x1, y: objectPos.y1 };
+		position[2] = { x: objectPos.x2, y: objectPos.y2 };
+
+        return position;
 
     }
 
@@ -93,18 +93,18 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  check if 2 objects are colliding
      *
-     *  @param {Object}  obj1  shape like {x,y,w,d}
-     *  @param {Object}  obj2  shape like {x,y,w,d}
+     *  @param {Array}  obj1  shape like [{x,y}, {x,y}, etc...]
+     *  @param {Object}  obj2  shape like [{x,y}, {x,y}, etc...]
      *
      *  @return {Boolean}
      *
      ******************************/
     TwoDBoxCollisionDetectionEngine.prototype.isColliding = function( obj1, obj2 ) {
 
-        return !( obj1.x2 < obj2.x1 ||
-            obj1.x1 > obj2.x2 ||
-            obj1.y2 < obj2.y1 ||
-            obj1.y1 > obj2.y2
+        return !( obj1[2].x < obj2[0].x ||
+            obj1[0].x > obj2[2].x ||
+            obj1[2].y < obj2[0].y ||
+            obj1[0].y > obj2[2].y
         );
 
     }
@@ -123,96 +123,75 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *  @param {Object}  directionVector  the directionVector{x,y}
      *  @param {Object}  obstacle  obstacle position
      *
-     *  @return {Object}  shape like {x1,y1,x2,y2}
+     *  @return {Object}  shape like {x: 0, y: 0}
      *
      ******************************/
     TwoDBoxCollisionDetectionEngine.prototype.canceledCollision = function( objectPos, directionVector, obstacle ) {
 
-		//var objectPoints = this._boxPoints( objectPos );
-		var obstaclePoints = this._boxPoints( obstacle );
         var intersectPoint = {
 			x : null,
 			y : null
 		}
 
-		//make loop through the 4 points of the obstacle
-			//Caclulate segements equations
-			//...
+		var obstaclePointL = Object.keys( obstacle ).length;
+		var objectPointL = Object.keys( objectPos ).length;
 
-			//make loop through the 4 points of the object
-				//Caclulate segements equations
-				//...
+		for( var i = 0; i < obstaclePointL; i++ ) {
+			var obsSegment = [
+				obstacle[i],
+				obstaclePointL - 1 ? obstacle[0] : obstacle[i+1]
+			];
 
-				//check for intersection
-				//...
+			//segment equation
+			var obs_M = (obsSegment[1].y - obsSegment[0].y) / (obsSegment[1].x - obsSegment[0].x);
+			var obs_T = obsSegment[0].y - ( obs_M*obsSegment[0].x ) ;
 
-				//if there is then calculate the intersection point coordinates and return them
-				return objectPos;
+			for( var j = 0; j < objectPointL; j++ ) {
+				var objSegment = [
+					objectPos[j],
+					j == objectPointL - 1 ? objectPos[0] : objectPos[j+1]
+				];
+
+				//segment equation
+				var obj_M = (objSegment[1].y - objSegment[0].y) / (objSegment[1].x - objSegment[1].x);
+				var obj_T = objSegment[0].y - ( obj_M*objSegment[0].x );
+
+				//Same x for everyone
+				if( objSegment[0].x === objSegment[1].x && obsSegment[0].x === objSegment[0].x ) {
+
+					intersectPoint.x = objSegment[0].x;
+					//normalize points
+					if( obsSegment[0].y > obsSegment[1].y ) { obsSegment = [ obsSegment[1], obsSegment[0] ] }
+					if( objSegment[0].y > objSegment[1].y ) { objSegment = [ objSegment[1], objSegment[0] ] }
+					if( obsSegment[0].y > objSegment[0].y ) { var tmp = objSegment; objSegment = obsSegment; obsSegment = objSegment; }
+					// ** //
+					intersectPoint.y = objSegment[0].y;
+
+				} else if( obsSegment[0].x === obsSegment[0].x ) {
+					//horizontal line for obstacle
+					intersectPoint.x = obsSegment[0].x;
+					intersectPoint.y = obj_M *intersectPoint.x + obj_T;
+
+				} else if( objSegment[0].x === objSegment[1].x ) {
+					//horizontal line for obstacle for object
+					intersectPoint.x = objSegment[0].x;
+					intersectPoint.y = obs_M*intersectPoint.x + obs_T;
+
+				} else {
+					//normal line !
+					intersectPoint.x = ( obj_T - obs_T ) / ( obj_M - obs_M );
+					intersectPoint.y = obs_M * intersectPoint.x + obs_T;
+				}
+
+			}//end for( var j = 0; j < objectPointL; j++ )
+
+		}
+
+		console.log( intersectPoint, obs_M, obs_T, obj_M, obj_T );
+
+		return intersectPoint;
 
     }
-
-
-	/******************************
-     *
-     *  boxPoints
-     *
-     *  from 2 point return the 4 points positions of the box
-     *
-     *  @param {Object}  obj  object position {x1,y1,x2,y2}
-     *
-     *  @return {Array}  shape like [{x,y}, {x,y}, ....]
-     *
-     ******************************/
-    TwoDBoxCollisionDetectionEngine.prototype._boxPoints = function( obj ) {
-
-		var points = [
-			{x: obj.x1, y: obj.y1},//A
-			{x: null, y: null},//B
-			{x: obj.x2, y: obj.y2},//C
-			{x: null, y: null}//D
-		];
-
-
-		//AC = racine( (xb-xa)carre + (yb-ya)carre )
-		var AClength = Math.sqrt( Math.pow((points[2].x - points[0].x), 2) + Math.pow((points[2].y - points[0].y), 2)  );
-
-		//because its a square AB = BC = CD = CA
-		var ABlength = AClength / Math.sqrt(2);
-		var ADlength = ABlength;
-
-
-
-		/*
-		* equation cercle ( X et Y sont le centre du cercle )
-		* ( x-X )square + ( y-Y )square = (r)square
-		*/
-		var a, h;
-		var rayon = ABlength;
-		var distance = AClength;
-		var Qpoint = {x:null, y:null};
-
-		a = Math.pow(distance, 2) / ( 2* distance);
-		h = Math.sqrt( Math.pow(rayon, 2) - Math.pow(a, 2) );
-
-		Qpoint.x = points[0].x + ( a*( points[2].x - points[0].x ) / distance );
-		Qpoint.y = points[0].y + ( a*( points[2].y - points[0].y ) / distance );
-
-		points[1].x = Qpoint.x + ( h*( points[2].y - points[0].y ) / distance );
-		points[1].y = Qpoint.x - ( h*( points[2].x - points[0].x ) / distance );
-
-		points[3].x = Qpoint.x - ( h*( points[2].y - points[0].y ) / distance );
-		points[3].y = Qpoint.x + ( h*( points[2].x - points[0].x ) / distance );
-
-		/*if( points[0].x === 0 ) {
-			console.log( '-------------------------------' );
-			console.log( points[1] );
-			console.log( points[3] );
-			console.log( '-------------------------------' );
-		}*/
-
-		return points;
-
-	}
 
 
 

@@ -96,12 +96,12 @@ var Box = (function() {
        *
        ******************************/
        Box.prototype.get2DPosition = function() {
-           return {
-               x1: this.obj.position.x,
-               y1: this.obj.position.z,
-               x2: this.obj.position.x + this.size.w,
-               y2: this.obj.position.z + this.size.d
-           }
+           return [
+               { x: this.obj.position.x, y: this.obj.position.z },
+               { x: this.obj.position.x + this.size.w, y: this.obj.position.z },
+               { x: this.obj.position.x + this.size.w, y: this.obj.position.z + this.size.d },
+               { x: this.obj.position.x, y: this.obj.position.z + this.size.d }
+           ]
        }
 
 

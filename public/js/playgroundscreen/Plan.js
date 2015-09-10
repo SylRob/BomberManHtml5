@@ -208,10 +208,30 @@ var Plan = (function() {
         var boxWidthX4 = boxWidth*4;
         var boxDepthX4 = boxDepth*4;
 
-        var squareTL = { x1 : 0, y1 : 0, x2 : boxWidthX4, y2 : boxDepthX4 };
-        var squareTR = { x1 : this.references.world.w - boxWidthX4, y1 : 0, x2 : this.references.world.w, y2 : boxDepthX4 };
-        var squareBL = { x1 : 0, y1 : this.references.world.d - boxDepthX4, x2 : boxDepthX4, y2 : this.references.world.d };
-        var squareBR = { x1 : this.references.world.w - boxWidthX4, y1 : this.references.world.d - boxWidthX4, x2 : this.references.world.w, y2 : this.references.world.d };
+        var squareTL = [
+            { x: 0, y: 0},
+            { x: boxWidthX4, y: 0},
+            { x: boxWidthX4, y: boxDepthX4 },
+            { x: 0, y: boxDepthX4 }
+        ];
+        var squareTR = [
+            { x: this.references.world.w - boxWidthX4, y: 0 },
+            { x: this.references.world.w, y: 0 },
+            { x: this.references.world.w, y: boxDepthX4 },
+            { x: this.references.world.w - boxWidthX4, y: boxDepthX4 }
+        ];
+        var squareBL = [
+            { x: 0, y: this.references.world.d - boxDepthX4 },
+            { x: boxDepthX4, y: this.references.world.d - boxDepthX4 },
+            { x: boxDepthX4, y: this.references.world.d },
+            { x: 0, y: this.references.world.d }
+        ];
+        var squareBR = [
+            { x: this.references.world.w - boxWidthX4, y: this.references.world.d - boxWidthX4 },
+            { x: this.references.world.w, y: this.references.world.d - boxWidthX4 },
+            { x: this.references.world.w, y: this.references.world.d },
+            { x: this.references.world.w - boxWidthX4, y: this.references.world.d }
+        ];
 
         var squaresStartPos = [ squareTL, squareTR, squareBL, squareBR ];
 
@@ -385,11 +405,7 @@ var Plan = (function() {
             avatarPos.y == newPosition.y
         ) return false;
 
-        var collisionCoodinates = {};
-        collisionCoodinates.x1 = newPosition.x;
-        collisionCoodinates.x2 = newPosition.x + avatarSize.w;
-        collisionCoodinates.y1 = newPosition.y;
-        collisionCoodinates.y2 = newPosition.y + avatarSize.d;
+        var collisionCoodinates = avatar.get2DpositionFromTemp( newPosition );
 
         newPosition = this.lookForCollision( collisionCoodinates, newPosition.directionVector );
 
@@ -403,7 +419,7 @@ var Plan = (function() {
      *
      *  loop throught all the collisionable elemParents
      *
-     *  @param {Object}  {x1, y1, x2, y2}  position  collisionable Coodinates
+     *  @param {Object}  position  position  collisionable Coodinates shape like [{x:0,y:0}, {x:0,y:0}, etc...]
      *
      *  @return {Object}  {x, y}  corrected Coodinates
      *
@@ -411,27 +427,23 @@ var Plan = (function() {
     Plan.prototype.lookForCollision = function( position, directionVector ) {
 
         // OOB ?
-        if( this.collisionDetection.isOOB( position.x1, position.y1, position.x2, position.y2 ) )
-            position = this.collisionDetection.correctedOOB( position.x1, position.y1, position.x2, position.y2 );
-
+        if( this.collisionDetection.isOOB( position ) )
+            position = this.collisionDetection.correctedOOB( position );
 
         //collison with obeject ?
         for( var objId in this.cubesList ) {
 
             var cube = this.cubesList[ objId ];
-
-            if( cube.isDestroyed() ) continue;
-
             var objectCoodinates = cube.get2DPosition();
-
+            if( cube.isDestroyed() || !this.collisionDetection.isColliding( position, objectCoodinates ) ) continue;
             position = this.collisionDetection.canceledCollision( position, directionVector, objectCoodinates );
-
-
+            break;
+            
         }
 
         return {
-            x: position.x1,
-            y: position.y1
+            x: position[0].x,
+            y: position[0].y
         };
 
     }
