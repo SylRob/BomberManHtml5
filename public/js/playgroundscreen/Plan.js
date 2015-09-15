@@ -350,36 +350,6 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
-     *  updatePlayersPos
-     *
-     *  update player position
-     *  and check fot colision
-     *
-     ******************************/
-    Plan.prototype.updatePlayersPos = function() {
-
-        var players = this.game.getPlayerList();
-
-        if( Object.keys(players).length < 1 ) return ;
-
-        for( var playerID in players ) {
-            var avatar = players[ playerID ].playerAvatar;
-            var avatarPos = avatar.getPos();
-            var newPosition = players[ playerID ].getPlayerTempPosition();
-
-            //same position as before? then skip
-            if(
-                avatarPos.x == newPosition.x &&
-                avatarPos.y == newPosition.y
-            ) continue
-
-            avatar.setPos( newPosition );
-
-        }
-
-    }
 
     /******************************
      *
@@ -395,21 +365,24 @@ var Plan = (function() {
      ******************************/
     Plan.prototype.updatePlayerPos = function( player ) {
         var avatar = player.playerAvatar;
-        var avatarPos = avatar.getPos();
+        var avatarPos = Object.create( avatar.getPos() );
         var avatarSize = avatar.getSize();
-        var newPosition = player.getPlayerTempPosition();
+        var tempPos = player.getPlayerTempPosition();
+        console.log( 'tempPos', tempPos );
+        var updatedPos = null;
 
-            //same position as before? then skip
+        //same position as before? then skip
         if(
-            avatarPos.x == newPosition.x &&
-            avatarPos.y == newPosition.y
+            avatarPos.x == tempPos.x &&
+            avatarPos.y == tempPos.y
         ) return false;
 
-        var collisionCoodinates = avatar.get2DpositionFromTemp( newPosition );
+        var collisionCoodinates = avatar.get2DpositionFromTemp( tempPos );
 
-        newPosition = this.lookForCollision( collisionCoodinates, newPosition.directionVector );
+        updatedPos = this.lookForCollision( collisionCoodinates, tempPos.directionVector, avatar.get2DpositionFromTemp( avatarPos ) );
 
-        avatar.setPos( newPosition );
+        avatar.setPos( updatedPos );
+        console.log( '///////////////////////////////NEW UPDATE' );
 
     }
 
@@ -424,26 +397,31 @@ var Plan = (function() {
      *  @return {Object}  {x, y}  corrected Coodinates
      *
      ******************************/
-    Plan.prototype.lookForCollision = function( position, directionVector ) {
+    Plan.prototype.lookForCollision = function( collidingPos, directionVector, avatarPos ) {
 
+        var newPos = Object.create(collidingPos);
         // OOB ?
-        if( this.collisionDetection.isOOB( position ) )
-            position = this.collisionDetection.correctedOOB( position );
+        if( this.collisionDetection.isOOB( newPos ) )
+            newPos = this.collisionDetection.correctedOOB( newPos );
 
         //collison with obeject ?
         for( var objId in this.cubesList ) {
 
             var cube = this.cubesList[ objId ];
             var objectCoodinates = cube.get2DPosition();
-            if( cube.isDestroyed() || !this.collisionDetection.isColliding( position, objectCoodinates ) ) continue;
-            position = this.collisionDetection.canceledCollision( position, directionVector, objectCoodinates );
-            break;
-            
+
+            if( cube.isDestroyed() || !this.collisionDetection.isColliding( newPos, objectCoodinates ) ) continue;
+
+            newPos = this.collisionDetection.canceledCollision( newPos, avatarPos, objectCoodinates );
+
+            console.log( newPos[0].y, collidingPos[0].y )
         }
 
+        console.log( '///////////////////////////////END OF RESEARCH' );
+
         return {
-            x: position[0].x,
-            y: position[0].y
+            x: newPos[0].x,
+            y: newPos[0].y
         };
 
     }
