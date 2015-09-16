@@ -48,7 +48,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      ******************************/
     TwoDBoxCollisionDetectionEngine.prototype.correctedOOB = function( position ) {
 
-		var correctedPos = Object.create(position);
+		var correctedPos = position;
 
         var objectPos = {
             x1: position[0].x,
@@ -149,41 +149,32 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      ******************************/
 	 TwoDBoxCollisionDetectionEngine.prototype.canceledCollision = function( objectPos, oldPos, obstacle ) {
 
-		 var dontMove = Object.create(oldPos);
-		 var testYpos = Object.create(oldPos);
-		 var testXpos = Object.create(oldPos);
+		 var tempObjX = JSON.parse(JSON.stringify(oldPos));//unrelated copy
+		 var tempObjY = JSON.parse(JSON.stringify(oldPos));//unrelated copy
 		 var obstaclePointL = Object.keys( obstacle ).length;
  		 var objectPointL = Object.keys( objectPos ).length;
 
-		 console.log( 'wich axis ?' )
+		 //can we move on x ?
+  		for( var i = 0; i < objectPointL; i++ ) {
+ 			tempObjX[i].x = objectPos[i].x;
+
+ 		}
+
+ 		if( !this.isColliding( tempObjX, obstacle ) ) {
+ 			return tempObjX;
+ 		}
 
  	 	//can we move on y ?
- 		for( var i = 0; i < objectPointL; i++ ) {
-
-			testYpos[i].y = objectPos[i].y;
-
-		}
-
-		if( !this.isColliding( testYpos, obstacle ) ) {
-			console.log( 'y axis' )
-			return testYpos;
-		}
-
-		//can we move on x ?
- 		for( var i = 0; i < objectPointL; i++ ) {
-
-			testXpos[i].x = objectPos[i].x;
+ 		for( var j = 0; j < objectPointL; j++ ) {
+			tempObjY[j].y = objectPos[j].y;
 
 		}
 
-		if( !this.isColliding( testXpos, obstacle ) ) {
-			console.log( 'x axis' )
-			return testXpos;
+		if( !this.isColliding( tempObjY, obstacle ) ) {
+			return tempObjY;
 		}
 
-		console.log( 'didnt caught ANYTHING' );
-
-		return dontMove;
+		return oldPos;
 
 	 }
 
@@ -220,8 +211,6 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 
 				//are these segements cross ? no ? then jump to the next
 				if( !this.doLinesIntersect( objSegment, obsSegment ) && !this.isCollidingSegements( obsSegment, objSegment ) ) continue;
-
-				console.log( 'Found collison', i, j )
 
 				 collision = true;
 
@@ -389,8 +378,6 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 			newObjectPos[j].x = newObjectPos[j].x - dist.x;
 			newObjectPos[j].y = newObjectPos[j].y - dist.y;
 		}
-
-		console.log( 'buildNew2Dcoordinates', dist, newObjectPos );
 
 		return newObjectPos;
     }

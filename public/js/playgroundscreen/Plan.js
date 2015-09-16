@@ -368,7 +368,6 @@ var Plan = (function() {
         var avatarPos = Object.create( avatar.getPos() );
         var avatarSize = avatar.getSize();
         var tempPos = player.getPlayerTempPosition();
-        console.log( 'tempPos', tempPos );
         var updatedPos = null;
 
         //same position as before? then skip
@@ -382,7 +381,6 @@ var Plan = (function() {
         updatedPos = this.lookForCollision( collisionCoodinates, tempPos.directionVector, avatar.get2DpositionFromTemp( avatarPos ) );
 
         avatar.setPos( updatedPos );
-        console.log( '///////////////////////////////NEW UPDATE' );
 
     }
 
@@ -399,11 +397,12 @@ var Plan = (function() {
      ******************************/
     Plan.prototype.lookForCollision = function( collidingPos, directionVector, avatarPos ) {
 
-        var newPos = Object.create(collidingPos);
-        // OOB ?
-        if( this.collisionDetection.isOOB( newPos ) )
-            newPos = this.collisionDetection.correctedOOB( newPos );
+        var newPos = collidingPos;
 
+        // OOB ?
+        if( this.collisionDetection.isOOB( collidingPos ) )
+            newPos = this.collisionDetection.correctedOOB( collidingPos );
+            
         //collison with obeject ?
         for( var objId in this.cubesList ) {
 
@@ -414,10 +413,7 @@ var Plan = (function() {
 
             newPos = this.collisionDetection.canceledCollision( newPos, avatarPos, objectCoodinates );
 
-            console.log( newPos[0].y, collidingPos[0].y )
         }
-
-        console.log( '///////////////////////////////END OF RESEARCH' );
 
         return {
             x: newPos[0].x,
