@@ -60,8 +60,7 @@ var Game = (function() {
      *
      *  initEvent
      *
-     *  init the SVG
-     *  and set the main loop
+     *  init the event
      *
      ******************************/
     Game.prototype.initEvent = function() {
@@ -159,7 +158,13 @@ var Game = (function() {
             }
         }
 
-        this.playerList[iid] = new PlayerController( this, Player );
+        var gameOption = {
+            PLAYER_SPEED: this.PLAYER_SPEED,
+            PLAYER_MAX_SPEED: this.PLAYER_MAX_SPEED,
+            PLAYER_MAX_BOMB: this.PLAYER_MAX_BOMB
+        }
+
+        this.playerList[iid] = new PlayerController( gameOption, Player );
 
         if( !this.gameStarted ) { this.start(); }
         else this.plan.addPlayer( this.playerList[iid] )
@@ -239,7 +244,7 @@ var Game = (function() {
 
                 if(_this.playerList[id]) {
 
-                    /*_this.playerList[id].playerAvatar.removePlayer();*/
+                    _this.plan.removePlayer( _this.playerList[id].playerAvatar );
                     delete _this.playerList[id];
 
                     return false;

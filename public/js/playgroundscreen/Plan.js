@@ -274,7 +274,7 @@ var Plan = (function() {
 
         for( var playerID in players ) {
 
-            players[ playerID ].playerAvatar = new PlayerAvatar( players[ playerID ].playerOption );
+            players[ playerID ].playerAvatar = new PlayerAvatar( players[ playerID ].getPlayerOption() );
             var avatarMesh = players[ playerID ].playerAvatar.initAvatar();
                 avatarMesh.position.x = 75;
                 avatarMesh.position.z = 75;
@@ -301,13 +301,29 @@ var Plan = (function() {
         var boxHeight = this.references.world.w/this.references.boxPerLine;
         var boxDepth = this.references.world.d/this.references.boxPerLine;
 
-        playerController.playerAvatar = new PlayerAvatar( playerController.playerOption );
+        playerController.playerAvatar = new PlayerAvatar( playerController.getPlayerOption() );
         var avatarMesh = playerController.playerAvatar.initAvatar();
             avatarMesh.position.x = 75;
             avatarMesh.position.z = 75;
         this.world.addElem( avatarMesh );
 
     }
+
+    /******************************
+     *
+     *  removePlayer
+     *
+     *  remove player avatar in the scene
+     *
+     *  @param {PlayerAvatar}  playerAvatar
+     *
+     *  @return {void}
+     *
+     ******************************/
+    Plan.prototype.removePlayer = function( playerAvatar ) {
+        this.world.removeElem( playerAvatar.getAvatar() );
+    }
+
 
     /******************************
      *
@@ -365,7 +381,7 @@ var Plan = (function() {
      ******************************/
     Plan.prototype.updatePlayerPos = function( player ) {
         var avatar = player.playerAvatar;
-        var avatarPos = Object.create( avatar.getPos() );
+        var avatarPos = avatar.getPos();
         var avatarSize = avatar.getSize();
         var tempPos = player.getPlayerTempPosition();
         var updatedPos = null;
@@ -402,7 +418,7 @@ var Plan = (function() {
         // OOB ?
         if( this.collisionDetection.isOOB( collidingPos ) )
             newPos = this.collisionDetection.correctedOOB( collidingPos );
-            
+
         //collison with obeject ?
         for( var objId in this.cubesList ) {
 

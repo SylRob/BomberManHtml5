@@ -10,19 +10,22 @@ var PlayerController = (function() {
      *  @return {Object}  PlayerController
      *
      ******************************/
-    function PlayerController(Game, playerOption) {
+    function PlayerController(gameOption, playerOption) {
 
-        this.playerOption = playerOption;
-        this.game = Game;
-        this.speed = Game.PLAYER_SPEED;
-        this.maxSpeed = Game.PLAYER_MAX_SPEED;
+        this._playerOption = playerOption;
         this._playerTempPos = {
             x: 0,
             y: 0
         }
-        
+
         this.playerAvatar;
         this.id = 0;
+        this._speed = gameOption.PLAYER_SPEED;
+        this._maxSpeed = gameOption.PLAYER_MAX_SPEED;
+        this._maxBomb = gameOption.PLAYER_MAX_BOMB;
+
+        this._bomb = 1;
+        this._actionButton = false;
 
         this.initPlayer();
 
@@ -37,11 +40,11 @@ var PlayerController = (function() {
      ******************************/
     PlayerController.prototype.initPlayer = function() {
 
-        if( undefined === this.playerOption.pseudo || this.playerOption.pseudo != '' ) {
-            this.pseudo = this.playerOption.pseudo;
-        } else this.pseudo = 'Player'+playerOption.id;
+        if( undefined !== this._playerOption.pseudo && this._playerOption.pseudo != '' ) {
+            this.pseudo = this._playerOption.pseudo;
+        } else this.pseudo = 'Player'+this._playerOption.id;
 
-        this.id = this.playerOption.id;
+        this.id = this._playerOption.id;
 
     }
 
@@ -57,7 +60,7 @@ var PlayerController = (function() {
 
         var direction = playerData.direction;
         var nowPos = this.playerAvatar.getPos();
-        var scalar = direction.velocity * (this.speed/100);
+        var scalar = direction.velocity * (this._speed/100);
 
         var newPos = {
             x: Math.cos( direction.radian ) * scalar,
@@ -74,6 +77,22 @@ var PlayerController = (function() {
             y: Math.sin( direction.radian )
         }
 
+        this._actionButton = playerData.ab;
+
+    }
+
+    /******************************
+     *
+     *  getPlayerOption
+     *
+     *
+     *  @return {Object}
+     *
+     ******************************/
+    PlayerController.prototype.getPlayerOption = function() {
+
+        return this._playerOption;
+
     }
 
     /******************************
@@ -87,6 +106,81 @@ var PlayerController = (function() {
     PlayerController.prototype.getPlayerTempPosition = function() {
 
         return this._playerTempPos;
+
+    }
+
+    /******************************
+     *
+     *  getMaxBomb
+     *
+     *  @return {int}
+     *
+     ******************************/
+    PlayerController.prototype.getMaxBomb = function() {
+
+        return this._maxBomb;
+
+    }
+
+    /******************************
+     *
+     *  setBomb
+     *
+     *  @param {int}  numberBomb
+     *
+     ******************************/
+    PlayerController.prototype.setBomb = function( numberBomb ) {
+
+        if( isNaN(numberBomb) ) {
+            throw new Error(' set Speed must be a number ');
+            return false;
+        }
+
+        if( numberBomb > this._maxBomb ) this._bomb = this._maxBomb;
+        this._bomb = numberBomb;
+
+    }
+
+    /******************************
+     *
+     *  getSpeed
+     *
+     *  @return {int}
+     *
+     ******************************/
+    PlayerController.prototype.getSpeed = function() {
+
+        return this._speed;
+
+    }
+
+    /******************************
+     *
+     *  setSpeed
+     *
+     *  @param {int}  speed
+     *
+     ******************************/
+    PlayerController.prototype.setSpeed = function( speed ) {
+
+        if( isNaN(speed) ) {
+            throw new Error(' set Speed must be a number ');
+            return false;
+        }
+
+        if( speed > this._maxSpeed ) this._speed = this._maxSpeed;
+        else this._speed = speed;
+
+    }
+
+    /******************************
+     *
+     *  actionBtnHandeler
+     *
+     ******************************/
+    PlayerController.prototype.actionBtnHandeler = function() {
+
+
 
     }
 

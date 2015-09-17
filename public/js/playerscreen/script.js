@@ -99,16 +99,15 @@ jQuery(document).ready(function() {
     var i=0;
     window.addEventListener('gamePad.draw', function(event) {
         var gamePadData = event.detail.gamePadData;
-
         var playerData = player.wrapResults( gamePadData );
 
         socket.emit( 'playerTouched', playerData );
 
     })
 
-
-
-
+    window.onbeforeunload = function(){
+      socket.emit( 'disconnect' );
+    };
 
 
 

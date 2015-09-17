@@ -137,14 +137,14 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  important! : check there is collision before (this.isColliding())
 	 *
-	 *	find the collision point coordinate and
-	 *	return it
+	 *	we know that there is a collision and we just check if there is at
+	 *  least 1 axis on witch we can move
      *
-     *  @param {Object}  objectPos  object position {x1,y1,x2,y2}
+     *  @param {Object}  objectPos  object position [{x:0,y:0}, {x:0,y:0}, etc...]
      *  @param {Object}  directionVector  the directionVector{x,y}
-     *  @param {Object}  obstacle  obstacle position
+     *  @param {Object}  obstacle  obstacle position [{x:0,y:0}, {x:0,y:0}, etc...]
      *
-     *  @return {Object}  shape like position
+     *  @return {Object}  shape like [{x:0,y:0}, {x:0,y:0}, etc...]
      *
      ******************************/
 	 TwoDBoxCollisionDetectionEngine.prototype.canceledCollision = function( objectPos, oldPos, obstacle ) {
@@ -157,7 +157,6 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 		 //can we move on x ?
   		for( var i = 0; i < objectPointL; i++ ) {
  			tempObjX[i].x = objectPos[i].x;
-
  		}
 
  		if( !this.isColliding( tempObjX, obstacle ) ) {
@@ -167,7 +166,6 @@ var TwoDBoxCollisionDetectionEngine = (function() {
  	 	//can we move on y ?
  		for( var j = 0; j < objectPointL; j++ ) {
 			tempObjY[j].y = objectPos[j].y;
-
 		}
 
 		if( !this.isColliding( tempObjY, obstacle ) ) {
