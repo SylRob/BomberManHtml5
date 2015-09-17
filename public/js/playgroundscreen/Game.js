@@ -243,10 +243,8 @@ var Game = (function() {
             for(var i = 0 ; i < Object.keys(this.playerList).length ; i++) {
 
                 if(_this.playerList[id]) {
-
                     _this.plan.removePlayer( _this.playerList[id].playerAvatar );
                     delete _this.playerList[id];
-
                     return false;
                 }
             }

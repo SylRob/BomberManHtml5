@@ -217,7 +217,7 @@ var GamePad = (function() {
                  _this.removeDirectionPad(_event)
              }//button ?
              else if( _this.actionBtnObj.id === _event.identifier ) {
-                 _this.removeActionBtn()
+                 _this.removeActionBtn();
              }
 
          }
@@ -364,7 +364,7 @@ var GamePad = (function() {
             }
 
             //actionBtn drawing
-            if( _this.actionBtnObj.id != -1 ) {
+            if( _this.actionBtnObj.id !== -1 ) {
                 _this.ctx.beginPath();
                 _this.ctx.arc(_this.actionBtnObj.pos.x, _this.actionBtnObj.pos.y, _this.actionBtnObj.r, 0, Math.PI*2, true);
                 _this.ctx.fillStyle = "red";
@@ -376,7 +376,7 @@ var GamePad = (function() {
 
             //and finaly, lets pass the results and trigger the event
             var eventToDispatch = new CustomEvent( _this.gamePadDrawEventName, {'detail' : _this.wrapResults()} );
-            window.dispatchEvent( eventToDispatch)
+            window.dispatchEvent( eventToDispatch);
 
         }, this.fps );
 

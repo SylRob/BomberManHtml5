@@ -25,6 +25,7 @@ var Plan = (function() {
             boxPerLine: 13
         }
         this.cubesList = [];
+        this.bombList = [];
 
         this.generate();
 
@@ -386,6 +387,8 @@ var Plan = (function() {
         var tempPos = player.getPlayerTempPosition();
         var updatedPos = null;
 
+        if( player.isActionBtnActif() ) this.putABomb( player );
+
         //same position as before? then skip
         if(
             avatarPos.x == tempPos.x &&
@@ -435,6 +438,63 @@ var Plan = (function() {
             x: newPos[0].x,
             y: newPos[0].y
         };
+
+    }
+
+    /******************************
+     *
+     *  putABomb
+     *
+     *  check if the player can use a bomb
+     *
+     *  @param {PlayerController}  player  player instance
+     *
+     ******************************/
+    Plan.prototype.putABomb = function( player ) {
+
+        //check if player didn't use all his bomb
+        var playerBomb = player.getBomb();
+        if( playerBomb+1 > player.getMaxBomb() ) return false;
+
+        var playerPos = [];
+        playerPos[0] = player.playerAvatar.getPointPosition();
+        playerPos[1] = player.playerAvatar.getPointPosition();
+        playerPos[2] = player.playerAvatar.getPointPosition();
+        playerPos[3] = player.playerAvatar.getPointPosition();
+
+        var bomb = new Bomb();
+        var position = null;
+        var size = null;
+
+        //need to find the cube where the player stand
+        //because that is where we are gonna put the bomb
+        for( var cubeId in this.cubesList ) {
+
+            var cube = this.cubesList[cubeId];
+
+            if( !cube.isDestroyed() ) continue;
+
+            var cubePosition = cube.get2DPosition();
+
+            if( this.collisionDetection.isColliding( playerPos, cubePosition ) ) {
+                position = cubePosition;
+                size = cube.size;
+                break;
+            }
+
+        }
+
+        if( null === position || !position ) {
+            throw new Error( 'there is no place to put the bomb' );
+            return false;
+        }
+
+        bomb.init( position, size );
+        //bomb.getObj().add( this.axisPaint() );
+        this.world.addElem( bomb.getObj() );
+
+        player.setBomb( playerBomb+1 );
+        this.bombList.push( bomb );
 
     }
 

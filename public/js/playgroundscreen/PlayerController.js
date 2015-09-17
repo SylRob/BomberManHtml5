@@ -22,9 +22,10 @@ var PlayerController = (function() {
         this.id = 0;
         this._speed = gameOption.PLAYER_SPEED;
         this._maxSpeed = gameOption.PLAYER_MAX_SPEED;
-        this._maxBomb = gameOption.PLAYER_MAX_BOMB;
+        this._worldMaxBomb = gameOption.PLAYER_MAX_BOMB;
 
-        this._bomb = 1;
+        this._bomb = 0;
+        this._maxBomb = 1;
         this._actionButton = false;
 
         this.initPlayer();
@@ -111,14 +112,14 @@ var PlayerController = (function() {
 
     /******************************
      *
-     *  getMaxBomb
+     *  getBomb
      *
      *  @return {int}
      *
      ******************************/
-    PlayerController.prototype.getMaxBomb = function() {
+    PlayerController.prototype.getBomb = function() {
 
-        return this._maxBomb;
+        return this._bomb;
 
     }
 
@@ -138,6 +139,38 @@ var PlayerController = (function() {
 
         if( numberBomb > this._maxBomb ) this._bomb = this._maxBomb;
         this._bomb = numberBomb;
+
+    }
+
+    /******************************
+     *
+     *  getMaxBomb
+     *
+     *  @return {int}
+     *
+     ******************************/
+    PlayerController.prototype.getMaxBomb = function() {
+
+        return this._maxBomb;
+
+    }
+
+    /******************************
+     *
+     *  setMaxBomb
+     *
+     *  @param {int}  numberBomb
+     *
+     ******************************/
+    PlayerController.prototype.setMaxBomb = function( numberBomb ) {
+
+        if( isNaN(numberBomb) ) {
+            throw new Error(' set Speed must be a number ');
+            return false;
+        }
+
+        if( numberBomb > this._worldMaxBomb ) return false;
+        this._maxBomb = numberBomb;
 
     }
 
@@ -175,12 +208,14 @@ var PlayerController = (function() {
 
     /******************************
      *
-     *  actionBtnHandeler
+     *  isActionBtnActif
+     *
+     *  @return {boolean}
      *
      ******************************/
-    PlayerController.prototype.actionBtnHandeler = function() {
+    PlayerController.prototype.isActionBtnActif = function() {
 
-
+        return this._actionButton;
 
     }
 

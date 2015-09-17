@@ -133,6 +133,46 @@ var PlayerAvatar = (function() {
 
     /******************************
      *
+     *  get2Dposition
+     *
+     *  @return {Object}  with the 4 square corner coordinates
+     *
+     ******************************/
+    PlayerAvatar.prototype.get2Dposition = function() {
+        var size = this.getSize();
+
+        console.log( this._avatar.position );
+
+        return [
+            { x: this._avatar.position.x, y: this._avatar.position.z },
+            { x: this._avatar.position.x + size.w, y: this._avatar.position.z },
+            { x: this._avatar.position.x + size.w, y: this._avatar.position.z + size.d },
+            { x: this._avatar.position.x, y: this._avatar.position.z + size.d }
+        ];
+
+    }
+
+    /******************************
+     *
+     *  getPointPosition
+     *
+     *  return the center of the avatar
+     *
+     *  @return {Object}  x and y
+     *
+     ******************************/
+    PlayerAvatar.prototype.getPointPosition = function() {
+        var size = this.getSize();
+
+        return {
+            x: ( this._avatar.position.x < 0 ? this._avatar.position.x - size.w/2 : this._avatar.position.x + size.w/2 ),
+            y: ( this._avatar.position.z < 0 ? this._avatar.position.z - size.d/2 : this._avatar.position.z + size.d/2 )
+        }
+
+    }
+
+    /******************************
+     *
      *  getSize
      *
      *  @return {Object}  with w and h and d
@@ -152,6 +192,8 @@ var PlayerAvatar = (function() {
     /******************************
      *
      *  get2DpositionFromTemp
+     *
+     *  @param {Object}  tempPos  pos with x and y
      *
      *  @return {Object}  with the 4 square corner coordinates
      *
