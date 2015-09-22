@@ -20,9 +20,13 @@ var PlayerController = (function() {
 
         this.playerAvatar;
         this.id = 0;
+
         this._speed = gameOption.PLAYER_SPEED;
         this._maxSpeed = gameOption.PLAYER_MAX_SPEED;
         this._worldMaxBomb = gameOption.PLAYER_MAX_BOMB;
+
+        this._bombPower = gameOption.BOMB_POWER;
+        this._maxBombPower = gameOption.BOMB_MAX_POWER;
 
         this._bomb = 0;
         this._maxBomb = 1;
@@ -203,6 +207,39 @@ var PlayerController = (function() {
 
         if( speed > this._maxSpeed ) this._speed = this._maxSpeed;
         else this._speed = speed;
+
+    }
+
+
+    /******************************
+     *
+     *  getBombPower
+     *
+     *  @return {int}
+     *
+     ******************************/
+    PlayerController.prototype.getBombPower = function() {
+
+        return this._bombPower;
+
+    }
+
+    /******************************
+     *
+     *  setBombPower
+     *
+     *  @param {int}  speed
+     *
+     ******************************/
+    PlayerController.prototype.setBombPower = function( power ) {
+
+        if( isNaN(power) ) {
+            throw new Error(' set Bomb power must be a number ');
+            return false;
+        }
+
+        if( power > this._maxBombPower ) this._bombPower = this._maxBombPower;
+        else this._bombPower = power;
 
     }
 

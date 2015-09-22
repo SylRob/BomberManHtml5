@@ -104,6 +104,21 @@ var Box = (function() {
            ]
        }
 
+       /******************************
+       *
+       *  getCenterPosition
+       *
+       *  get center point
+       *
+       *  @return {Object}  {x:0, y:0}
+       *
+       ******************************/
+       Box.prototype.getCenterPosition = function() {
+           return { 
+            x: this.obj.position.x + this.size.w/2, 
+            y: this.obj.position.z + this.size.d/2 
+          }
+       }
 
     return Box;
 

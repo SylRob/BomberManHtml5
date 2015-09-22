@@ -55,29 +55,27 @@ var Bomb = (function() {
 
     /******************************
      *
-     *  destroyed
-     *
-     *  set the destroyed material
+     *  boom
      *
      *  @return {void}
      *
      ******************************/
-     Bomb.prototype.destroyed = function() {
+     Bomb.prototype.boom = function() {
 
-         this.mesh.material.opacity = 0;
+      this._exploded = true; 
 
      }
 
      /******************************
      *
-     *  isDestroyed
+     *  isExploded
      *
-     *  set the destroyed material
+     *  make it disepear
      *
      *  @return {Boolean}  true or false
      *
      ******************************/
-     Bomb.prototype.isDestroyed = function() {
+     Bomb.prototype.isExploded = function() {
 
          if( this._exploded ) return true;
          return false;

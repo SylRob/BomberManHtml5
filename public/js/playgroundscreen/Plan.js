@@ -25,7 +25,6 @@ var Plan = (function() {
             boxPerLine: 13
         }
         this.cubesList = [];
-        this.bombList = [];
 
         this.generate();
 
@@ -48,6 +47,7 @@ var Plan = (function() {
         this.setLight();
         this.world = new World( this.scene, this.references.world );
         this.collisionDetection = new TwoDBoxCollisionDetectionEngine( this.world.getGroundCoordinates() );
+        this.bombsController = new BombsController( this.world );
         this.letsPaint();
 
         //this.scene.add( this.axisPaint() );
@@ -277,8 +277,8 @@ var Plan = (function() {
 
             players[ playerID ].playerAvatar = new PlayerAvatar( players[ playerID ].getPlayerOption() );
             var avatarMesh = players[ playerID ].playerAvatar.initAvatar();
-                avatarMesh.position.x = 75;
-                avatarMesh.position.z = 75;
+                avatarMesh.position.x = 80;
+                avatarMesh.position.z = 80;
             this.world.addElem( avatarMesh );
 
 
@@ -434,6 +434,31 @@ var Plan = (function() {
 
         }
 
+        //collision with bomb ?
+        var bombsList = this.bombsController.getBombsList();
+        for( var playerId in bombsList ) {
+
+            var playerBombs = bombsList[ playerId ].bomb;
+
+            for( var bombId in playerBombs ) {
+                var bomb = playerBombs[ bombId ];
+                var bombCoodinates = bomb.get2DPosition();
+
+                //not exploded ? then normal detection
+                if( !bomb.isExploded() ) {
+                    if( this.collisionDetection.isColliding( avatarPos, bombCoodinates ) ) continue;
+                    if( !this.collisionDetection.isColliding( newPos, bombCoodinates ) ) continue;
+                
+                    newPos = this.collisionDetection.canceledCollision( newPos, avatarPos, bombCoodinates );
+
+                } else {
+                    //special detection
+                }
+            }
+
+        }        
+
+
         return {
             x: newPos[0].x,
             y: newPos[0].y
@@ -462,7 +487,6 @@ var Plan = (function() {
         playerPos[2] = player.playerAvatar.getPointPosition();
         playerPos[3] = player.playerAvatar.getPointPosition();
 
-        var bomb = new Bomb();
         var position = null;
         var size = null;
 
@@ -489,12 +513,9 @@ var Plan = (function() {
             return false;
         }
 
-        bomb.init( position, size );
-        //bomb.getObj().add( this.axisPaint() );
-        this.world.addElem( bomb.getObj() );
+        this.bombsController.newBomb( position, size, player.getBombPower(), player.id );
 
         player.setBomb( playerBomb+1 );
-        this.bombList.push( bomb );
 
     }
 

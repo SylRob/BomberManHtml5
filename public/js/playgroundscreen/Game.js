@@ -16,6 +16,8 @@ var Game = (function() {
         //Contstants
         this.PLAYER_SPEED = 10;
         this.PLAYER_MAX_SPEED = 20;
+        this.BOMB_POWER = 2;
+        this.BOMB_MAX_POWER = 12;
         this.MIN_PLAYER = 1;
 
         this.elem = elem;
@@ -161,7 +163,9 @@ var Game = (function() {
         var gameOption = {
             PLAYER_SPEED: this.PLAYER_SPEED,
             PLAYER_MAX_SPEED: this.PLAYER_MAX_SPEED,
-            PLAYER_MAX_BOMB: this.PLAYER_MAX_BOMB
+            PLAYER_MAX_BOMB: this.PLAYER_MAX_BOMB,
+            BOMB_POWER: this.BOMB_POWER,
+            BOMB_MAX_POWER: this.BOMB_MAX_POWER
         }
 
         this.playerList[iid] = new PlayerController( gameOption, Player );
