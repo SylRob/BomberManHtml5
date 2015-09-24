@@ -4,15 +4,12 @@ var Bomb = (function() {
         this.mesh = new THREE.Mesh();
         this.position = null;
         this.obj = new THREE.Object3D();
-        this._exploded = false;
         this.size = {
             w: 0,
             h: 0,
             d: 0
         }
-
-        this.timerStart = 0;
-        this.animTotalTime = 3000;
+        this._radius = 25;
     }
 
     /**********************************
@@ -41,13 +38,15 @@ var Bomb = (function() {
      **********************************/
     Bomb.prototype.buildMesh = function() {
 
-        var sphereGeo = new THREE.SphereGeometry( 25, 32, 16 );
-        var sphereMaterial = new THREE.MeshPhongMaterial( {color: '0x000000' } );
+        var sphereGeo = new THREE.SphereGeometry( this._radius, 32, 16 );
+        var sphereMaterial = new THREE.MeshPhongMaterial( {color: '0x000000', opacity: 1 } );
         this.mesh.geometry = sphereGeo;
         this.mesh.material = sphereMaterial;
-        this.mesh.position.set( this.size.w/2, 25, this.size.d/2 );
+        this.mesh.position.set( this.size.w/2, this._radius, this.size.d/2 );
 
         this.obj.add( this.mesh );
+
+        this.obj.add( this.axisPaint() );
 
         this.obj.position.set( this.position[0].x, 0, this.position[0].y );
 
@@ -55,43 +54,46 @@ var Bomb = (function() {
 
     /******************************
      *
-     *  boom
+     *  destroy
+     *
+     *  set the destroyed material
      *
      *  @return {void}
      *
      ******************************/
-     Bomb.prototype.boom = function() {
+     Bomb.prototype.destroy = function() {
 
-      this._exploded = true; 
+         this.mesh.material.opacity = 0;
 
      }
 
-     /******************************
+    /******************************
      *
-     *  isExploded
+     *  animationStep
      *
-     *  make it disepear
+     *  animate the bomb
      *
-     *  @return {Boolean}  true or false
+     *  @param {int}  animPercentage  the percentage of the animation (0.33)
      *
      ******************************/
-     Bomb.prototype.isExploded = function() {
+     Bomb.prototype.animationStep = function( animPercentage ) {
 
-         if( this._exploded ) return true;
-         return false;
+         var loop = 3;
+
+         var maxGrow = this.size.w/2;
+         var maxGrowScale = (maxGrow / this._radius) - 1;
+
+         var bigStep = Math.round( 117 / loop );//117 and not 100 because I want to skip 1/6 of the loop animation to finish with the big bomb
+
+         var stepPercentage = ( ( ((animPercentage*100) % bigStep )+1) * 100 ) / bigStep;//from 1 to 100
+         var smallStep = 50;//%
+
+         if( stepPercentage < smallStep ) var actualScale = 1 + (maxGrowScale * stepPercentage/100);
+         else var actualScale = 1 + (maxGrowScale * (100-stepPercentage)/100);
+
+         this.mesh.scale.set( actualScale, actualScale, actualScale );
 
      }
-
-     /******************************
-      *
-      *  initAnimation
-      *
-      *  set the animation timer
-      *
-      ******************************/
-      Bomb.prototype.initAnimation = function() {
-          this.timerStart = new Date().getTime();
-      }
 
     /******************************
      *
@@ -122,6 +124,47 @@ var Bomb = (function() {
               { x: this.obj.position.x + this.size.w, y: this.obj.position.z + this.size.d },
               { x: this.obj.position.x, y: this.obj.position.z + this.size.d }
           ]
+      }
+
+      /******************************
+       *
+       *  axisPaint
+       *
+       *  paint the axis x,y,z
+       *
+       *  @return {THREE.Object3D}
+       *
+       ******************************/
+      Bomb.prototype.axisPaint = function() {
+
+          var axisYGeo = new THREE.CylinderGeometry( 2, 2, 150, 32 );
+          var axisYMaterial = new THREE.MeshBasicMaterial( {color: 0xFFFF00} );
+          var axisY = new THREE.Mesh( axisYGeo, axisYMaterial );
+          axisY.position.set( 0, 75, 0 );
+          //this.scene.add( axisY );
+
+
+          var axisXGeo = new THREE.CylinderGeometry( 2, 2, 150, 32 );
+          var axisXMaterial = new THREE.MeshBasicMaterial( {color: 0xFF0000} );
+          var axisX = new THREE.Mesh( axisXGeo, axisXMaterial );
+          axisX.rotation.z = 90*( Math.PI/180 );
+          axisX.position.set( 75, 0, 0 );
+          //this.scene.add( axisX );
+
+          var axisZGeo = new THREE.CylinderGeometry( 2, 2, 150, 32 );
+          var axisZMaterial = new THREE.MeshBasicMaterial( {color: 0x0000FF} );
+          var axisZ = new THREE.Mesh( axisZGeo, axisZMaterial );
+          axisZ.rotation.x = 90*( Math.PI/180 );
+          axisZ.position.set( 0, 0, 75 );
+          //this.scene.add( axisZ );
+
+          var axisGroup = new THREE.Object3D();
+          axisGroup.add( axisY );
+          axisGroup.add( axisX );
+          axisGroup.add( axisZ );
+
+          return axisGroup;
+
       }
 
     return Bomb;

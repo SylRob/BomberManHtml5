@@ -438,17 +438,19 @@ var Plan = (function() {
         var bombsList = this.bombsController.getBombsList();
         for( var playerId in bombsList ) {
 
-            var playerBombs = bombsList[ playerId ].bomb;
+            var playerBombs = bombsList[ playerId ];
 
             for( var bombId in playerBombs ) {
-                var bomb = playerBombs[ bombId ];
+                var bombStatus = playerBombs[ bombId ];
+                var bomb = bombStatus.bomb;
                 var bombCoodinates = bomb.get2DPosition();
 
                 //not exploded ? then normal detection
-                if( !bomb.isExploded() ) {
+                if( !bombStatus.isExploded === true ) {
+
                     if( this.collisionDetection.isColliding( avatarPos, bombCoodinates ) ) continue;
                     if( !this.collisionDetection.isColliding( newPos, bombCoodinates ) ) continue;
-                
+
                     newPos = this.collisionDetection.canceledCollision( newPos, avatarPos, bombCoodinates );
 
                 } else {
@@ -456,7 +458,7 @@ var Plan = (function() {
                 }
             }
 
-        }        
+        }
 
 
         return {
@@ -479,7 +481,7 @@ var Plan = (function() {
 
         //check if player didn't use all his bomb
         var playerBomb = player.getBomb();
-        if( playerBomb+1 > player.getMaxBomb() ) return false;
+        if( playerBomb+1 > player.getMaxBomb() )  return false;
 
         var playerPos = [];
         playerPos[0] = player.playerAvatar.getPointPosition();
@@ -513,9 +515,8 @@ var Plan = (function() {
             return false;
         }
 
-        this.bombsController.newBomb( position, size, player.getBombPower(), player.id );
-
-        player.setBomb( playerBomb+1 );
+        var succed = this.bombsController.newBomb( position, size, player.getBombPower(), player.id );
+        if( succed )  player.setBomb( playerBomb+1 );
 
     }
 
@@ -555,9 +556,34 @@ var Plan = (function() {
      *
      ******************************/
     Plan.prototype.animate = function() {
-        window.requestAnimationFrame(this.animate.bind(this));
+        var timeStamp = new Date().getTime();
+        var self = this;
         //this.updatePlayersPos();
+
+        //deal with playerBomb ( probably need to do a separate function )
+        this.bombsController.animationHandeler( timeStamp, this.exoplodedBombHandeler.bind(this) );
         this.render();
+        window.requestAnimationFrame( this.animate.bind(this) );
+    }
+
+    /******************************
+     *
+     *  exoplodedBombHandeler
+     *
+     *
+     *
+     *  return {void}
+     *
+     ******************************/
+    Plan.prototype.exoplodedBombHandeler = function( playerId ) {
+        var player = this.game.getaPlayerById( playerId );
+        if( !player ){
+            throw new Error( 'cannot find the player in the player list' );
+        }
+
+        var bombNbr = player.getBomb() -1;
+        bombNbr = bombNbr < 0 ? 0 : bombNbr;
+        player.setBomb( bombNbr );
     }
 
     /******************************

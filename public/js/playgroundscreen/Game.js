@@ -213,6 +213,22 @@ var Game = (function() {
 
     /******************************
      *
+     *  getaPlayerById
+     *
+     *  @param {string}  id  id of the player
+     *
+     *  @return {PlayerController}
+     *
+     ******************************/
+    Game.prototype.getaPlayerById = function( id ) {
+
+        if( !this.playerList[ id ] ) return false;
+
+        return this.playerList[ id ];
+    }
+
+    /******************************
+     *
      *  enoughPlayer
      *
      *  check if there is the minimum number of players

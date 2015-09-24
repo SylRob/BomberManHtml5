@@ -29,7 +29,7 @@ var PlayerController = (function() {
         this._maxBombPower = gameOption.BOMB_MAX_POWER;
 
         this._bomb = 0;
-        this._maxBomb = 1;
+        this._maxBomb = 2;
         this._actionButton = false;
 
         this.initPlayer();
@@ -137,7 +137,7 @@ var PlayerController = (function() {
     PlayerController.prototype.setBomb = function( numberBomb ) {
 
         if( isNaN(numberBomb) ) {
-            throw new Error(' set Speed must be a number ');
+            throw new Error(' set bomb must be a number ');
             return false;
         }
 
@@ -169,7 +169,7 @@ var PlayerController = (function() {
     PlayerController.prototype.setMaxBomb = function( numberBomb ) {
 
         if( isNaN(numberBomb) ) {
-            throw new Error(' set Speed must be a number ');
+            throw new Error(' set max bomb must be a number ');
             return false;
         }
 

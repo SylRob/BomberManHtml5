@@ -115,7 +115,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *  check if 2 segements are colliding
      *
      *  @param {Array}  obj1  shape like [{x,y}, {x,y}]
-     *  @param {Object}  obj2  shape like [{x,y}, {x,y}]
+     *  @param {Array}  obj2  shape like [{x,y}, {x,y}]
      *
      *  @return {Boolean}
      *
@@ -129,6 +129,47 @@ var TwoDBoxCollisionDetectionEngine = (function() {
         );
 
     }
+
+	/******************************
+     *
+     *  isCollidingPoint
+     *
+     *  check if 2 segements are colliding
+     *
+     *  @param {Object}  obj1  shape like {x,y}
+     *  @param {Array}  obj2  shape like [{x,y}, {x,y}, etc...]
+     *
+     *  @return {Boolean}
+     *
+     ******************************/
+    TwoDBoxCollisionDetectionEngine.prototype.isCollidingPoint = function( obj1, obj2 ) {
+
+        return !( obj1.x < obj2[0].x ||
+            obj1.x > obj2[1].x ||
+            obj1.y < obj2[0].y ||
+            obj1.y > obj2[1].y
+        );
+
+    }
+
+	/******************************
+     *
+     *  sameCoordinates
+     *
+     *  check if 2 objects have the same coordinates
+     *
+     *  @param {Array}  obj1  shape like [{x,y}, {x,y}, etc...]
+     *  @param {Object}  obj2  shape like [{x,y}, {x,y}, etc...]
+     *
+     *  @return {Boolean}
+     *
+     ******************************/
+    TwoDBoxCollisionDetectionEngine.prototype.sameCoordinates = function( obj1, obj2 ) {
+
+        return (obj1[0].x == obj2[0].x && obj1[2].x == obj2[2].x && obj1[0].y == obj2[0].y && obj1[2].y == obj2[2].y);
+
+    }
+
 
 
     /******************************
