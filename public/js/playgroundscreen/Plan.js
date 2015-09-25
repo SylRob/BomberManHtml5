@@ -542,7 +542,7 @@ var Plan = (function() {
 		this.elemParents.appendChild( this.renderer.domElement );
 
         this.cameraControls = new THREE.OrbitAndPanControls( this.camera, this.renderer.domElement );
-        this.cameraControls.target.set( 0, 0, 50);
+        this.cameraControls.target.set( -(this.references.world.w/2 -75 ), 25, -(this.references.world.w/2 - 75));
 
     }
 

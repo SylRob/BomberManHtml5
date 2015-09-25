@@ -93,7 +93,7 @@ var BombsController = (function() {
 
 				bombObj.animationStep( animPercentage );
 
-				if( animPercentage >= 1 ) this.removeBomb( userId, id, explodedBombCallBack );
+				//if( animPercentage >= 1 ) this.removeBomb( userId, id, explodedBombCallBack );
 			}
 
 		}

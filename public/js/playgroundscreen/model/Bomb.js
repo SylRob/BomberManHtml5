@@ -1,15 +1,27 @@
 var Bomb = (function() {
 
     function Bomb() {
-        this.mesh = new THREE.Mesh();
         this.position = null;
-        this.obj = new THREE.Object3D();
         this.size = {
             w: 0,
             h: 0,
             d: 0
         }
         this._radius = 25;
+        this.hsbStart = {
+            h: 0,
+            s: 0,
+            l: 0
+        }
+        this.hsbEnd = {
+            h: 0,
+            s: 1,
+            l: 0.5
+        }
+
+        this.obj = new THREE.Object3D();
+        this._topPart = new THREE.Object3D();
+        this._corp = new THREE.Mesh();
     }
 
     /**********************************
@@ -38,16 +50,37 @@ var Bomb = (function() {
      **********************************/
     Bomb.prototype.buildMesh = function() {
 
+
         var sphereGeo = new THREE.SphereGeometry( this._radius, 32, 16 );
-        var sphereMaterial = new THREE.MeshPhongMaterial( {color: '0x000000', opacity: 1 } );
-        this.mesh.geometry = sphereGeo;
-        this.mesh.material = sphereMaterial;
-        this.mesh.position.set( this.size.w/2, this._radius, this.size.d/2 );
+        var sphereMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 });
+        sphereMaterial.color.setHSL( this.hsbStart.h, this.hsbStart.s, this.hsbStart.l );
+        this._corp.geometry = sphereGeo;
+        this._corp.material = sphereMaterial;
+        this._corp.position.set( this.size.w/2, this._radius, this.size.d/2 );
 
-        this.obj.add( this.mesh );
+        var headSize = this._radius/3;
+        var headGroup = new THREE.Object3D();
+        var cilinder1 = new THREE.CylinderGeometry( headSize, headSize, headSize/2 );
+        var material1 = new THREE.MeshLambertMaterial({ color: 0xFFFFFF });
+        var mesh1 = new THREE.Mesh( cilinder1, material1 );
+        this._topPart.add( mesh1 );
 
-        this.obj.add( this.axisPaint() );
+        //etincelle spritesheet
+        var etincelleTexture = THREE.ImageUtils.loadTexture('../img/etincelle-w185.png');
+        console.log( etincelleTexture );
+        etincelleTexture.offset.x = 0;
+        etincelleTexture.offset.y = 0;
+        var etincelleMaterial = new THREE.MeshBasicMaterial( { map: etincelleTexture, side: THREE.DoubleSide } );
+        var etincelleGeometry = new THREE.PlaneGeometry( headSize, headSize);
+        var etincellMesh = new THREE.Mesh( etincelleGeometry, etincelleMaterial );
+        etincellMesh.position.set( 0, (headSize + headSize/2)/2, 0 );
+        this._topPart.add( etincellMesh );
 
+        this._topPart.position.set( this.size.w/2, this._radius*2, this.size.d/2 );
+
+        this.obj.add( this._corp );
+        this.obj.add( this._topPart );
+        //this._topPart.add( this.axisPaint() );
         this.obj.position.set( this.position[0].x, 0, this.position[0].y );
 
     }
@@ -63,7 +96,6 @@ var Bomb = (function() {
      ******************************/
      Bomb.prototype.destroy = function() {
 
-         this.mesh.material.opacity = 0;
 
      }
 
@@ -88,10 +120,26 @@ var Bomb = (function() {
          var stepPercentage = ( ( ((animPercentage*100) % bigStep )+1) * 100 ) / bigStep;//from 1 to 100
          var smallStep = 50;//%
 
-         if( stepPercentage < smallStep ) var actualScale = 1 + (maxGrowScale * stepPercentage/100);
-         else var actualScale = 1 + (maxGrowScale * (100-stepPercentage)/100);
+         if( stepPercentage < smallStep ) {
+             var actualScale = 1 + (maxGrowScale * stepPercentage/100);
+             this._topPart.position.y =  this._topPart.position.y + (maxGrowScale * stepPercentage/100);
+             this._corp.material.color.setHSL(
+                 this.hsbEnd.h*(stepPercentage*2)/100,
+                 this.hsbEnd.s*(stepPercentage*2)/100,
+                 this.hsbEnd.l*(stepPercentage*2)/100
+             );
 
-         this.mesh.scale.set( actualScale, actualScale, actualScale );
+         } else {
+             var actualScale = 1 + (maxGrowScale * (100-stepPercentage)/100);
+             this._topPart.position.y =  this._topPart.position.y - (maxGrowScale * (100-stepPercentage)/100);
+             this._corp.material.color.setHSL(
+                 this.hsbEnd.h + this.hsbEnd.h*(100-(stepPercentage*2))/100,
+                 this.hsbEnd.s + this.hsbEnd.s*(100-(stepPercentage*2))/100,
+                 this.hsbEnd.l + this.hsbEnd.l*(100-(stepPercentage*2))/100
+             );
+         }
+
+         this._corp.scale.set( actualScale, actualScale, actualScale );
 
      }
 
