@@ -22,6 +22,11 @@ var Bomb = (function() {
         this.obj = new THREE.Object3D();
         this._topPart = new THREE.Object3D();
         this._corp = new THREE.Mesh();
+
+        this.explodedPart = {
+            h: new THREE.Object3D(),
+            v: new THREE.Object3D()
+        }
     }
 
     /**********************************
@@ -38,6 +43,8 @@ var Bomb = (function() {
 
         this.position = position;
         this.size = size;
+        this.size.w -= 0.01;
+        this.size.d -= 0.01;
         this.buildMesh();
     }
 
@@ -67,10 +74,9 @@ var Bomb = (function() {
 
         //etincelle spritesheet
         var etincelleTexture = THREE.ImageUtils.loadTexture('../img/etincelle-w185.png');
-        console.log( etincelleTexture );
         etincelleTexture.offset.x = 0;
         etincelleTexture.offset.y = 0;
-        var etincelleMaterial = new THREE.MeshBasicMaterial( { map: etincelleTexture, side: THREE.DoubleSide } );
+        var etincelleMaterial = new THREE.MeshBasicMaterial( { map: etincelleTexture, side: THREE.DoubleSide, transparent: true } );
         var etincelleGeometry = new THREE.PlaneGeometry( headSize, headSize);
         var etincellMesh = new THREE.Mesh( etincelleGeometry, etincelleMaterial );
         etincellMesh.position.set( 0, (headSize + headSize/2)/2, 0 );
@@ -94,8 +100,39 @@ var Bomb = (function() {
      *  @return {void}
      *
      ******************************/
-     Bomb.prototype.destroy = function() {
+     Bomb.prototype.destroyAnimation = function( horizontalCoor, verticalCoor ) {
 
+         var sizeH = {
+             w: horizontalCoor[0].x - horizontalCoor[1].x,
+             d: horizontalCoor[0].y - horizontalCoor[3].y
+         }
+         var sizeV = {
+             w: verticalCoor[0].x - verticalCoor[1].x,
+             d: verticalCoor[0].y - verticalCoor[3].y
+         }
+
+         var objXGeo =  new THREE.BoxGeometry(
+             sizeH.w,
+             2,
+             sizeH.d
+         );
+         var objXMat = new THREE.MeshPhongMaterial( {color: 0xFF0000} );
+         objX = new THREE.Mesh(　objXGeo, objXMat　);
+         objX.position.set( horizontalCoor[0].x - sizeH.w/2, 50, horizontalCoor[0].y - sizeH.d/2 )
+
+         var objYGeo =  new THREE.BoxGeometry(
+             sizeV.w,
+             2,
+             sizeV.d
+         );
+         var objYMat = new THREE.MeshPhongMaterial( {color: 0xFFFF00} );
+         objY = new THREE.Mesh(　objYGeo, objYMat　);
+         objY.position.set( verticalCoor[0].x - sizeV.w/2, 50, verticalCoor[0].y - sizeV.d/2 );
+
+         this.explodedPart.v = objY;
+         this.explodedPart.h = objX;
+
+         return this.explodedPart;
 
      }
 
@@ -140,6 +177,20 @@ var Bomb = (function() {
          }
 
          this._corp.scale.set( actualScale, actualScale, actualScale );
+
+     }
+
+    /******************************
+     *
+     *  getExplosionCoordinates
+     *
+     *  @param {int}  power  the bomb power
+     *
+     *
+     *
+     ******************************/
+     Bomb.prototype.getExplosionCoordinates = function( power, step ) {
+
 
      }
 

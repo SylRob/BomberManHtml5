@@ -57,6 +57,22 @@ var Box = (function() {
 
      }
 
+    /******************************
+     *
+     *  paint
+     *
+     *  set the destroyed material
+     *
+     *  @return {void}
+     *
+     ******************************/
+     Box.prototype.paint = function() {
+
+         this.mesh.material.color = 0x000000;
+         this.mesh.material.opacity = 1;
+
+     }
+
      /******************************
      *
      *  isDestroyed
@@ -72,6 +88,17 @@ var Box = (function() {
          return false;
 
      }
+
+     /******************************
+      *
+      *  isDestructible
+      *
+      *  @return {Boolean}
+      *
+      ******************************/
+      Box.prototype.isDestructible = function() {
+          return this.destructible;
+      }
 
      /******************************
       *
@@ -114,9 +141,9 @@ var Box = (function() {
        *
        ******************************/
        Box.prototype.getCenterPosition = function() {
-           return { 
-            x: this.obj.position.x + this.size.w/2, 
-            y: this.obj.position.z + this.size.d/2 
+           return {
+            x: this.obj.position.x + this.size.w/2,
+            y: this.obj.position.z + this.size.d/2
           }
        }
 

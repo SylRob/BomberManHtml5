@@ -24,7 +24,6 @@ var Plan = (function() {
             world: { w: 1000, h: 20, d: 1000 },
             boxPerLine: 13
         }
-        this.cubesList = [];
 
         this.generate();
 
@@ -47,7 +46,8 @@ var Plan = (function() {
         this.setLight();
         this.world = new World( this.scene, this.references.world );
         this.collisionDetection = new TwoDBoxCollisionDetectionEngine( this.world.getGroundCoordinates() );
-        this.bombsController = new BombsController( this.world );
+        this.bombsController = new BombsController( this.world, this.references.world.w/this.references.boxPerLine, this.references.world.d/this.references.boxPerLine, this.references.world.w, this.references.world.d );
+        this.boxsController = new BoxsController( this.world, this.references.world.w, this.references.world.d );
         this.letsPaint();
 
         //this.scene.add( this.axisPaint() );
@@ -139,52 +139,8 @@ var Plan = (function() {
      ******************************/
     Plan.prototype.letsPaint = function() {
 
-        //Boxes
-        var boxWidth = this.references.world.w/this.references.boxPerLine;
-        var boxHeight = this.references.world.w/this.references.boxPerLine;
-        var boxDepth = this.references.world.d/this.references.boxPerLine;
-        var occurences = this.references.boxPerLine*this.references.boxPerLine;
 
-        var boxXpos = 0;
-        var boxZpos = 0;
-
-        var line = 0;
-
-        for( var i=0; i<occurences; i++ ) {
-            // not destructible
-            if( !(i%2) && !(line%2) ) {
-                var box = new Box( boxWidth, boxHeight, boxDepth, 0x000FFF, false );
-                box.getObj().position.set(
-                    boxXpos,
-                    0,
-                    boxZpos
-                );
-
-                //box.getObj().add( this.axisPaint() )
-                //push the cube in the list to remember it
-                this.cubesList.push( box );
-
-            } else {
-            // destructible
-                var box = new Box( boxWidth, boxHeight, boxDepth, 0x8A2BE2, true );
-                box.getObj().position.set(
-                    boxXpos,
-                    0,
-                    boxZpos
-                );
-
-                this.cubesList.push( box );
-            }
-
-            this.world.addElem( box.getObj() );
-            boxXpos += boxWidth;
-
-            if(boxXpos >= this.references.world.w - boxWidth) {
-                line++;
-                boxZpos += boxDepth;
-                boxXpos = 0;
-            }
-        }
+        this.boxsController.generateBox( this.references.boxPerLine );
 
         this.world.addElem( this.axisPaint() );
         this.scene.add( this.world.getGround() );
@@ -236,21 +192,21 @@ var Plan = (function() {
 
         var squaresStartPos = [ squareTL, squareTR, squareBL, squareBR ];
 
-        for( var i in this.cubesList ) {
-            var cubePosition = this.cubesList[i].get2DPosition();
+        var destroyableBox = this.boxsController.getDestructibleBoxList();
 
-            //undestrutible ? then skip
-            if( !this.cubesList[i].destructible ) continue;
+        var cubeToDestroy = [];
+
+        for( var i in destroyableBox ) {
+            var cubePosition = destroyableBox[i].get2DPosition();
 
             for( var j in squaresStartPos ) {
-
-                if( this.collisionDetection.isColliding( squaresStartPos[j], cubePosition ) ) this.cubesList[i].destroyed();
+                if( this.collisionDetection.isColliding( squaresStartPos[j], cubePosition ) ) {
+                    cubeToDestroy.push( destroyableBox[i] );
+                }
             }
-
         }
 
-
-
+        this.boxsController.destroyBoxsNoAnim( cubeToDestroy );
     }
 
 
@@ -423,12 +379,13 @@ var Plan = (function() {
             newPos = this.collisionDetection.correctedOOB( collidingPos );
 
         //collison with obeject ?
-        for( var objId in this.cubesList ) {
+        var boxsList = this.boxsController.getAllVisibleBoxsList();
+        for( var objId in boxsList ) {
 
-            var cube = this.cubesList[ objId ];
+            var cube = boxsList[ objId ];
             var objectCoodinates = cube.get2DPosition();
 
-            if( cube.isDestroyed() || !this.collisionDetection.isColliding( newPos, objectCoodinates ) ) continue;
+            if( !this.collisionDetection.isColliding( newPos, objectCoodinates ) ) continue;
 
             newPos = this.collisionDetection.canceledCollision( newPos, avatarPos, objectCoodinates );
 
@@ -494,11 +451,11 @@ var Plan = (function() {
 
         //need to find the cube where the player stand
         //because that is where we are gonna put the bomb
-        for( var cubeId in this.cubesList ) {
+        var boxsList = this.boxsController.getUnvisibleBoxsList();
 
-            var cube = this.cubesList[cubeId];
+        for( var cubeId in boxsList ) {
 
-            if( !cube.isDestroyed() ) continue;
+            var cube = boxsList[cubeId];
 
             var cubePosition = cube.get2DPosition();
 
@@ -518,6 +475,111 @@ var Plan = (function() {
         var succed = this.bombsController.newBomb( position, size, player.getBombPower(), player.id );
         if( succed )  player.setBomb( playerBomb+1 );
 
+    }
+
+    /******************************
+     *
+     *  exoplodedBombHandeler
+     *
+     *  @param {Object}  bombExploded  all the info about the bomb
+     *
+     *  return {void}
+     *
+     ******************************/
+    Plan.prototype.exoplodedBombHandeler = function( bombExploded ) {
+
+        var playerId = bombExploded.userId;
+        var bombId = bombExploded.id;
+
+        var player = this.game.getaPlayerById( playerId );
+        if( !player ){
+            throw new Error( 'cannot find the player in the player list' );
+        }
+
+        //check and correct OOB
+        if( this.collisionDetection.isOOB( bombExploded.horizontalCoor ) )
+            bombExploded.horizontalCoor = this.collisionDetection.correctedOOB(bombExploded.horizontalCoor);
+        if( this.collisionDetection.isOOB( bombExploded.verticalCoor ) )
+            bombExploded.verticalCoor = this.collisionDetection.correctedOOB(bombExploded.verticalCoor);
+
+        //check for collision with block
+        var allVisibleBox = this.boxsController.getAllVisibleBoxsList();
+        var willExplodeBox = {
+            x: new Array(),
+            y: new Array()
+        };
+
+        for( var boxId in allVisibleBox ) {
+            var box = allVisibleBox[boxId];
+            var boxCoord = box.get2DPosition();
+            var axis = false;
+            var side = false;
+
+            //x collision
+            if( this.collisionDetection.isColliding( boxCoord, bombExploded.horizontalCoor ) ) {
+
+                axis = 'x';
+                if( boxCoord[1].x < bombExploded.position[0].x ) {
+                    if( axis == 'x' ) side = 0;
+                    /*bombExploded.horizontalCoor[0].x = boxCoord[1].x-0.1;
+                    bombExploded.horizontalCoor[3].x = boxCoord[1].x-0.1;*/
+                } else {
+                    if( axis == 'x' ) side = 1;
+                    /*bombExploded.horizontalCoor[0].x = boxCoord[1].x-0.1;
+                    bombExploded.horizontalCoor[3].x = boxCoord[1].x-0.1;*/
+                }
+
+            //y collision
+            } else if( this.collisionDetection.isColliding( boxCoord, bombExploded.verticalCoor ) ) {
+
+                axis = 'y';
+                if( boxCoord[2].y < bombExploded.position[0].y ) {
+                    if( axis == 'y' ) side = 0;
+                    bombExploded.verticalCoor[0].y = boxCoord[2].y-0.1;
+                    bombExploded.verticalCoor[1].y = boxCoord[2].y-0.1;
+                } else {
+                    if( axis == 'y' ) side = 1;
+                    bombExploded.verticalCoor[2].y = boxCoord[0].y-0.1;
+                    bombExploded.verticalCoor[3].y = boxCoord[0].y-0.1;
+                }
+
+            }
+
+            //box need to be destroy ?
+            if( false !== axis ) {
+                var posIndex = side === 0 ? 2 : 0;
+                if(
+                    !(side in willExplodeBox[axis]) ||
+                    !willExplodeBox[axis][side] ||
+                    ( (posIndex === 2 &&  willExplodeBox[axis][side].get2DPosition()[posIndex][axis] < boxCoord[posIndex][axis]) ||
+                      (posIndex === 0 &&  willExplodeBox[axis][side].get2DPosition()[posIndex][axis] > boxCoord[posIndex][axis]) )
+                ) {
+                    if( box.isDestructible() ) willExplodeBox[axis][side] = box;
+                    else delete willExplodeBox[axis][side];
+                }
+            }
+
+        }//end for( var boxId in allVisibleBox )
+
+        for( var axis in willExplodeBox ) {
+            for( var side in willExplodeBox[axis] ) {
+                this.boxsController.destroyBoxNoAnim( willExplodeBox[axis][side] );
+            }
+        }
+
+        this.bombsController.drawEpxlodedBomb( bombExploded );
+
+        //check for collision with bomb
+        //this.bombsController.checkBombCollision( bombExploded );
+
+        //check for collision with player
+
+        //ask to display the explosion animation with the new coordinates
+
+        //remove the bomb from the player profile
+        var bombNbr = player.getBomb() -1;
+        bombNbr = bombNbr < 0 ? 0 : bombNbr;
+        player.setBomb( bombNbr );
     }
 
 
@@ -560,30 +622,11 @@ var Plan = (function() {
         var self = this;
         //this.updatePlayersPos();
 
-        //deal with playerBomb ( probably need to do a separate function )
+        //deal with playerBomb
         this.bombsController.animationHandeler( timeStamp, this.exoplodedBombHandeler.bind(this) );
+
         this.render();
         window.requestAnimationFrame( this.animate.bind(this) );
-    }
-
-    /******************************
-     *
-     *  exoplodedBombHandeler
-     *
-     *
-     *
-     *  return {void}
-     *
-     ******************************/
-    Plan.prototype.exoplodedBombHandeler = function( playerId ) {
-        var player = this.game.getaPlayerById( playerId );
-        if( !player ){
-            throw new Error( 'cannot find the player in the player list' );
-        }
-
-        var bombNbr = player.getBomb() -1;
-        bombNbr = bombNbr < 0 ? 0 : bombNbr;
-        player.setBomb( bombNbr );
     }
 
     /******************************

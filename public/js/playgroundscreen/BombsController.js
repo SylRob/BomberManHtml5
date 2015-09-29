@@ -1,9 +1,17 @@
 var BombsController = (function() {
 
-	function BombsController( world ) {
+	function BombsController( world, stepX, stepY, planeSizeW, planeSizeH ) {
 
           this._world = world;
 		  this.animationTime = 5000;//4seconds
+		  this._step = {
+			  x: stepX-0.01,
+			  y: stepY-0.01
+		  }
+		  this._planeSize = {
+			  w: planeSizeW,
+			  h: planeSizeH
+		  }
 		  this.explodedAnimationTime = 1000;
 		  this.collisionDetection = new TwoDBoxCollisionDetectionEngine( this._world.getGroundCoordinates() )
 		  this._bombList = new Array();
@@ -71,6 +79,25 @@ var BombsController = (function() {
 
 	}
 
+	/******************************
+     *
+     *  setSteps
+     *
+     *  set the step width
+     *
+     *  @param {int}  stepX
+     *  @param {int}  stepY
+     *
+     ******************************/
+	BombsController.prototype.setSteps = function( stepX, stepY ) {
+
+		this._step = {
+			x: stepX,
+			y: stepY
+		}
+
+	}
+
 
 	/******************************
      *
@@ -79,6 +106,7 @@ var BombsController = (function() {
      *	assign animation state to the bomb list
      *
      *	@param {int}  timeStamp
+     *	@param {function}  explodedBombCallBack  send explodedBombObj
      *
      ******************************/
 	BombsController.prototype.animationHandeler = function( timeStamp, explodedBombCallBack ) {
@@ -89,36 +117,111 @@ var BombsController = (function() {
 			for( var id in userBombs ) {
 				var bombInfo = userBombs[id];
 				var bombObj = userBombs[id].bomb;
-				var animPercentage = Math.round( (timeStamp - bombInfo.startTime) / (bombInfo.duration - this.explodedAnimationTime) * 100 )/100;
+				var timeSpent = timeStamp - bombInfo.startTime;
+				var animPercentage = Math.round( timeSpent / (bombInfo.duration - this.explodedAnimationTime) * 100 )/100;
 
 				bombObj.animationStep( animPercentage );
+				if ( !bombObj.isExploded && animPercentage >= 1 ) {
+					bombObj.isExploded = true;
+					this.explodeSequenceTemp( userId, id, explodedBombCallBack );
+				}
 
-				//if( animPercentage >= 1 ) this.removeBomb( userId, id, explodedBombCallBack );
-			}
+				if( timeSpent >= this.animationTime ) this.removeBomb( userId, id );
 
+
+			}//end for( var id in userBombs )
+
+		}//end for( var userId in this._bombList )
+	}
+
+	/******************************
+     *
+     *  removeBomb
+     *
+     *  @param {int}  userId  to find the user in the bomb list
+     *  @param {int}  id  to find the bomb in the bomb list
+     *
+     ******************************/
+	BombsController.prototype.removeBomb = function( userId, id ) {
+		delete this._bombList[userId][id];
+	}
+
+	/******************************
+     *
+     *  explodeSequenceTemp
+     *
+     *  @param {int}  userId  to find the user in the bomb list
+     *  @param {int}  id  to find the bomb in the bomb list
+     *  @param {function}  explodedBombCallBack  send explodedBombObj
+     *
+     ******************************/
+	BombsController.prototype.explodeSequenceTemp = function( userId, id, explodedBombCallBack ) {
+
+		var bombObj = this._bombList[userId][id];
+		var bomb = bombObj.bomb;
+
+		var bombCoor = bomb.get2DPosition();
+
+		var horizontalCoor = [
+			{ x: bombCoor[0].x - (bombObj.power * this._step.x) + 0.01, y: bombCoor[0].y + 0.01 },
+			{ x: bombCoor[1].x + (bombObj.power * this._step.x) - 0.01, y: bombCoor[1].y + 0.01 },
+			{ x: bombCoor[2].x + (bombObj.power * this._step.x) - 0.01, y: bombCoor[2].y - 0.01 },
+			{ x: bombCoor[3].x - (bombObj.power * this._step.x) + 0.01, y: bombCoor[3].y - 0.01 }
+		];
+
+		var verticalCoor = [
+			{ x: bombCoor[0].x + 0.01, y: bombCoor[0].y - (bombObj.power * this._step.y) + 0.01 },
+			{ x: bombCoor[1].x - 0.01, y: bombCoor[1].y - (bombObj.power * this._step.y) + 0.01 },
+			{ x: bombCoor[2].x - 0.01, y: bombCoor[2].y + (bombObj.power * this._step.y) - 0.01 },
+			{ x: bombCoor[3].x + 0.01, y: bombCoor[3].y + (bombObj.power * this._step.y) - 0.01 }
+		]
+
+		var bombExplodedObj = {
+			userId : userId,
+			id: id,
+			power: bombObj.power,
+			position: bomb.get2DPosition(),
+			horizontalCoor: horizontalCoor,
+			verticalCoor: verticalCoor
 		}
 
-		/******************************
-	     *
-	     *  removeBomb
-	     *
-	     *  @param {int}  userId  to find the user in the bomb list
-	     *  @param {int}  id  to find the bomb in the bomb list
-	     *
-	     ******************************/
-		BombsController.prototype.removeBomb = function( userId, id, explodedBombCallBack ) {
+		this._world.removeElem( bomb.getObj() );
 
-			this._world.removeElem( this._bombList[userId][id].bomb.getObj() );
-			delete this._bombList[userId][id];
+		if( typeof explodedBombCallBack == "function" ) explodedBombCallBack( bombExplodedObj );
 
-			if( typeof explodedBombCallBack === 'function' ) {
-				explodedBombCallBack( userId );
-			}
+	}
 
-		}
+	/******************************
+     *
+     *  drawEpxlodedBomb
+     *
+     *  @param {object}  bombExoplodedObj
+     *
+     ******************************/
+	BombsController.prototype.drawEpxlodedBomb = function( bombExoplodedObj ) {
+
+		var bomb = this._bombList[ bombExoplodedObj.userId ][ bombExoplodedObj.id ].bomb;
+
+		var obj = bomb.destroyAnimation( bombExoplodedObj.horizontalCoor, bombExoplodedObj.verticalCoor );
+
+		this._world.addElem( obj.h );
+		this._world.addElem( obj.v );
+
+	}
+
+	/******************************
+     *
+     *  checkBombCollision
+     *
+     *  @param {object}  bombExoplodedObj
+     *
+     ******************************/
+	BombsController.prototype.checkBombCollision = function( bombExoplodedObj ) {
+
+
 
 	}
 
 	return BombsController;
 
-})()
+})();
