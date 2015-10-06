@@ -68,7 +68,7 @@ var Box = (function() {
      ******************************/
      Box.prototype.paint = function() {
 
-         this.mesh.material.color = 0x000000;
+         this.mesh.material.color = 0x00FF00;
          this.mesh.material.opacity = 1;
 
      }

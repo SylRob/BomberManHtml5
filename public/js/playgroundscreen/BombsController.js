@@ -15,6 +15,7 @@ var BombsController = (function() {
 		  this.explodedAnimationTime = 1000;
 		  this.collisionDetection = new TwoDBoxCollisionDetectionEngine( this._world.getGroundCoordinates() )
 		  this._bombList = new Array();
+		  this._explodedBomb = new Array();
 
 	}
 
@@ -76,6 +77,21 @@ var BombsController = (function() {
 	BombsController.prototype.getBombsList = function() {
 
 		return this._bombList;
+
+	}
+
+	/******************************
+     *
+     *  getExplodedList
+     *
+     *  get the exploded bombs list
+     *
+     *  return {array}
+     *
+     ******************************/
+	BombsController.prototype.getExplodedList = function() {
+
+		return this._explodedBomb;
 
 	}
 
@@ -143,7 +159,10 @@ var BombsController = (function() {
      *
      ******************************/
 	BombsController.prototype.removeBomb = function( userId, id ) {
-		delete this._bombList[userId][id];
+		this._world.removeElem( this._explodedBomb[userId][id].horizontalObj );
+		this._world.removeElem( this._explodedBomb[userId][id].verticalObj );
+		delete this._explodedBomb[ userId ][ id ];
+		delete this._bombList[ userId ][ id ];
 	}
 
 	/******************************
@@ -185,6 +204,10 @@ var BombsController = (function() {
 			verticalCoor: verticalCoor
 		}
 
+		if( !(userId in this._explodedBomb) ) this._explodedBomb[ userId ] = new Array();
+
+		this._explodedBomb[ userId ][ id ] = bombExplodedObj;
+
 		this._world.removeElem( bomb.getObj() );
 
 		if( typeof explodedBombCallBack == "function" ) explodedBombCallBack( bombExplodedObj );
@@ -204,6 +227,14 @@ var BombsController = (function() {
 
 		var obj = bomb.destroyAnimation( bombExoplodedObj.horizontalCoor, bombExoplodedObj.verticalCoor );
 
+		if( !(bombExoplodedObj.userId in this._explodedBomb) ) {
+			throw new Error( 'cannot find the exploded bomb' );
+			return false;
+		}
+
+		this._explodedBomb[ bombExoplodedObj.userId ][ bombExoplodedObj.id ].horizontalObj = obj.h;
+		this._explodedBomb[ bombExoplodedObj.userId ][ bombExoplodedObj.id ].verticalObj = obj.v;
+
 		this._world.addElem( obj.h );
 		this._world.addElem( obj.v );
 
@@ -218,7 +249,7 @@ var BombsController = (function() {
      ******************************/
 	BombsController.prototype.checkBombCollision = function( bombExoplodedObj ) {
 
-
+		
 
 	}
 

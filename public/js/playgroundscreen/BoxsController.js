@@ -177,7 +177,6 @@ var BoxsController = (function() {
 
             var boxToSwitch = arr[id];
             var index = this._boxsDestructibleList.indexOf( boxToSwitch );
-			console.log( index, boxToSwitch );
 
             if( index < 0 ) {
                 throw new Error("cannot find the bomb");
@@ -200,7 +199,6 @@ var BoxsController = (function() {
 	BoxsController.prototype.destroyBoxNoAnim = function( box ) {
 
         var index = this._boxsDestructibleList.indexOf( box );
-		console.log( index, box );
 
         if( index < 0 ) {
             throw new Error("cannot find the bomb");

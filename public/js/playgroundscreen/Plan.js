@@ -515,34 +515,33 @@ var Plan = (function() {
             var axis = false;
             var side = false;
 
+
+
             //x collision
             if( this.collisionDetection.isColliding( boxCoord, bombExploded.horizontalCoor ) ) {
-
                 axis = 'x';
-                if( boxCoord[1].x < bombExploded.position[0].x ) {
-                    if( axis == 'x' ) side = 0;
-                    /*bombExploded.horizontalCoor[0].x = boxCoord[1].x-0.1;
-                    bombExploded.horizontalCoor[3].x = boxCoord[1].x-0.1;*/
+                if( boxCoord[1].x <= bombExploded.position[0].x ) {
+                    side = 0;
+                    bombExploded.horizontalCoor[0].x = boxCoord[1].x-0.1;
+                    bombExploded.horizontalCoor[3].x = boxCoord[1].x-0.1;
                 } else {
-                    if( axis == 'x' ) side = 1;
-                    /*bombExploded.horizontalCoor[0].x = boxCoord[1].x-0.1;
-                    bombExploded.horizontalCoor[3].x = boxCoord[1].x-0.1;*/
+                    side = 1;
+                    bombExploded.horizontalCoor[1].x = boxCoord[1].x-0.1;
+                    bombExploded.horizontalCoor[2].x = boxCoord[1].x-0.1;
                 }
 
             //y collision
             } else if( this.collisionDetection.isColliding( boxCoord, bombExploded.verticalCoor ) ) {
-
                 axis = 'y';
-                if( boxCoord[2].y < bombExploded.position[0].y ) {
-                    if( axis == 'y' ) side = 0;
-                    bombExploded.verticalCoor[0].y = boxCoord[2].y-0.1;
-                    bombExploded.verticalCoor[1].y = boxCoord[2].y-0.1;
+                if( boxCoord[2].y <= bombExploded.position[0].y ) {
+                    side = 0;
+                    bombExploded.verticalCoor[0].y = boxCoord[0].y-0.1;
+                    bombExploded.verticalCoor[1].y = boxCoord[0].y-0.1;
                 } else {
-                    if( axis == 'y' ) side = 1;
-                    bombExploded.verticalCoor[2].y = boxCoord[0].y-0.1;
-                    bombExploded.verticalCoor[3].y = boxCoord[0].y-0.1;
+                    side = 1;
+                    bombExploded.verticalCoor[2].y = boxCoord[2].y-0.1;
+                    bombExploded.verticalCoor[3].y = boxCoord[2].y-0.1;
                 }
-
             }
 
             //box need to be destroy ?
@@ -550,7 +549,6 @@ var Plan = (function() {
                 var posIndex = side === 0 ? 2 : 0;
                 if(
                     !(side in willExplodeBox[axis]) ||
-                    !willExplodeBox[axis][side] ||
                     ( (posIndex === 2 &&  willExplodeBox[axis][side].get2DPosition()[posIndex][axis] < boxCoord[posIndex][axis]) ||
                       (posIndex === 0 &&  willExplodeBox[axis][side].get2DPosition()[posIndex][axis] > boxCoord[posIndex][axis]) )
                 ) {
@@ -567,10 +565,10 @@ var Plan = (function() {
             }
         }
 
-        this.bombsController.drawEpxlodedBomb( bombExploded );
-
         //check for collision with bomb
-        //this.bombsController.checkBombCollision( bombExploded );
+        this.bombsController.checkBombCollision( bombExploded );
+
+        this.bombsController.drawEpxlodedBomb( bombExploded );
 
         //check for collision with player
 
@@ -604,7 +602,7 @@ var Plan = (function() {
 		this.elemParents.appendChild( this.renderer.domElement );
 
         this.cameraControls = new THREE.OrbitAndPanControls( this.camera, this.renderer.domElement );
-        this.cameraControls.target.set( -(this.references.world.w/2 -75 ), 25, -(this.references.world.w/2 - 75));
+        this.cameraControls.target.set( -(this.references.world.w/2 - (5*75) ), 25, -(this.references.world.w/2 - 75));
 
     }
 
