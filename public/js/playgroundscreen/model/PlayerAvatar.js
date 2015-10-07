@@ -141,8 +141,6 @@ var PlayerAvatar = (function() {
     PlayerAvatar.prototype.get2Dposition = function() {
         var size = this.getSize();
 
-        console.log( this._avatar.position );
-
         return [
             { x: this._avatar.position.x, y: this._avatar.position.z },
             { x: this._avatar.position.x + size.w, y: this._avatar.position.z },
@@ -221,6 +219,19 @@ var PlayerAvatar = (function() {
     PlayerAvatar.prototype.getAvatar = function() {
 
         return this._avatar;
+
+    }
+
+    /******************************
+     *
+     *  dyingAvatarAnimation
+     *
+     *  @param {function}  callBack  callBack animation
+     *
+     ******************************/
+    PlayerAvatar.prototype.dyingAvatarAnimation = function(callBack) {
+
+        callBack();
 
     }
 

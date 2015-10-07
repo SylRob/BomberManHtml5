@@ -93,7 +93,7 @@ var Bomb = (function() {
 
     /******************************
      *
-     *  destroy
+     *  destroyAnimation
      *
      *  set the destroyed material
      *

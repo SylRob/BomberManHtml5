@@ -230,15 +230,7 @@ var Plan = (function() {
         if( Object.keys(players).length < 1 ) throw new Error('the player list is empty');
 
         for( var playerID in players ) {
-
-            players[ playerID ].playerAvatar = new PlayerAvatar( players[ playerID ].getPlayerOption() );
-            var avatarMesh = players[ playerID ].playerAvatar.initAvatar();
-                avatarMesh.position.x = 80;
-                avatarMesh.position.z = 80;
-            this.world.addElem( avatarMesh );
-
-
-
+            players[ playerID ].initAvatar( 80, 80, this.world );
         }
 
     }
@@ -258,11 +250,7 @@ var Plan = (function() {
         var boxHeight = this.references.world.w/this.references.boxPerLine;
         var boxDepth = this.references.world.d/this.references.boxPerLine;
 
-        playerController.playerAvatar = new PlayerAvatar( playerController.getPlayerOption() );
-        var avatarMesh = playerController.playerAvatar.initAvatar();
-            avatarMesh.position.x = 75;
-            avatarMesh.position.z = 75;
-        this.world.addElem( avatarMesh );
+        playerController.initAvatar( 75, 75, this.world );
 
     }
 
@@ -493,7 +481,8 @@ var Plan = (function() {
 
         var player = this.game.getaPlayerById( playerId );
         if( !player ){
-            throw new Error( 'cannot find the player in the player list' );
+
+            //throw new Error( 'cannot find the player in the player list' );
         }
 
         //check and correct OOB
@@ -568,11 +557,21 @@ var Plan = (function() {
         //check for collision with bomb
         this.bombsController.checkBombCollision( bombExploded );
 
+        //ask to display the explosion animation with the new coordinates
         this.bombsController.drawEpxlodedBomb( bombExploded );
 
         //check for collision with player
-
-        //ask to display the explosion animation with the new coordinates
+        var players = this.game.getPlayerList();
+        for( var pId in players ) {
+            var player = players[pId];
+            var playerCoord = player.playerAvatar.get2Dposition();
+            if( this.collisionDetection.isColliding( playerCoord, bombExploded.verticalCoor ) ||
+                this.collisionDetection.isColliding( playerCoord, bombExploded.horizontalCoor )
+            ) {
+                player.iAmDead();
+                this.game.youAreDead( player.id );
+            }
+        }
 
         //remove the bomb from the player profile
         var bombNbr = player.getBomb() -1;

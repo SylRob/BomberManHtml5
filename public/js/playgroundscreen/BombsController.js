@@ -159,9 +159,15 @@ var BombsController = (function() {
      *
      ******************************/
 	BombsController.prototype.removeBomb = function( userId, id ) {
-		this._world.removeElem( this._explodedBomb[userId][id].horizontalObj );
-		this._world.removeElem( this._explodedBomb[userId][id].verticalObj );
-		delete this._explodedBomb[ userId ][ id ];
+
+		if( this._explodedBomb[userId][id] ){
+			this._world.removeElem( this._explodedBomb[userId][id].horizontalObj );
+			this._world.removeElem( this._explodedBomb[userId][id].verticalObj );
+			delete this._explodedBomb[ userId ][ id ];
+		} else {
+			this._world.removeElem( this._bombList[ userId ][ id ].bomb.getObj() );
+		}
+
 		delete this._bombList[ userId ][ id ];
 	}
 
@@ -249,7 +255,20 @@ var BombsController = (function() {
      ******************************/
 	BombsController.prototype.checkBombCollision = function( bombExoplodedObj ) {
 
-		
+		for( var playerId in this._bombList ) {
+
+			for( var i in this._bombList[playerId] ) {
+				var bomb = this._bombList[playerId][i].bomb;
+
+				if( bombExoplodedObj.userId == playerId && bombExoplodedObj.id == i ) continue;
+
+				var bombPosition = bomb.get2DPosition();
+
+				if( !this.collisionDetection.isColliding( bombExoplodedObj.horizontalCoor, bombPosition ) &&
+			 	!this.collisionDetection.isColliding( bombExoplodedObj.verticalCoor, bombPosition ) ) continue;
+				else this.removeBomb( playerId, i );
+			}
+		}
 
 	}
 

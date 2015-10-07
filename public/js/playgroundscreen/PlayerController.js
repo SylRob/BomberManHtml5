@@ -31,6 +31,7 @@ var PlayerController = (function() {
         this._bomb = 0;
         this._maxBomb = 2;
         this._actionButton = false;
+        this._world;
 
         this.initPlayer();
 
@@ -50,6 +51,27 @@ var PlayerController = (function() {
         } else this.pseudo = 'Player'+this._playerOption.id;
 
         this.id = this._playerOption.id;
+
+    }
+
+    /******************************
+     *
+     *  initAvatar
+     *
+     *  @return {void}
+     *
+     ******************************/
+    PlayerController.prototype.initAvatar = function( x, y, world ) {
+
+        this.playerAvatar = new PlayerAvatar( this._playerOption );
+        this.playerAvatar.initAvatar();
+
+        var avatarMesh = this.playerAvatar.getAvatar();
+        avatarMesh.position.x = x;
+        avatarMesh.position.z = y;
+
+        this._world = world;
+        this._world.addElem( avatarMesh );
 
     }
 
@@ -254,6 +276,20 @@ var PlayerController = (function() {
 
         return this._actionButton;
 
+    }
+
+    /******************************
+     *
+     *  iAmDead
+     *
+     *  @return {boolean}
+     *
+     ******************************/
+    PlayerController.prototype.iAmDead = function() {
+
+        this.playerAvatar.dyingAvatarAnimation((function(){
+            this._world.removeElem( this.playerAvatar.getAvatar() );
+        }).bind(this));
     }
 
     return PlayerController;
