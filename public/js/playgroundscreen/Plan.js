@@ -343,7 +343,7 @@ var Plan = (function() {
 
         updatedPos = this.lookForCollision( collisionCoodinates, tempPos.directionVector, avatar.get2DpositionFromTemp( avatarPos ) );
 
-        avatar.setPos( updatedPos );
+        avatar.setPos( updatedPos, tempPos.directionVector );
 
     }
 
@@ -366,7 +366,7 @@ var Plan = (function() {
         if( this.collisionDetection.isOOB( collidingPos ) )
             newPos = this.collisionDetection.correctedOOB( collidingPos );
 
-        //collison with obeject ?
+        //collison with object ?
         var boxsList = this.boxsController.getAllVisibleBoxsList();
         for( var objId in boxsList ) {
 

@@ -10,11 +10,27 @@ var PlayerAvatar = (function() {
      *  @return {Object}  PlayerAvatar
      *
      ******************************/
-    function PlayerAvatar( playerOption ) {
+    function PlayerAvatar( playerOption, yPos ) {
 
         this._playerOption = playerOption;
 
         this._avatar = new THREE.Object3D();
+
+        this.yPos = yPos;
+
+        this._body = {
+            all: new THREE.Object3D(),
+            head: new THREE.Mesh(),
+            corps: new THREE.Mesh(),
+            foot: {
+                left: new THREE.Mesh(),
+                right: new THREE.Mesh()
+            },
+            hands: {
+                left: new THREE.Mesh(),
+                right: new THREE.Mesh()
+            }
+        }
 
         this.init();
 
@@ -35,6 +51,8 @@ var PlayerAvatar = (function() {
         this._playerOption.avatar.primaryColor = new THREE.Color( this._playerOption.avatar.primaryColor );
         this._playerOption.avatar.secondaryColor = new THREE.Color( this._playerOption.avatar.secondaryColor );
 
+        this.step = 0;
+
 
     }
 
@@ -49,14 +67,49 @@ var PlayerAvatar = (function() {
      ******************************/
     PlayerAvatar.prototype.initAvatar = function() {
 
-        var sphereGeo = new THREE.SphereGeometry( 25, 32, 16 );
-        var sphereMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
-        var sphere = new THREE.Mesh( sphereGeo, sphereMaterial );
-        sphere.position.set( 25, 25, 25 );
+        var troncGeo = new THREE.SphereGeometry( 25, 32, 16 );
+        var troncMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
+        this._body.corps.geometry = troncGeo;
+        this._body.corps.material = troncMaterial;
+        this._body.corps.position.set( 0, 10, 0 );
+        this._body.all.add( this._body.corps );
 
-        this._avatar.add( sphere );
+
+        var headGeo = new THREE.SphereGeometry( 35, 32, 16 );
+        var headMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
+        this._body.head.geometry = headGeo;
+        this._body.head.material = headMaterial;
+        this._body.head.position.set( 0, 60, 0 );
+        this._body.all.add( this._body.head );
+
+        var handsGeo = new THREE.SphereGeometry( 7, 32, 16 );
+        var handsMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
+        this._body.hands.right.geometry = handsGeo;
+        this._body.hands.right.material = headMaterial;
+        this._body.hands.right.position.set( 0, 15, 32 );
+        this._body.all.add( this._body.hands.right );
+
+        this._body.hands.left.geometry = handsGeo;
+        this._body.hands.left.material = headMaterial;
+        this._body.hands.left.position.set( 0, 15, -32 );
+        this._body.all.add( this._body.hands.left );
+
+        var footGeo = new THREE.SphereGeometry(7, 4, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+        var footMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
+        this._body.foot.left.geometry = footGeo;
+        this._body.foot.left.material = footMaterial;
+        this._body.foot.left.position.set( 0, -20, -10 );
+        this._body.all.add( this._body.foot.left );
+
+        this._body.foot.right.geometry = footGeo;
+        this._body.foot.right.material = footMaterial;
+        this._body.foot.right.position.set( 0, -20, 10 );
+        this._body.all.add( this._body.foot.right );
+
+        this._body.all.position.set( 35, 0, 35 );
+        this._avatar.add(this._body.all);
+
         this._avatar.add( this.axisPaint() );
-
         return this._avatar;
 
     }
@@ -72,25 +125,25 @@ var PlayerAvatar = (function() {
      ******************************/
     PlayerAvatar.prototype.axisPaint = function() {
 
-        var axisYGeo = new THREE.CylinderGeometry( 2, 2, 150, 32 );
+        var axisYGeo = new THREE.CylinderGeometry( 2, 2, 50, 32 );
         var axisYMaterial = new THREE.MeshBasicMaterial( {color: 0xFFFF00} );
         var axisY = new THREE.Mesh( axisYGeo, axisYMaterial );
-        axisY.position.set( 0, 75, 0 );
+        axisY.position.set( 0, 25, 0 );
         //this.scene.add( axisY );
 
 
-        var axisXGeo = new THREE.CylinderGeometry( 2, 2, 150, 32 );
+        var axisXGeo = new THREE.CylinderGeometry( 2, 2, 50, 32 );
         var axisXMaterial = new THREE.MeshBasicMaterial( {color: 0xFF0000} );
         var axisX = new THREE.Mesh( axisXGeo, axisXMaterial );
         axisX.rotation.z = 90*( Math.PI/180 );
-        axisX.position.set( 75, 0, 0 );
+        axisX.position.set( 25, 0, 0 );
         //this.scene.add( axisX );
 
-        var axisZGeo = new THREE.CylinderGeometry( 2, 2, 150, 32 );
+        var axisZGeo = new THREE.CylinderGeometry( 2, 2, 50, 32 );
         var axisZMaterial = new THREE.MeshBasicMaterial( {color: 0x0000FF} );
         var axisZ = new THREE.Mesh( axisZGeo, axisZMaterial );
         axisZ.rotation.x = 90*( Math.PI/180 );
-        axisZ.position.set( 0, 0, 75 );
+        axisZ.position.set( 0, 0, 25 );
         //this.scene.add( axisZ );
 
         var axisGroup = new THREE.Object3D();
@@ -123,11 +176,35 @@ var PlayerAvatar = (function() {
      *  setPos
      *
      *  @param {Object}  pos  with x and y
+     *  @param {Object}  directionVector  with x and y
      *
      ******************************/
-    PlayerAvatar.prototype.setPos = function( pos ) {
+    PlayerAvatar.prototype.setPos = function( pos, directionVector ) {
 
-        this._avatar.position.set( pos.x, 0, pos.y );
+        this._avatar.position.set( pos.x, this.yPos, pos.y );
+
+        this.animateAvatar( pos.x, pos.y, directionVector );
+
+    }
+
+    /******************************
+     *
+     *  animateAvatar
+     *
+     *  @param {int}  posX
+     *  @param {int}  posY
+     *
+     ******************************/
+    PlayerAvatar.prototype.animateAvatar = function( x, y, directionVector ) {
+
+        this.step += 1 / 4;
+        this._body.foot.left.position.setX( (Math.sin(this.step) * 16) + 35);
+        this._body.foot.right.position.setX( (Math.cos(this.step + (Math.PI / 2)) * 16) + 35);
+        this._body.hands.left.position.setX( (Math.cos(this.step + (Math.PI / 2)) * 8) + 35);
+        this._body.hands.right.position.setX( (Math.sin(this.step) * 8) + 35);
+
+        var rotation = Math.atan2( directionVector.y, directionVector.x ) * 180 / Math.PI;
+        this._body.all.rotation.y = rotation;
 
     }
 
@@ -179,9 +256,9 @@ var PlayerAvatar = (function() {
     PlayerAvatar.prototype.getSize = function() {
 
         return {
-            w: 50,
-            d: 50,
-            h: 50
+            w: 60,
+            d: 60,
+            h: 60
         };
 
     }

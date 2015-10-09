@@ -63,12 +63,11 @@ var PlayerController = (function() {
      ******************************/
     PlayerController.prototype.initAvatar = function( x, y, world ) {
 
-        this.playerAvatar = new PlayerAvatar( this._playerOption );
+        this.playerAvatar = new PlayerAvatar( this._playerOption, 25 );
         this.playerAvatar.initAvatar();
 
         var avatarMesh = this.playerAvatar.getAvatar();
-        avatarMesh.position.x = x;
-        avatarMesh.position.z = y;
+        avatarMesh.position.set( x, 25, y );
 
         this._world = world;
         this._world.addElem( avatarMesh );
