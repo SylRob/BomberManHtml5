@@ -25,6 +25,8 @@ var Plan = (function() {
             boxPerLine: 13
         }
 
+        this.startPosition = {};
+
         this.generate();
 
     }
@@ -96,7 +98,7 @@ var Plan = (function() {
 
         this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 5000 );
         this.camera.position.set( 0, 1200, 500);
-        this.camera.lookAt( new THREE.Vector3( 0, 0, 100 ) );
+        this.camera.lookAt( new THREE.Vector3( 0, 0, 50 ) );
 
     }
 
@@ -162,8 +164,8 @@ var Plan = (function() {
 
         var boxWidth = this.references.world.w/this.references.boxPerLine;
         var boxDepth = this.references.world.d/this.references.boxPerLine;
-        var boxWidthX4 = boxWidth*4;
-        var boxDepthX4 = boxDepth*4;
+        var boxWidthX4 = boxWidth*2;
+        var boxDepthX4 = boxDepth*2;
 
         var squareTL = [
             { x: 0, y: 0},
@@ -172,28 +174,26 @@ var Plan = (function() {
             { x: 0, y: boxDepthX4 }
         ];
         var squareTR = [
-            { x: this.references.world.w - boxWidthX4, y: 0 },
+            { x: this.references.world.w - (boxDepthX4 + 0.1), y: 0 },
             { x: this.references.world.w, y: 0 },
             { x: this.references.world.w, y: boxDepthX4 },
-            { x: this.references.world.w - boxWidthX4, y: boxDepthX4 }
+            { x: this.references.world.w - (boxDepthX4 + 0.1), y: boxDepthX4 }
         ];
         var squareBL = [
-            { x: 0, y: this.references.world.d - boxDepthX4 },
-            { x: boxDepthX4, y: this.references.world.d - boxDepthX4 },
+            { x: 0, y: this.references.world.d - (boxDepthX4 + 0.1) },
+            { x: boxDepthX4, y: this.references.world.d - (boxDepthX4 + 0.1) },
             { x: boxDepthX4, y: this.references.world.d },
             { x: 0, y: this.references.world.d }
         ];
         var squareBR = [
-            { x: this.references.world.w - boxWidthX4, y: this.references.world.d - boxWidthX4 },
-            { x: this.references.world.w, y: this.references.world.d - boxWidthX4 },
+            { x: this.references.world.w - (boxDepthX4 + boxDepthX4/2), y: this.references.world.d - (boxDepthX4 + 0.1) },
+            { x: this.references.world.w, y: this.references.world.d - (boxDepthX4 + 0.1) },
             { x: this.references.world.w, y: this.references.world.d },
-            { x: this.references.world.w - boxWidthX4, y: this.references.world.d }
+            { x: this.references.world.w - (boxDepthX4 + 0.1), y: this.references.world.d }
         ];
 
         var squaresStartPos = [ squareTL, squareTR, squareBL, squareBR ];
-
         var destroyableBox = this.boxsController.getDestructibleBoxList();
-
         var cubeToDestroy = [];
 
         for( var i in destroyableBox ) {
@@ -205,8 +205,16 @@ var Plan = (function() {
                 }
             }
         }
-
         this.boxsController.destroyBoxsNoAnim( cubeToDestroy );
+
+
+        this.startPosition = {
+            1: { x:  (boxWidth+0.1), y: (boxWidth+0.1) },
+            2: { x: (this.references.world.w- (boxWidth+0.1)), y:  (boxWidth+0.1) },
+            3: { x: (this.references.world.w- (boxWidth+0.1)), y: (this.references.world.d- (boxWidth+0.1)) },
+            4: { x:  (boxWidth+0.1), y: (this.references.world.d- (boxWidth+0.1)) }
+        }
+
     }
 
 
@@ -229,9 +237,20 @@ var Plan = (function() {
 
         if( Object.keys(players).length < 1 ) throw new Error('the player list is empty');
 
+        var foundPosition = false;
         for( var playerID in players ) {
-            players[ playerID ].initAvatar( 80, 80, this.world );
+            for( var posId in this.startPosition ) {
+                if( !this.startPosition[posId] ) continue;
+                else {
+                    foundPosition = true;
+                    var startPos = this.startPosition[posId];
+                    players[ playerID ].initAvatar( startPos.x, startPos.y, this.world );
+                    this.startPosition[posId] = false;
+                    return false;
+                }
+            }
         }
+        if( !foundPosition ) throw new Error( 'no available start position found' );
 
     }
 
@@ -333,15 +352,18 @@ var Plan = (function() {
 
         if( player.isActionBtnActif() ) this.putABomb( player );
 
-        //same position as before? then skip
+        //same position as before? then reset pos of avatar moving animation and skip
         if(
             avatarPos.x == tempPos.x &&
             avatarPos.y == tempPos.y
-        ) return false;
+        ) {
+            avatar.resetPos();
+            return false;
+        }
 
         var collisionCoodinates = avatar.get2DpositionFromTemp( tempPos );
 
-        updatedPos = this.lookForCollision( collisionCoodinates, tempPos.directionVector, avatar.get2DpositionFromTemp( avatarPos ) );
+        updatedPos = this.lookForCollision( collisionCoodinates, tempPos.directionVector, avatar.get2DpositionFromTemp( avatarPos ), player );
 
         avatar.setPos( updatedPos, tempPos.directionVector );
 
@@ -358,7 +380,7 @@ var Plan = (function() {
      *  @return {Object}  {x, y}  corrected Coodinates
      *
      ******************************/
-    Plan.prototype.lookForCollision = function( collidingPos, directionVector, avatarPos ) {
+    Plan.prototype.lookForCollision = function( collidingPos, directionVector, avatarPos, player ) {
 
         var newPos = collidingPos;
 
@@ -393,16 +415,34 @@ var Plan = (function() {
                 //not exploded ? then normal detection
                 if( !bombStatus.isExploded === true ) {
 
+                    //if the avatar just dropped the bomb and is still standing on it
                     if( this.collisionDetection.isColliding( avatarPos, bombCoodinates ) ) continue;
+                    //else if the avatar does collid with a bomb
                     if( !this.collisionDetection.isColliding( newPos, bombCoodinates ) ) continue;
 
                     newPos = this.collisionDetection.canceledCollision( newPos, avatarPos, bombCoodinates );
-
-                } else {
-                    //special detection
                 }
             }
 
+        }
+
+        //collision with exploded bomb ?
+        var explodedList = this.bombsController.getExplodedList();
+        for( var playerId in explodedList ) {
+
+            for( var bombId in explodedList[playerId] ) {
+                var explodedBomb = explodedList[playerId][bombId];
+                var horizontalCoor = explodedBomb.horizontalCoor;
+                var verticalCoor =  explodedBomb.verticalCoor;
+                if(
+                    this.collisionDetection.isColliding( newPos, horizontalCoor ) ||
+                    this.collisionDetection.isColliding( newPos, verticalCoor )
+                ) {
+                    player.iAmDead();
+                    this.game.youAreDead( player.id );
+                }
+
+            }
         }
 
 
@@ -573,6 +613,8 @@ var Plan = (function() {
             }
         }
 
+        //check if the player already die
+        if( !this.game.getaPlayerById( playerId ) ) return false;
         //remove the bomb from the player profile
         var bombNbr = player.getBomb() -1;
         bombNbr = bombNbr < 0 ? 0 : bombNbr;
@@ -601,7 +643,8 @@ var Plan = (function() {
 		this.elemParents.appendChild( this.renderer.domElement );
 
         this.cameraControls = new THREE.OrbitAndPanControls( this.camera, this.renderer.domElement );
-        this.cameraControls.target.set( -(this.references.world.w/2 - (5*75) ), 25, -(this.references.world.w/2 - 75));
+        //this.cameraControls.target.set( -(this.references.world.w/2 - (5*75) ), 25, -(this.references.world.w/2 - 75));
+        this.cameraControls.target.set( 0, 0, 50);
 
     }
 

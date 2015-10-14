@@ -218,7 +218,7 @@ var Game = (function() {
      *
      *  @param {string}  id  id of the player
      *
-     *  @return {PlayerController}
+     *  @return {PlayerController} or {Boolean}
      *
      ******************************/
     Game.prototype.getaPlayerById = function( id ) {

@@ -67,7 +67,7 @@ var PlayerAvatar = (function() {
      ******************************/
     PlayerAvatar.prototype.initAvatar = function() {
 
-        var troncGeo = new THREE.SphereGeometry( 25, 32, 16 );
+        var troncGeo = new THREE.SphereGeometry( 20, 32, 16 );
         var troncMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
         this._body.corps.geometry = troncGeo;
         this._body.corps.material = troncMaterial;
@@ -75,23 +75,23 @@ var PlayerAvatar = (function() {
         this._body.all.add( this._body.corps );
 
 
-        var headGeo = new THREE.SphereGeometry( 35, 32, 16 );
+        var headGeo = new THREE.SphereGeometry( 25, 32, 16 );
         var headMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
         this._body.head.geometry = headGeo;
         this._body.head.material = headMaterial;
-        this._body.head.position.set( 0, 60, 0 );
+        this._body.head.position.set( 0, 50, 0 );
         this._body.all.add( this._body.head );
 
         var handsGeo = new THREE.SphereGeometry( 7, 32, 16 );
         var handsMaterial = new THREE.MeshPhongMaterial( {color: this._playerOption.avatar.primaryColor } );
         this._body.hands.right.geometry = handsGeo;
         this._body.hands.right.material = headMaterial;
-        this._body.hands.right.position.set( 0, 15, 32 );
+        this._body.hands.right.position.set( 0, 10, 25 );
         this._body.all.add( this._body.hands.right );
 
         this._body.hands.left.geometry = handsGeo;
         this._body.hands.left.material = headMaterial;
-        this._body.hands.left.position.set( 0, 15, -32 );
+        this._body.hands.left.position.set( 0, 10, -25 );
         this._body.all.add( this._body.hands.left );
 
         var footGeo = new THREE.SphereGeometry(7, 4, 8, 0, Math.PI * 2, 0, Math.PI / 2);
@@ -109,7 +109,9 @@ var PlayerAvatar = (function() {
         this._body.all.position.set( 35, 0, 35 );
         this._avatar.add(this._body.all);
 
-        this._avatar.add( this.axisPaint() );
+        this._body.all.add( this.axisPaint() );
+
+        //this._avatar.add( this.axisPaint() );
         return this._avatar;
 
     }
@@ -197,14 +199,32 @@ var PlayerAvatar = (function() {
      ******************************/
     PlayerAvatar.prototype.animateAvatar = function( x, y, directionVector ) {
 
-        this.step += 1 / 4;
-        this._body.foot.left.position.setX( (Math.sin(this.step) * 16) + 35);
-        this._body.foot.right.position.setX( (Math.cos(this.step + (Math.PI / 2)) * 16) + 35);
-        this._body.hands.left.position.setX( (Math.cos(this.step + (Math.PI / 2)) * 8) + 35);
-        this._body.hands.right.position.setX( (Math.sin(this.step) * 8) + 35);
+        this.step += 1 / 1.25;
+        this._body.foot.left.position.setX( (Math.sin(this.step) * 16));
+        this._body.foot.right.position.setX( (Math.cos(this.step + (Math.PI / 2)) * 16));
+        this._body.hands.left.position.setX( (Math.cos(this.step + (Math.PI / 2)) * 16));
+        this._body.hands.right.position.setX( (Math.sin(this.step) * 16));
 
-        var rotation = Math.atan2( directionVector.y, directionVector.x ) * 180 / Math.PI;
-        this._body.all.rotation.y = rotation;
+        this._body.all.rotation.y = Math.atan2( directionVector.y, directionVector.x ) * -1;
+        this._body.all.rotation.z = -20 * Math.PI / 180;
+
+    }
+
+    /******************************
+     *
+     *  resetPos
+     *
+     ******************************/
+    PlayerAvatar.prototype.resetPos = function() {
+
+        if( this._body.all.rotation.z === 0 ) return false;
+
+        this._body.foot.left.position.setX( 0 );
+        this._body.foot.right.position.setX( 0 );
+        this._body.hands.left.position.setX( 0 );
+        this._body.hands.right.position.setX( 0 );
+
+        this._body.all.rotation.z = 0;
 
     }
 

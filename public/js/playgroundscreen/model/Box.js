@@ -31,8 +31,8 @@ var Box = (function() {
             this.size.d
         );
 
-        if( this.destructible ) var boxMaterial = new THREE.MeshPhongMaterial( {color: this.color, transparent: true, opacity: 0.5} );
-        else var boxMaterial = new THREE.MeshPhongMaterial( {color: this.color} );
+        if( this.destructible ) var boxMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/grass-verydark.jpg'), transparent: true, opacity: 1 } );
+        else var boxMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/castle_walls_short.jpg') } );
 
         this.mesh.geometry = boxGeo;
         this.mesh.material = boxMaterial;

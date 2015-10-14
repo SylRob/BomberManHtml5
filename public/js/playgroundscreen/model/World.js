@@ -29,8 +29,14 @@ var World = (function() {
         this.scene.add( plane );
 
         //Ground
+
+        var texture = THREE.ImageUtils.loadTexture( "img/buldwarehouseroofV02.jpg" );
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set( 4, 4 );
+
         var groundGeo = new THREE.BoxGeometry( this.setup.w, this.setup.h, this.setup.d );
-        var groundMaterial = new THREE.MeshPhongMaterial( {color: 0x00ff00} );
+        var groundMaterial = new THREE.MeshPhongMaterial( { map: texture } );
         var ground = new THREE.Mesh( groundGeo, groundMaterial );
         ground.castShadow = true;
         ground.receiveShadow = false;
@@ -65,9 +71,9 @@ var World = (function() {
      *
      ******************************/
     World.prototype.getGroundCoordinates = function(){
-        
+
         return {
-            x1: 0, 
+            x1: 0,
             y1: 0,
             x2: this.setup.w,
             y2: this.setup.d
@@ -87,7 +93,7 @@ var World = (function() {
     World.prototype.addElem = function( object3D ){
 
         this.groundGroup.add( object3D );
-        
+
     }
 
     /******************************
