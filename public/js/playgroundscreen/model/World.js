@@ -33,7 +33,7 @@ var World = (function() {
         var texture = THREE.ImageUtils.loadTexture( "img/buldwarehouseroofV02.jpg" );
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set( 4, 4 );
+        texture.repeat.set( Math.round(this.setup.w/256), Math.round(this.setup.w/256) );
 
         var groundGeo = new THREE.BoxGeometry( this.setup.w, this.setup.h, this.setup.d );
         var groundMaterial = new THREE.MeshPhongMaterial( { map: texture } );

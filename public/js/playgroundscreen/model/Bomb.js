@@ -116,7 +116,13 @@ var Bomb = (function() {
              2,
              sizeH.d
          );
-         var objXMat = new THREE.MeshPhongMaterial( {color: 0xFF0000} );
+
+         var texture = THREE.ImageUtils.loadTexture( "img/lava-w256-space1px.png" );
+         texture.wrapS = THREE.RepeatWrapping;
+         texture.wrapT = THREE.RepeatWrapping;
+         texture.repeat.set( 1/3, 1 );
+
+         var objXMat = new THREE.MeshPhongMaterial( { map: texture, transparent: true} );
          objX = new THREE.Mesh(　objXGeo, objXMat　);
          objX.position.set( horizontalCoor[0].x - sizeH.w/2, 50, horizontalCoor[0].y - sizeH.d/2 )
 
