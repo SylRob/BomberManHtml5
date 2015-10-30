@@ -27,6 +27,7 @@ var Bomb = (function() {
             h: new THREE.Object3D(),
             v: new THREE.Object3D()
         }
+        
     }
 
     /**********************************
@@ -120,9 +121,10 @@ var Bomb = (function() {
          var texture = THREE.ImageUtils.loadTexture( "img/lava-w256-space1px.png" );
          texture.wrapS = THREE.RepeatWrapping;
          texture.wrapT = THREE.RepeatWrapping;
-         texture.repeat.set( 1/3, 1 );
+         texture.repeat.set( 1, 1 );
 
-         var objXMat = new THREE.MeshPhongMaterial( { map: texture, transparent: true} );
+         //var objXMat = new THREE.MeshPhongMaterial(  {color: 0xFFFF00}  );
+         var objXMat = new THREE.MeshPhongMaterial( { map: texture } );
          objX = new THREE.Mesh(　objXGeo, objXMat　);
          objX.position.set( horizontalCoor[0].x - sizeH.w/2, 50, horizontalCoor[0].y - sizeH.d/2 )
 
@@ -131,7 +133,9 @@ var Bomb = (function() {
              2,
              sizeV.d
          );
-         var objYMat = new THREE.MeshPhongMaterial( {color: 0xFFFF00} );
+
+         //var objYMat = new THREE.MeshPhongMaterial( {color: 0xFFFF00} );
+         var objYMat = new THREE.MeshPhongMaterial( { map: texture } );
          objY = new THREE.Mesh(　objYGeo, objYMat　);
          objY.position.set( verticalCoor[0].x - sizeV.w/2, 50, verticalCoor[0].y - sizeV.d/2 );
 

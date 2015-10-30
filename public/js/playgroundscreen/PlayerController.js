@@ -29,9 +29,19 @@ var PlayerController = (function() {
         this._maxBombPower = gameOption.BOMB_MAX_POWER;
 
         this._bomb = 0;
-        this._maxBomb = 2;
+        this._maxBomb = 1;
         this._actionButton = false;
         this._world;
+
+        this._soundList = {
+            run: new Howl({
+                    urls: ['/sound/runningFormated.mp3'],
+                    sprite: {  sl: [0, 2700] }
+                }),
+            die: new Howl({
+                    urls: ['/sound/PLAYER_OUT.mp3']
+                }),
+        }
 
         this.initPlayer();
 
@@ -45,12 +55,22 @@ var PlayerController = (function() {
      *
      ******************************/
     PlayerController.prototype.initPlayer = function() {
-
+        var self = this;
         if( undefined !== this._playerOption.pseudo && this._playerOption.pseudo != '' ) {
             this.pseudo = this._playerOption.pseudo;
         } else this.pseudo = 'Player'+this._playerOption.id;
 
         this.id = this._playerOption.id;
+
+        for( var id in this._soundList ) {
+            (function(id){
+                var sound = self._soundList[id];
+                sound.on('load', function() {
+                    sound.play();
+                    sound.stop();
+                })
+            })(id)
+        }
 
     }
 
@@ -91,7 +111,7 @@ var PlayerController = (function() {
         var newPos = {
             x: Math.cos( direction.radian ) * scalar,
             y: Math.sin( direction.radian ) * scalar
-        };
+        }
 
         newPos.x += nowPos.x;
         newPos.y += nowPos.y;
@@ -123,15 +143,30 @@ var PlayerController = (function() {
 
     /******************************
      *
+     *  getPlayerPosition
+     *
+     *
+     *  @return {Object}  x, y and direction( vector coordinate )
+     *
+     ******************************/
+    PlayerController.prototype.getPlayerPosition = function() {
+
+        return this.playerAvatar.get2DpositionFromTemp( this.playerAvatar.getPos() );
+
+    }
+
+    /******************************
+     *
      *  getPlayerTempPosition
      *
      *
      *  @return {Object}  x, y and direction( vector coordinate )
      *
      ******************************/
-    PlayerController.prototype.getPlayerTempPosition = function() {
+    PlayerController.prototype.getPlayerTempPosition = function( dummyPos ) {
 
-        return this._playerTempPos;
+        if( undefined === dummyPos )  return this._playerTempPos;
+        else return this.playerAvatar.get2DpositionFromTemp( dummyPos );
 
     }
 
@@ -279,6 +314,51 @@ var PlayerController = (function() {
 
     /******************************
      *
+     *  isMoveable
+     *
+     *  if the getPlayerTempPosition return the
+     *  same position as before we stop the sound
+     *  reset the avatar postion and return false
+     *
+     *  @return {boolean}
+     *
+     ******************************/
+    PlayerController.prototype.isMoveable = function() {
+
+        var avatarPos = this.playerAvatar.getPos();
+        var avatarSize = this.playerAvatar.getSize();
+        var tempPos = this.getPlayerTempPosition();
+        if(
+            avatarPos.x == tempPos.x &&
+            avatarPos.y == tempPos.y
+        ) {
+            this._soundList.run.stop();
+            this.playerAvatar.resetPos();
+            return false;
+        } else return true;
+
+    }
+
+    /******************************
+     *
+     *  moveTo
+     *
+     *  trigger the running sound +
+     *  ask the avatar to move
+     *
+     *  @param {Object}  updatedPos  {x:0,y:0}
+     *  @param {Object}  directionVector  {x:0,y:0}
+     *
+     ******************************/
+    PlayerController.prototype.moveTo = function( updatedPos, directionVector ) {
+
+        if( this._soundList.run.pos() === 0 ) this._soundList.run.play();
+        this.playerAvatar.setPos( updatedPos, directionVector );
+
+    }
+
+    /******************************
+     *
      *  iAmDead
      *
      *  @return {boolean}
@@ -286,6 +366,7 @@ var PlayerController = (function() {
      ******************************/
     PlayerController.prototype.iAmDead = function() {
 
+        this._soundList.die.play();
         this.playerAvatar.dyingAvatarAnimation((function(){
             this._world.removeElem( this.playerAvatar.getAvatar() );
         }).bind(this));

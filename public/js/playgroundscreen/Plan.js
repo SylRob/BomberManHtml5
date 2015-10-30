@@ -209,10 +209,10 @@ var Plan = (function() {
 
 
         this.startPosition = {
-            1: { x:  (boxWidth+0.1), y: (boxWidth+0.1) },
+            1: { x: (boxWidth+0.1), y: (this.references.world.d- (boxWidth+0.1)) },
             2: { x: (this.references.world.w- (boxWidth+0.1)), y:  (boxWidth+0.1) },
             3: { x: (this.references.world.w- (boxWidth+0.1)), y: (this.references.world.d- (boxWidth+0.1)) },
-            4: { x:  (boxWidth+0.1), y: (this.references.world.d- (boxWidth+0.1)) }
+            4: { x: (boxWidth+0.1), y: (boxWidth+0.1) }
         }
 
     }
@@ -344,28 +344,18 @@ var Plan = (function() {
      *
      ******************************/
     Plan.prototype.updatePlayerPos = function( player ) {
-        var avatar = player.playerAvatar;
-        var avatarPos = avatar.getPos();
-        var avatarSize = avatar.getSize();
-        var tempPos = player.getPlayerTempPosition();
+
         var updatedPos = null;
 
         if( player.isActionBtnActif() ) this.putABomb( player );
+        if( !player.isMoveable() ) return false;
 
-        //same position as before? then reset pos of avatar moving animation and skip
-        if(
-            avatarPos.x == tempPos.x &&
-            avatarPos.y == tempPos.y
-        ) {
-            avatar.resetPos();
-            return false;
-        }
+        var tempPos = player.getPlayerTempPosition();
+        var collisionCoodinates = player.getPlayerTempPosition( tempPos );
 
-        var collisionCoodinates = avatar.get2DpositionFromTemp( tempPos );
+        updatedPos = this.lookForCollision( collisionCoodinates, tempPos.directionVector, player.getPlayerPosition(), player );
 
-        updatedPos = this.lookForCollision( collisionCoodinates, tempPos.directionVector, avatar.get2DpositionFromTemp( avatarPos ), player );
-
-        avatar.setPos( updatedPos, tempPos.directionVector );
+        player.moveTo( updatedPos, tempPos.directionVector );
 
     }
 
@@ -375,7 +365,9 @@ var Plan = (function() {
      *
      *  loop throught all the collisionable elemParents
      *
-     *  @param {Object}  position  position  collisionable Coodinates shape like [{x:0,y:0}, {x:0,y:0}, etc...]
+     *  @param {Object}  collidingPos  collisionable Coodinates shape like [{x:0,y:0}, {x:0,y:0}, etc...]
+     *  @param {Object}  directionVector  what direction the player is going, shape like {x:0,y:0}
+     *  @param {PlayerController}  player  just need this to kill it !
      *
      *  @return {Object}  {x, y}  corrected Coodinates
      *

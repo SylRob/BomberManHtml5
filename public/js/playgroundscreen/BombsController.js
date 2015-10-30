@@ -16,6 +16,17 @@ var BombsController = (function() {
 		  this.collisionDetection = new TwoDBoxCollisionDetectionEngine( this._world.getGroundCoordinates() )
 		  this._bombList = new Array();
 		  this._explodedBomb = new Array();
+		  this._soundList = {
+              explodeS: new Howl({
+                      urls: ['/sound/BOM_11_S.mp3']
+                  }),
+              explodeM: new Howl({
+                      urls: ['/sound/BOM_11_M.mp3']
+                  }),
+              explodeXL: new Howl({
+                      urls: ['/sound/BOM_11_L.mp3']
+                  }),
+          }
 
 	}
 

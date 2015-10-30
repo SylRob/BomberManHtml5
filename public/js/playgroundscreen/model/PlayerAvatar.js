@@ -46,13 +46,12 @@ var PlayerAvatar = (function() {
      *
      ******************************/
     PlayerAvatar.prototype.init = function() {
-
+        var self = this;
         //transform the color in hex
         this._playerOption.avatar.primaryColor = new THREE.Color( this._playerOption.avatar.primaryColor );
         this._playerOption.avatar.secondaryColor = new THREE.Color( this._playerOption.avatar.secondaryColor );
 
         this.step = 0;
-
 
     }
 
@@ -327,9 +326,9 @@ var PlayerAvatar = (function() {
      *
      ******************************/
     PlayerAvatar.prototype.dyingAvatarAnimation = function(callBack) {
+        this.resetPos();
 
         callBack();
-
     }
 
     return PlayerAvatar;

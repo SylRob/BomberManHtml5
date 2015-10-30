@@ -16,7 +16,7 @@ var Game = (function() {
         //Contstants
         this.PLAYER_SPEED = 10;
         this.PLAYER_MAX_SPEED = 20;
-        this.BOMB_POWER = 2;
+        this.BOMB_POWER = 1;
         this.BOMB_MAX_POWER = 12;
         this.PLAYER_MAX_BOMB = 8;
         this.MIN_PLAYER = 1;
