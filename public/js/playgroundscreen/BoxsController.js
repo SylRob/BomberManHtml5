@@ -20,7 +20,7 @@ var BoxsController = (function() {
      *
      *  newBox
      *
-     *  create a new bomb, add it to the list
+     *  create a new box, add it to the list
      *	and return it
      *
      *  @param {Object}  position  x and y
@@ -71,7 +71,7 @@ var BoxsController = (function() {
 
         for( var i=0; i<occurences; i++ ) {
             // not destructible
-            if( !(i%2) && !(line%2) ) {
+            if( !(i%4) && !(line%4) ) {
 
                 var box = new Box( boxWidth, boxHeight, boxDepth, 0x000FFF, false );
                 box.getObj().position.set(

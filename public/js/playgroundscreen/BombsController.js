@@ -23,9 +23,13 @@ var BombsController = (function() {
               explodeM: new Howl({
                       urls: ['/sound/BOM_11_M.mp3']
                   }),
-              explodeXL: new Howl({
+              explodeL: new Howl({
                       urls: ['/sound/BOM_11_L.mp3']
                   }),
+		      bombSet: new Howl({
+                      urls: ['/sound/BOM_SET02.wav'],
+                      volume: 0.2
+                  })
           }
 
 	}
@@ -61,6 +65,9 @@ var BombsController = (function() {
 		}
 
         bomb.init( position, size );
+
+		this._soundList.bombSet.play();
+
         this._world.addElem( bomb.getObj() );
         this._bombList[playerId].push(
           {
@@ -196,6 +203,7 @@ var BombsController = (function() {
 		var bombObj = this._bombList[userId][id];
 		var bomb = bombObj.bomb;
 
+		this._soundList[ ['explodeS', 'explodeM', 'explodeL'][Math.floor(Math.random() * 3)] ].play();
 		var bombCoor = bomb.get2DPosition();
 
 		var horizontalCoor = [

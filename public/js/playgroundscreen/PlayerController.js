@@ -35,11 +35,12 @@ var PlayerController = (function() {
 
         this._soundList = {
             run: new Howl({
-                    urls: ['/sound/runningFormated.mp3'],
-                    sprite: {  sl: [0, 2700] }
+                    urls: ['/sound/PLAYER_WALK.wav'],
+                    volume: 0.05
                 }),
             die: new Howl({
-                    urls: ['/sound/PLAYER_OUT.mp3']
+                    urls: ['/sound/PLAYER_OUT.mp3'],
+                    volume: 1
                 }),
         }
 
@@ -66,8 +67,7 @@ var PlayerController = (function() {
             (function(id){
                 var sound = self._soundList[id];
                 sound.on('load', function() {
-                    sound.play();
-                    sound.stop();
+                    //sound.play();
                 })
             })(id)
         }

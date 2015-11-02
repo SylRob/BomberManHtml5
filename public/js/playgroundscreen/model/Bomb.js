@@ -27,7 +27,7 @@ var Bomb = (function() {
             h: new THREE.Object3D(),
             v: new THREE.Object3D()
         }
-        
+
     }
 
     /**********************************
@@ -75,6 +75,7 @@ var Bomb = (function() {
 
         //etincelle spritesheet
         var etincelleTexture = THREE.ImageUtils.loadTexture('../img/etincelle-w185.png');
+        etincelleTexture.minFilter = THREE.LinearFilter;
         etincelleTexture.offset.x = 0;
         etincelleTexture.offset.y = 0;
         var etincelleMaterial = new THREE.MeshBasicMaterial( { map: etincelleTexture, side: THREE.DoubleSide, transparent: true } );
@@ -119,8 +120,9 @@ var Bomb = (function() {
          );
 
          var texture = THREE.ImageUtils.loadTexture( "img/lava-w256-space1px.png" );
-         texture.wrapS = THREE.RepeatWrapping;
-         texture.wrapT = THREE.RepeatWrapping;
+         texture.minFilter = THREE.LinearFilter;
+         texture.wrapS = THREE.ClampToEdgeWrapping;
+         texture.wrapT = THREE.ClampToEdgeWrapping;
          texture.repeat.set( 1, 1 );
 
          //var objXMat = new THREE.MeshPhongMaterial(  {color: 0xFFFF00}  );
@@ -157,7 +159,7 @@ var Bomb = (function() {
      ******************************/
      Bomb.prototype.animationStep = function( animPercentage ) {
 
-         var loop = 3;
+         var loop = 6;
 
          var maxGrow = this.size.w/2;
          var maxGrowScale = (maxGrow / this._radius) - 1;

@@ -20,7 +20,7 @@ var World = (function() {
     World.prototype.init = function() {
 
         // Plane
-        var planeGeo = new THREE.PlaneGeometry( 5000, 5000, 32 );
+        var planeGeo = new THREE.PlaneBufferGeometry( 5000, 5000, 32 );
         var planeMaterial = new THREE.MeshPhongMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
         var plane = new THREE.Mesh( planeGeo, planeMaterial );
         plane.receiveShadow = true;

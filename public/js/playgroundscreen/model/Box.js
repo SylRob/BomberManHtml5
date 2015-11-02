@@ -31,9 +31,11 @@ var Box = (function() {
             this.size.d
         );
 
-        if( this.destructible ) var boxMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/grass-verydark.jpg'), transparent: true, opacity: 1 } );
-        else var boxMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/castle_walls_short.jpg') } );
+        if( this.destructible ) var myTexture = THREE.ImageUtils.loadTexture('img/grass-verydark.jpg');
+        else var myTexture = THREE.ImageUtils.loadTexture('img/castle_walls_short.jpg');
+        myTexture.minFilter = THREE.LinearFilter;
 
+        var boxMaterial = new THREE.MeshPhongMaterial( { map: myTexture, transparent: true, opacity: 1 } );
         this.mesh.geometry = boxGeo;
         this.mesh.material = boxMaterial;
         this.mesh.position.set( this.size.w/2, this.size.h/2, this.size.d/2 );

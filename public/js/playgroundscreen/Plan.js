@@ -41,7 +41,7 @@ var Plan = (function() {
      *
      ******************************/
     Plan.prototype.generate = function() {
-        var _this = this;
+        var self = this;
 
         this.setScene();
         this.setCamera();
@@ -54,8 +54,10 @@ var Plan = (function() {
 
         //this.scene.add( this.axisPaint() );
 
-        this.renderer();
-        this.animate();
+        window.onload = function() {
+            self.renderer();
+            self.animate();
+        }
     }
 
     /******************************
