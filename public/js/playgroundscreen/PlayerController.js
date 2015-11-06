@@ -1,15 +1,14 @@
 
 var PlayerController = (function() {
 
-    /******************************
-     *
+    /**
      *  PlayerController
      *
      *  @param {Oject}  palyerOption  various player option (name, color, etc...)
      *
      *  @return {Object}  PlayerController
      *
-     ******************************/
+     **/
     function PlayerController(gameOption, playerOption) {
 
         this._playerOption = playerOption;
@@ -48,13 +47,12 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  initPlayer
      *
      *  @return {void}
      *
-     ******************************/
+     **/
     PlayerController.prototype.initPlayer = function() {
         var self = this;
         if( undefined !== this._playerOption.pseudo && this._playerOption.pseudo != '' ) {
@@ -74,13 +72,12 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  initAvatar
      *
      *  @return {void}
      *
-     ******************************/
+     **/
     PlayerController.prototype.initAvatar = function( x, y, world ) {
 
         this.playerAvatar = new PlayerAvatar( this._playerOption, 25 );
@@ -95,13 +92,12 @@ var PlayerController = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  updatePlayerTempPos
      *
      *  @param {Oject}  playerData  an object with the direction and velocity informations
      *
-     ******************************/
+     **/
     PlayerController.prototype.updatePlayerTempPos = function( playerData ) {
 
         var direction = playerData.direction;
@@ -127,42 +123,39 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getPlayerOption
      *
      *
      *  @return {Object}
      *
-     ******************************/
+     **/
     PlayerController.prototype.getPlayerOption = function() {
 
         return this._playerOption;
 
     }
 
-    /******************************
-     *
+    /**
      *  getPlayerPosition
      *
      *
      *  @return {Object}  x, y and direction( vector coordinate )
      *
-     ******************************/
+     **/
     PlayerController.prototype.getPlayerPosition = function() {
 
         return this.playerAvatar.get2DpositionFromTemp( this.playerAvatar.getPos() );
 
     }
 
-    /******************************
-     *
+    /**
      *  getPlayerTempPosition
      *
      *
      *  @return {Object}  x, y and direction( vector coordinate )
      *
-     ******************************/
+     **/
     PlayerController.prototype.getPlayerTempPosition = function( dummyPos ) {
 
         if( undefined === dummyPos )  return this._playerTempPos;
@@ -170,26 +163,24 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getBomb
      *
      *  @return {int}
      *
-     ******************************/
+     **/
     PlayerController.prototype.getBomb = function() {
 
         return this._bomb;
 
     }
 
-    /******************************
-     *
+    /**
      *  setBomb
      *
      *  @param {int}  numberBomb
      *
-     ******************************/
+     **/
     PlayerController.prototype.setBomb = function( numberBomb ) {
 
         if( isNaN(numberBomb) ) {
@@ -202,26 +193,24 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getMaxBomb
      *
      *  @return {int}
      *
-     ******************************/
+     **/
     PlayerController.prototype.getMaxBomb = function() {
 
         return this._maxBomb;
 
     }
 
-    /******************************
-     *
+    /**
      *  setMaxBomb
      *
      *  @param {int}  numberBomb
      *
-     ******************************/
+     **/
     PlayerController.prototype.setMaxBomb = function( numberBomb ) {
 
         if( isNaN(numberBomb) ) {
@@ -234,26 +223,24 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getSpeed
      *
      *  @return {int}
      *
-     ******************************/
+     **/
     PlayerController.prototype.getSpeed = function() {
 
         return this._speed;
 
     }
 
-    /******************************
-     *
+    /**
      *  setSpeed
      *
      *  @param {int}  speed
      *
-     ******************************/
+     **/
     PlayerController.prototype.setSpeed = function( speed ) {
 
         if( isNaN(speed) ) {
@@ -267,26 +254,24 @@ var PlayerController = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  getBombPower
      *
      *  @return {int}
      *
-     ******************************/
+     **/
     PlayerController.prototype.getBombPower = function() {
 
         return this._bombPower;
 
     }
 
-    /******************************
-     *
+    /**
      *  setBombPower
      *
      *  @param {int}  speed
      *
-     ******************************/
+     **/
     PlayerController.prototype.setBombPower = function( power ) {
 
         if( isNaN(power) ) {
@@ -299,21 +284,19 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  isActionBtnActif
      *
      *  @return {boolean}
      *
-     ******************************/
+     **/
     PlayerController.prototype.isActionBtnActif = function() {
 
         return this._actionButton;
 
     }
 
-    /******************************
-     *
+    /**
      *  isMoveable
      *
      *  if the getPlayerTempPosition return the
@@ -322,7 +305,7 @@ var PlayerController = (function() {
      *
      *  @return {boolean}
      *
-     ******************************/
+     **/
     PlayerController.prototype.isMoveable = function() {
 
         var avatarPos = this.playerAvatar.getPos();
@@ -339,8 +322,7 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  moveTo
      *
      *  trigger the running sound +
@@ -349,7 +331,7 @@ var PlayerController = (function() {
      *  @param {Object}  updatedPos  {x:0,y:0}
      *  @param {Object}  directionVector  {x:0,y:0}
      *
-     ******************************/
+     **/
     PlayerController.prototype.moveTo = function( updatedPos, directionVector ) {
 
         if( this._soundList.run.pos() === 0 ) this._soundList.run.play();
@@ -357,13 +339,12 @@ var PlayerController = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  iAmDead
      *
      *  @return {boolean}
      *
-     ******************************/
+     **/
     PlayerController.prototype.iAmDead = function() {
 
         this._soundList.die.play();

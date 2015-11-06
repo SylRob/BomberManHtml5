@@ -2,15 +2,14 @@
 
 var Game = (function() {
 
-    /******************************
-     *
+    /**
      *  PlayerController
      *
      *  @param {HTMLElement}  elem  game container
      *
      *  @return {Object}  Game
      *
-     ******************************/
+     */
     function Game(elem) {
 
         //Contstants
@@ -34,13 +33,12 @@ var Game = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  init
      *
      *  warn the players
      *
-     ******************************/
+     */
     Game.prototype.init = function() {
         var _this = this;
 
@@ -59,25 +57,23 @@ var Game = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  initEvent
      *
      *  init the event
      *
-     ******************************/
+     */
     Game.prototype.initEvent = function() {
         var _this = this;
     }
 
 
-    /******************************
-     *
+    /**
      *  start
      *
      *  init the players avatar
      *
-     ******************************/
+     */
     Game.prototype.start = function() {
         var _this = this;
 
@@ -92,14 +88,13 @@ var Game = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  didIKillSomeone
      *
      *  check if a player touch
      *  an element
      *
-     ******************************/
+     */
     Game.prototype.didIKillSomeone = function(elem) {
         var _this = this;
 
@@ -107,34 +102,31 @@ var Game = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  youNeedABeer
      *
      *  gice a free beer to the player
      *
-     ******************************/
+     */
     Game.prototype.youNeedABeer = function(playerId) {
 
         socket.emit('youNeedABeer', playerId);
 
     }
 
-    /******************************
-     *
+    /**
      *  youAreDead
      *
      *  a player lost
      *
-     ******************************/
+     */
     Game.prototype.youAreDead = function(playerId) {
         socket.emit('youAreDead', playerId);
         delete this.playerList[playerId];
     }
 
 
-    /******************************
-     *
+    /**
      *  addNewPlayer
      *
      *  is called every "newPlayer" event take a Player object as parameter and compare the
@@ -142,7 +134,7 @@ var Game = (function() {
      *
      *  @param {Object}  Player
      *
-     ******************************/
+     */
     Game.prototype.addNewPlayer = function( Player ) {
 
         if( typeof(Player) != 'object' || Player.id == '' ) {
@@ -176,15 +168,14 @@ var Game = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  updatePlayerData
      *
      *  update the player position
      *
      *  @param {Object} playerPos got new position of the player and his id
      *
-     ******************************/
+     */
     Game.prototype.updatePlayerData = function( playerPos ) {
 
         var myPlayer = this.playerList[playerPos.id];
@@ -199,28 +190,26 @@ var Game = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  getPlayerList
      *
      *  check if there is the minimum number of players
      *
      *  @return {Array}
      *
-     ******************************/
+     */
     Game.prototype.getPlayerList = function() {
         return this.playerList;
     }
 
-    /******************************
-     *
+    /**
      *  getaPlayerById
      *
      *  @param {string}  id  id of the player
      *
      *  @return {PlayerController} or {Boolean}
      *
-     ******************************/
+     */
     Game.prototype.getaPlayerById = function( id ) {
 
         if( !this.playerList[ id ] ) return false;
@@ -228,28 +217,26 @@ var Game = (function() {
         return this.playerList[ id ];
     }
 
-    /******************************
-     *
+    /**
      *  enoughPlayer
      *
      *  check if there is the minimum number of players
      *
      *  @return {boolean} yes or no
      *
-     ******************************/
+     */
     Game.prototype.enoughPlayer = function() {
         return Object.keys(this.playerList).length >= this.MIN_PLAYER;
     }
 
-    /******************************
-     *
+    /**
      *  removePlayer
      *  is called every "playerLeft" event take a id string
      *  look for the ID in the player list and remove it from the playerList
      *
      *  @param {integer} id of the player
      *
-     ******************************/
+     */
 
     Game.prototype.removePlayer = function( id ) {
         var _this = this;
@@ -273,14 +260,13 @@ var Game = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  notSupported
      *
      *  if canvas or a mandatory game's feature is not supported,
      *  add a visual element that inform the user that the gamepad will not work correctly
      *
-     ******************************/
+     */
 
     Game.prototype.notSupported = function() {
         var elem = document.createElement('div');

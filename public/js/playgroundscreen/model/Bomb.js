@@ -30,8 +30,7 @@ var Bomb = (function() {
 
     }
 
-    /**********************************
-     *
+    /**
      *   init
      *
      *   init the mesh and position
@@ -39,7 +38,7 @@ var Bomb = (function() {
      *   @param {Object}  position  bombPosition like [ {x:0,y0}, {x:0,y:0}, etc... ]
      *   @param {Object}  size  {w: 0, h: 0, d: 0}
      *
-     **********************************/
+     */
     Bomb.prototype.init = function( position, size ) {
 
         this.position = position;
@@ -49,13 +48,12 @@ var Bomb = (function() {
         this.buildMesh();
     }
 
-    /**********************************
-     *
+    /**
      *   buildMesh
      *
      *   Draw the mesh
      *
-     **********************************/
+     */
     Bomb.prototype.buildMesh = function() {
 
 
@@ -93,15 +91,14 @@ var Bomb = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  destroyAnimation
      *
      *  set the destroyed material
      *
      *  @return {void}
      *
-     ******************************/
+     */
      Bomb.prototype.destroyAnimation = function( horizontalCoor, verticalCoor ) {
 
          var sizeH = {
@@ -148,15 +145,14 @@ var Bomb = (function() {
 
      }
 
-    /******************************
-     *
+    /**
      *  animationStep
      *
      *  animate the bomb
      *
      *  @param {int}  animPercentage  the percentage of the animation (0.33)
      *
-     ******************************/
+     */
      Bomb.prototype.animationStep = function( animPercentage ) {
 
          var loop = 6;
@@ -192,42 +188,37 @@ var Bomb = (function() {
 
      }
 
-    /******************************
-     *
+    /**
      *  getExplosionCoordinates
      *
      *  @param {int}  power  the bomb power
      *
-     *
-     *
-     ******************************/
+     */
      Bomb.prototype.getExplosionCoordinates = function( power, step ) {
 
 
      }
 
-    /******************************
-     *
+    /**
      *  getObj
      *
      *  get box object3D
      *
      *  @return {THREE.Object3D}
      *
-     ******************************/
+     */
      Bomb.prototype.getObj = function() {
          return this.obj;
      }
 
-     /******************************
-      *
+     /**
       *  get2DPosition
       *
       *  get point A and C coordinates of the ABCD cube
       *
       *  @return {Object}  {x1, y1, x2, y2}
       *
-      ******************************/
+      */
       Bomb.prototype.get2DPosition = function() {
           return [
               { x: this.obj.position.x, y: this.obj.position.z },
@@ -237,15 +228,14 @@ var Bomb = (function() {
           ]
       }
 
-      /******************************
-       *
+      /**
        *  axisPaint
        *
        *  paint the axis x,y,z
        *
        *  @return {THREE.Object3D}
        *
-       ******************************/
+       */
       Bomb.prototype.axisPaint = function() {
 
           var axisYGeo = new THREE.CylinderGeometry( 2, 2, 150, 32 );

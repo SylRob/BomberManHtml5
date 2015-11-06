@@ -35,8 +35,7 @@ var BombsController = (function() {
 	}
 
 
-	/******************************
-     *
+	/**
      *  newBomb
      *
      *  create a new bomb, add it to the list
@@ -49,7 +48,7 @@ var BombsController = (function() {
      *
      *  @return {boolean} succed or not
      *
-     ******************************/
+     */
 	BombsController.prototype.newBomb = function( position, size, power, playerId ) {
         var bomb = new Bomb();
 		var timeStamp = new Date().getTime();
@@ -83,38 +82,35 @@ var BombsController = (function() {
 	}
 
 
-	/******************************
-     *
+	/**
      *  getBombsList
      *
      *  get the bombs list
      *
      *  return {array}
      *
-     ******************************/
+     */
 	BombsController.prototype.getBombsList = function() {
 
 		return this._bombList;
 
 	}
 
-	/******************************
-     *
+	/**
      *  getExplodedList
      *
      *  get the exploded bombs list
      *
      *  return {array}
      *
-     ******************************/
+     */
 	BombsController.prototype.getExplodedList = function() {
 
 		return this._explodedBomb;
 
 	}
 
-	/******************************
-     *
+	/**
      *  setSteps
      *
      *  set the step width
@@ -122,7 +118,7 @@ var BombsController = (function() {
      *  @param {int}  stepX
      *  @param {int}  stepY
      *
-     ******************************/
+     */
 	BombsController.prototype.setSteps = function( stepX, stepY ) {
 
 		this._step = {
@@ -133,8 +129,7 @@ var BombsController = (function() {
 	}
 
 
-	/******************************
-     *
+	/**
      *  animationHandeler
      *
      *	assign animation state to the bomb list
@@ -142,7 +137,7 @@ var BombsController = (function() {
      *	@param {int}  timeStamp
      *	@param {function}  explodedBombCallBack  send explodedBombObj
      *
-     ******************************/
+     */
 	BombsController.prototype.animationHandeler = function( timeStamp, explodedBombCallBack ) {
 
 		for( var userId in this._bombList ) {
@@ -168,14 +163,13 @@ var BombsController = (function() {
 		}//end for( var userId in this._bombList )
 	}
 
-	/******************************
-     *
+	/**
      *  removeBomb
      *
      *  @param {int}  userId  to find the user in the bomb list
      *  @param {int}  id  to find the bomb in the bomb list
      *
-     ******************************/
+     */
 	BombsController.prototype.removeBomb = function( userId, id ) {
 
 		if( this._explodedBomb[userId][id] ){
@@ -189,15 +183,14 @@ var BombsController = (function() {
 		delete this._bombList[ userId ][ id ];
 	}
 
-	/******************************
-     *
+	/**
      *  explodeSequenceTemp
      *
      *  @param {int}  userId  to find the user in the bomb list
      *  @param {int}  id  to find the bomb in the bomb list
      *  @param {function}  explodedBombCallBack  send explodedBombObj
      *
-     ******************************/
+     */
 	BombsController.prototype.explodeSequenceTemp = function( userId, id, explodedBombCallBack ) {
 
 		var bombObj = this._bombList[userId][id];
@@ -239,13 +232,12 @@ var BombsController = (function() {
 
 	}
 
-	/******************************
-     *
+	/**
      *  drawEpxlodedBomb
      *
      *  @param {object}  bombExoplodedObj
      *
-     ******************************/
+     */
 	BombsController.prototype.drawEpxlodedBomb = function( bombExoplodedObj ) {
 
 		var bomb = this._bombList[ bombExoplodedObj.userId ][ bombExoplodedObj.id ].bomb;
@@ -265,13 +257,12 @@ var BombsController = (function() {
 
 	}
 
-	/******************************
-     *
+	/**
      *  checkBombCollision
      *
      *  @param {object}  bombExoplodedObj
      *
-     ******************************/
+     */
 	BombsController.prototype.checkBombCollision = function( bombExoplodedObj ) {
 
 		for( var playerId in this._bombList ) {

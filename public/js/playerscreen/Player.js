@@ -46,8 +46,7 @@ var Player = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  myAvatar
      *
      *  set player color/image setting
@@ -56,7 +55,7 @@ var Player = (function() {
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Player.prototype.myAvatar = function( option ) {
         this.avatar = this.avatarList[option];
 
@@ -72,8 +71,7 @@ var Player = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  wrapResults
      *
      *  wrap results
@@ -82,7 +80,7 @@ var Player = (function() {
      *
      *  @return {Object} all the data that we want to pass to the server
      *
-     ******************************/
+     */
     Player.prototype.wrapResults = function( gamePadData ) {
         return {
             'id' : this.id,

@@ -7,8 +7,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 
 	}
 
-	/******************************
-     *
+	/**
      *  isOOB
      *
      *  check if the object is beyond ground coordinate
@@ -17,7 +16,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Boolean}
      *
-     ******************************/
+     */
     TwoDBoxCollisionDetectionEngine.prototype.isOOB = function( position ) {
 
         var objectPos = {
@@ -35,8 +34,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  correctedOOB
      *
      *  the oob object is return with rectified Values
@@ -45,7 +43,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Object}  position  (corrected)
      *
-     ******************************/
+     */
     TwoDBoxCollisionDetectionEngine.prototype.correctedOOB = function( position ) {
 
 		var correctedPos = position;
@@ -86,8 +84,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  isColliding
      *
      *  check if 2 objects are colliding
@@ -97,7 +94,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Boolean}
      *
-     ******************************/
+     */
     TwoDBoxCollisionDetectionEngine.prototype.isColliding = function( obj1, obj2 ) {
 
         return !( obj1[2].x < obj2[0].x ||
@@ -108,8 +105,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 
     }
 
-	/******************************
-     *
+	/**
      *  isCollidingSegements
      *
      *  check if 2 segements are colliding
@@ -119,7 +115,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Boolean}
      *
-     ******************************/
+     */
     TwoDBoxCollisionDetectionEngine.prototype.isCollidingSegements = function( obj1, obj2 ) {
 
         return !( obj1[1].x < obj2[0].x ||
@@ -130,8 +126,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 
     }
 
-	/******************************
-     *
+	/**
      *  isCollidingPoint
      *
      *  check if 2 segements are colliding
@@ -141,7 +136,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Boolean}
      *
-     ******************************/
+     */
     TwoDBoxCollisionDetectionEngine.prototype.isCollidingPoint = function( obj1, obj2 ) {
 
         return !( obj1.x < obj2[0].x ||
@@ -152,8 +147,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 
     }
 
-	/******************************
-     *
+	/**
      *  sameCoordinates
      *
      *  check if 2 objects have the same coordinates
@@ -163,7 +157,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Boolean}
      *
-     ******************************/
+     */
     TwoDBoxCollisionDetectionEngine.prototype.sameCoordinates = function( obj1, obj2 ) {
 
         return (obj1[0].x == obj2[0].x && obj1[2].x == obj2[2].x && obj1[0].y == obj2[0].y && obj1[2].y == obj2[2].y);
@@ -172,8 +166,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 
 
 
-    /******************************
-     *
+    /**
      *  canceledCollision
      *
      *  important! : check there is collision before (this.isColliding())
@@ -187,7 +180,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Object}  shape like [{x:0,y:0}, {x:0,y:0}, etc...]
      *
-     ******************************/
+     */
 	 TwoDBoxCollisionDetectionEngine.prototype.canceledCollision = function( objectPos, oldPos, obstacle ) {
 
 		 var tempObjX = JSON.parse(JSON.stringify(oldPos));//unrelated copy
@@ -217,179 +210,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 
 	 }
 
-    /*TwoDBoxCollisionDetectionEngine.prototype.canceledCollision = function( objectPos, directionVector, obstacle ) {
-
-        var intersectPoint = {
-			x : null,
-			y : null
-		};
-
-		var newObjectPos = null;
-
-		var obstaclePointL = Object.keys( obstacle ).length;
-		var objectPointL = Object.keys( objectPos ).length;
-
-		for( var i = 0; i < obstaclePointL; i++ ) {
-
-			var collision = false;
-
-			var obsSegment = [
-				obstacle[i],
-				obstaclePointL - 1 ? obstacle[0] : obstacle[i+1]
-			];
-
-			//segment equation
-			var obs_M = (obsSegment[1].y - obsSegment[0].y) / (obsSegment[1].x - obsSegment[0].x);
-			var obs_T = obsSegment[0].y - ( obs_M*obsSegment[0].x ) ;
-
-			for( var j = 0; j < objectPointL; j++ ) {
-				var objSegment = [
-					objectPos[j],
-					j == objectPointL - 1 ? objectPos[0] : objectPos[j+1]
-				];
-
-				//are these segements cross ? no ? then jump to the next
-				if( !this.doLinesIntersect( objSegment, obsSegment ) && !this.isCollidingSegements( obsSegment, objSegment ) ) continue;
-
-				 collision = true;
-
-				 //the intersection [(x1,y1), (x2, y2)]
-			    //it might be a line or a single point. If it is a line,
-			    //then x1 = x2 and y1 = y2.
-			     var x1, y1, x2, y2;
-
-			    if (obsSegment[0].x == obsSegment[1].x) {
-			         // Case (A)
-			         // As a is a perfect vertical line, it cannot be represented
-			         // nicely in a mathematical way. But we directly know that
-			         //
-			         x1 = obsSegment[0].x;
-			         x2 = x1;
-			         if (objSegment[0].x == objSegment[1].x) {
-			             // Case (AA): all x are the same!
-			             // Normalize
-			             if(obsSegment[0].y > obsSegment[1].y) {
-			                 a = [ obsSegment[1], obsSegment[0] ];
-			             }
-			             if(objSegment[0].y > objSegment[1].y) {
-			                 b = [ objSegment[1], objSegment[0] ];
-			             }
-			             if(obsSegment[0].y > objSegment[0].y) {
-			                 var tmp = obsSegment;
-			                 obsSegment = objSegment;
-			                 objSegment = tmp;
-			             }
-
-			             // Now we know that the y-value of obsSegment[0] is the
-			             // lowest of all 4 y values
-			             // this means, we are either in case (AAA):
-			             //   a: x--------------x
-			             //   b:    x---------------x
-			             // or in case (AAB)
-			             //   a: x--------------x
-			             //   b:    x-------x
-			             // in both cases:
-			             // get the relavant y intervall
-			             y1 = objSegment[0].y;
-			             y2 = Math.min(obsSegment[1].y, objSegment[1].y);
-			         } else {
-			             // Case (AB)
-			             // we can mathematically represent line b as
-			             //     y = m*x + t <=> t = y - m*x
-			             // m = (y1-y2)/(x1-x2)
-			             var m, t;
-			             m = (objSegment[0].y - objSegment[1].y)/
-			                 (objSegment[0].x - objSegment[1].x);
-			             t = objSegment[0].y - m*objSegment[0].x;
-			             y1 = m*x1 + t;
-			             y2 = y1
-			         }
-			     } else if (objSegment[0].x == objSegment[1].x) {
-			         // Case (B)
-			         // essentially the same as Case (AB), but with
-			         // a and b switched
-			         x1 = objSegment[0].x;
-			         x2 = x1;
-
-			         var tmp = obsSegment;
-			         obsSegment = objSegment;
-			         objSegment = tmp;
-
-			         var m, t;
-			         m = (objSegment[0].y - objSegment[1].y)/
-			             (objSegment[0].x - objSegment[1].x);
-			         t = objSegment[0].y - m*objSegment[0].x;
-			         y1 = m*x1 + t;
-			         y2 = y1
-			     } else {
-			         // Case (C)
-			         // Both lines can be represented mathematically
-			         var ma, mb, ta, tb;
-			         ma = (obsSegment[0].y - obsSegment[1].y)/
-			              (obsSegment[0].x - obsSegment[1].x);
-			         mb = (objSegment[0].y - objSegment[1].y)/
-			              (objSegment[0].x - objSegment[1].x);
-			         ta = obsSegment[0].y - ma*obsSegment[0].x;
-			         tb = objSegment[0].y - mb*objSegment[0].x;
-			         if (ma == mb) {
-			             // Case (CA)
-			             // both lines are in parallel. As we know that they
-			             // intersect, the intersection could be a line
-			             // when we rotated this, it would be the same situation
-			             // as in case (AA)
-
-			             // Normalize
-			             if(obsSegment[0].x > obsSegment[1].x) {
-			                 obsSegment = [ obsSegment[1], obsSegment[0] ];
-			             }
-			             if(objSegment[0].x > objSegment[1].x) {
-			                 objSegment =[ objSegment[1], objSegment[0] ];
-			             }
-			             if(obsSegment[0].x > objSegment[0].x) {
-			                 var tmp = obsSegment;
-			                 obsSegment = objSegment;
-			                 objSegment = tmp;
-			             }
-
-			             // get the relavant x intervall
-			             x1 = objSegment[0].x;
-			             x2 = Math.min(obsSegment[1].x, objSegment[1].x);
-			             y1 = ma*x1+ta;
-			             y2 = ma*x2+ta;
-			         } else {
-			             // Case (CB): only a point as intersection:
-			             // y = ma*x+ta
-			             // y = mb*x+tb
-			             // ma*x + ta = mb*x + tb
-			             // (ma-mb)*x = tb - ta
-			             // x = (tb - ta)/(ma-mb)
-			             x1 = (tb-ta)/(ma-mb);
-			             y1 = ma*x1+ta;
-			             x2 = x1;
-			             y2 = y1;
-			         }
-			     }
-
-				 intersectPoint.x = x1;
-				 intersectPoint.y = y1;
-				 newObjectPos = this.buildNew2Dcoordinates( intersectPoint, objSegment, objectPos, j  );
-
-				break;
-
-			}//end for( var j = 0; j < objectPointL; j++ )
-
-			if( collision ) break;
-
-		}
-
-		if( newObjectPos === null ) throw new Error('no intersection where found !');
-
-		return newObjectPos;
-
-    }*/
-
-	/******************************
-     *
+	/**
      *  buildNew2Dcoordinates
      *
      *  make new coodinates for a square
@@ -400,7 +221,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Object}  shape like [{x,y}, {x,y}, etc...]
      *
-     ******************************/
+     */
     TwoDBoxCollisionDetectionEngine.prototype.buildNew2Dcoordinates = function( intersectPoint, objSegement, obj,  i) {
 
 		var newObjectPos = obj;
@@ -421,8 +242,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 		return newObjectPos;
     }
 
-	/******************************
-     *
+	/**
      *  crossProduct
      *
      *  calculate cross product
@@ -432,27 +252,25 @@ var TwoDBoxCollisionDetectionEngine = (function() {
      *
      *  @return {Object}  float
      *
-     ******************************/
+     */
     TwoDBoxCollisionDetectionEngine.prototype.crossProduct = function(a, b) {
 	    return a.x * b.y - b.x * a.y;
 	}
 
-	/******************************
-	*
+	/**
 	 *  Check if line segments intersect
 	 *  @param a first line segment
 	 *  @param b second line segment
 	 *  @return <code>true</code> if lines do intersect,
 	 *         <code>false</code> otherwise
 	 *
-	 ******************************/
+	 */
 	TwoDBoxCollisionDetectionEngine.prototype.doLinesIntersect = function(a, b) {
 	    return this.lineSegmentTouchesOrCrossesLine(a, b)
 	            && this.lineSegmentTouchesOrCrossesLine(b, a);
 	}
 
-	/******************************
-	*
+	/**
 	 *  Check if line segment first touches or crosses the line that is
 	 *  defined by line segment second.
 	 *
@@ -462,7 +280,7 @@ var TwoDBoxCollisionDetectionEngine = (function() {
 	 *                           crosses line second,
 	 *         <code>false</code> otherwise.
 	 *
-	 ******************************/
+	 */
 	 TwoDBoxCollisionDetectionEngine.prototype.lineSegmentTouchesOrCrossesLine = function(a, b) {
 	    return this.isPointOnLine(a, b[0])
 	            || this.isPointOnLine(a, b[1])

@@ -14,15 +14,14 @@ var Box = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  init
      *
      *  create elements
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Box.prototype.init = function() {
 
         var boxGeo = new THREE.BoxGeometry(
@@ -44,30 +43,28 @@ var Box = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  destroyed
      *
      *  set the destroyed material
      *
      *  @return {void}
      *
-     ******************************/
+     */
      Box.prototype.destroyed = function() {
 
          if( this.destructible ) this.mesh.material.opacity = 0;
 
      }
 
-    /******************************
-     *
+    /**
      *  paint
      *
      *  set the destroyed material
      *
      *  @return {void}
      *
-     ******************************/
+     */
      Box.prototype.paint = function() {
 
          this.mesh.material.color = 0x00FF00;
@@ -75,15 +72,14 @@ var Box = (function() {
 
      }
 
-     /******************************
-     *
+     /**
      *  isDestroyed
      *
      *  set the destroyed material
      *
      *  @return {Boolean}  true or false
      *
-     ******************************/
+     */
      Box.prototype.isDestroyed = function() {
 
          if( this.mesh.material.opacity == 0 ) return true;
@@ -91,39 +87,36 @@ var Box = (function() {
 
      }
 
-     /******************************
-      *
+     /**
       *  isDestructible
       *
       *  @return {Boolean}
       *
-      ******************************/
+      */
       Box.prototype.isDestructible = function() {
           return this.destructible;
       }
 
-     /******************************
-      *
+     /**
       *  getObj
       *
       *  get box object3D
       *
       *  @return {THREE.Object3D}
       *
-      ******************************/
+      */
       Box.prototype.getObj = function() {
           return this.obj;
       }
 
-      /******************************
-       *
+      /**
        *  get2DPosition
        *
        *  get point A and C coordinates of the ABCD cube
        *
        *  @return {Object}  {x1, y1, x2, y2}
        *
-       ******************************/
+       */
        Box.prototype.get2DPosition = function() {
            return [
                { x: this.obj.position.x, y: this.obj.position.z },
@@ -133,15 +126,14 @@ var Box = (function() {
            ]
        }
 
-       /******************************
-       *
+       /**
        *  getCenterPosition
        *
        *  get center point
        *
        *  @return {Object}  {x:0, y:0}
        *
-       ******************************/
+       */
        Box.prototype.getCenterPosition = function() {
            return {
             x: this.obj.position.x + this.size.w/2,

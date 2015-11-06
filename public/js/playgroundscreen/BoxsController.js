@@ -16,8 +16,7 @@ var BoxsController = (function() {
 		  this._explodAnimationTime = 1500;
 	}
 
-    /******************************
-     *
+    /**
      *  newBox
      *
      *  create a new box, add it to the list
@@ -28,7 +27,7 @@ var BoxsController = (function() {
      *	@param {boolean}  destroyed  is it already destoyed ?
      *	@param {boolean}  destroyable is it destroyable
      *
-     ******************************/
+     */
 	BoxsController.prototype.newBox = function( position, size, destroyed, destroyable ) {
         var box = new Box();
 
@@ -41,15 +40,14 @@ var BoxsController = (function() {
 
 	}
 
-    /******************************
-     *
+    /**
      *  generateBox
      *
      *	assign animation state to the selected box
      *
      *	@param {int}  boxPerLine
      *
-     ******************************/
+     */
 	BoxsController.prototype.generateBox = function( boxPerLine ) {
 
         if( isNaN(boxPerLine) ) {
@@ -91,6 +89,7 @@ var BoxsController = (function() {
                     0,
                     boxZpos
                 );
+				console.log( box );
                 this._boxsDestructibleList.push( box );
             }
 
@@ -106,8 +105,7 @@ var BoxsController = (function() {
 
 	}
 
-    /******************************
-     *
+    /**
      *  animationHandeler
      *
      *	assign animation state to the selected box
@@ -115,62 +113,58 @@ var BoxsController = (function() {
      *	@param {int}  timeStamp
      *	@param {function}  explodedBoxCallBack  send explodedBombObj
      *
-     ******************************/
+     */
 	BoxsController.prototype.animationHandeler = function( timeStamp, explodedBoxCallBack ) {
 
 
 	}
 
-    /******************************
-     *
+    /**
      *  getAllVisibleBoxsList
      *
      *  get the bombs list
      *
      *  return {array}
      *
-     ******************************/
+     */
 	BoxsController.prototype.getAllVisibleBoxsList = function() {
 
         return this._boxsDestructibleList.concat(this._boxsUndestructibleList);
 
 	}
 
-    /******************************
-     *
+    /**
      *  getUnvisibleBoxsList
      *
      *  get the bombs list
      *
      *  return {array}
      *
-     ******************************/
+     */
 	BoxsController.prototype.getUnvisibleBoxsList = function() {
         return this._boxsUnvisibleBoxsList;
 	}
 
-    /******************************
-     *
+    /**
      *  getDestructibleBoxList
      *
      *  get the bombs list
      *
      *  return {array}
      *
-     ******************************/
+     */
 	BoxsController.prototype.getDestructibleBoxList = function() {
         return this._boxsDestructibleList;
 	}
 
-    /******************************
-     *
+    /**
      *  destroyBoxsNoAnim
      *
      *  destroy a box and skip the destroy animation
      *
      *  @param {Array}  arr  an array of box to switch
      *
-     ******************************/
+     */
 	BoxsController.prototype.destroyBoxsNoAnim = function( arr ) {
 
         for( var id in arr ) {
@@ -191,11 +185,10 @@ var BoxsController = (function() {
 
 	}
 
-	/******************************
-     *
+	/**
      *  just for debug
      *
-     ******************************/
+     */
 	BoxsController.prototype.destroyBoxNoAnim = function( box ) {
 
         var index = this._boxsDestructibleList.indexOf( box );
@@ -211,14 +204,13 @@ var BoxsController = (function() {
         this._boxsDestructibleList.splice(index, 1);
 	}
 
-    /******************************
-     *
+    /**
      *  getBoxCollision
      *
      *
      *  return {array}
      *
-     ******************************/
+     */
 	BoxsController.prototype.getBoxCollision = function() {
 
 

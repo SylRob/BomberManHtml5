@@ -1,15 +1,14 @@
 
 var PlayerAvatar = (function() {
 
-    /******************************
-     *
+    /**
      *  PlayerAvatar
      *
      *  @param {Oject}  palyerOption  various player option (name, color, etc...)
      *
      *  @return {Object}  PlayerAvatar
      *
-     ******************************/
+     */
     function PlayerAvatar( playerOption, yPos ) {
 
         this._playerOption = playerOption;
@@ -36,15 +35,14 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  init
      *
      *  create and return a new avatar
      *
      *  @return {void}
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.init = function() {
         var self = this;
         //transform the color in hex
@@ -55,15 +53,14 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  initAvatar
      *
      *  create a new avatar
      *
      *  @return {THREE.Mesh}
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.initAvatar = function() {
 
         var troncGeo = new THREE.SphereGeometry( 20, 32, 16 );
@@ -115,15 +112,14 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  axisPaint
      *
      *  paint the axis x,y,z
      *
      *  @return {Object3D}
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.axisPaint = function() {
 
         var axisYGeo = new THREE.CylinderGeometry( 2, 2, 50, 32 );
@@ -156,13 +152,12 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getPos
      *
      *  @return {Object}  with x and y
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.getPos = function() {
 
         return {
@@ -172,14 +167,13 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  setPos
      *
      *  @param {Object}  pos  with x and y
      *  @param {Object}  directionVector  with x and y
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.setPos = function( pos, directionVector ) {
 
         this._avatar.position.set( pos.x, this.yPos, pos.y );
@@ -188,14 +182,13 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  animateAvatar
      *
      *  @param {int}  posX
      *  @param {int}  posY
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.animateAvatar = function( x, y, directionVector ) {
 
         this.step += 1 / 1.25;
@@ -209,11 +202,10 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  resetPos
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.resetPos = function() {
 
         if( this._body.all.rotation.z === 0 ) return false;
@@ -227,13 +219,12 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  get2Dposition
      *
      *  @return {Object}  with the 4 square corner coordinates
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.get2Dposition = function() {
         var size = this.getSize();
 
@@ -246,15 +237,14 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getPointPosition
      *
      *  return the center of the avatar
      *
      *  @return {Object}  x and y
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.getPointPosition = function() {
         var size = this.getSize();
 
@@ -265,13 +255,12 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getSize
      *
      *  @return {Object}  with w and h and d
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.getSize = function() {
 
         return {
@@ -283,15 +272,14 @@ var PlayerAvatar = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  get2DpositionFromTemp
      *
      *  @param {Object}  tempPos  pos with x and y
      *
      *  @return {Object}  with the 4 square corner coordinates
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.get2DpositionFromTemp = function( tempPos ) {
 
         var size = this.getSize();
@@ -305,26 +293,24 @@ var PlayerAvatar = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getAvatar
      *
      *  @return {THREE.Object3D}
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.getAvatar = function() {
 
         return this._avatar;
 
     }
 
-    /******************************
-     *
+    /**
      *  dyingAvatarAnimation
      *
      *  @param {function}  callBack  callBack animation
      *
-     ******************************/
+     */
     PlayerAvatar.prototype.dyingAvatarAnimation = function(callBack) {
         this.resetPos();
 

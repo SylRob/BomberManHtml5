@@ -2,8 +2,7 @@
 
 var GamePad = (function() {
 
-    /******************************
-     *
+    /**
      *  GamePad
      *
      *  @param {HTMLElement}  elem  where to create the GamePad
@@ -11,7 +10,7 @@ var GamePad = (function() {
      *
      *  @return {Object} GamePad
      *
-     ******************************/
+     */
     function GamePad(elem, Player) {
 
         this.player = Player;
@@ -50,8 +49,7 @@ var GamePad = (function() {
         this.init();
     }
 
-    /******************************
-     *
+    /**
      *  init
      *
      *  test if the device is touchable
@@ -62,7 +60,7 @@ var GamePad = (function() {
      *  and pass it to the player
      *  class
      *
-     ******************************/
+     */
     GamePad.prototype.init = function() {
         var _this = this;
 
@@ -83,14 +81,13 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  canvasInit
      *
      *  create the canvas and
      *  assign it to the document
      *
-     ******************************/
+     */
     GamePad.prototype.canvasInit = function() {
         //create the canvas element
         this.canvas = document.createElement( 'canvas' );
@@ -101,8 +98,7 @@ var GamePad = (function() {
         this.elem.appendChild( this.canvas );
     }
 
-    /******************************
-     *
+    /**
      *  eventInit
      *
      *  assign the event to the
@@ -110,7 +106,7 @@ var GamePad = (function() {
      *  and pass it to the player
      *  class
      *
-     ******************************/
+     */
     GamePad.prototype.eventInit = function() {
         var _this = this;
 
@@ -133,15 +129,14 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  touchStartHandeler
      *
      *  assign new touch event
      *
      *  @param {event}  eventS  get the touchs event
      *
-     ******************************/
+     */
     GamePad.prototype.touchStartHandeler = function( eventS ) {
         var _this = this;
         var max = eventS.changedTouches.length;
@@ -163,15 +158,14 @@ var GamePad = (function() {
 
     }
 
-     /******************************
-      *
+     /**
       *  touchMouveHandeler
       *
       *  handle mouvement
       *
       *  @param {event}  eventS  get the touchs event
       *
-      ******************************/
+      */
      GamePad.prototype.touchMouveHandeler = function( eventS ) {
          event.preventDefault();
 
@@ -197,15 +191,14 @@ var GamePad = (function() {
 
      }
 
-     /******************************
-      *
+     /**
       *  touchEndHandeler
       *
       *  assign new touch event
       *
       *  @param {event}  eventS  get the touchs event
       *
-      ******************************/
+      */
      GamePad.prototype.touchEndHandeler = function( eventS ) {
          var _this = this;
          var max = eventS.changedTouches.length;
@@ -224,15 +217,14 @@ var GamePad = (function() {
 
      }
 
-    /******************************
-     *
+    /**
      *  addDirectionPad
      *
      *  create direction pad
      *
      *  @param {Object}  posObj  an object containing finger position
      *
-     ******************************/
+     */
     GamePad.prototype.addDirectionPad = function( posObj ) {
 
         this.directionPadObj.id = posObj.identifier;
@@ -243,15 +235,14 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  addActionBtn
      *
      *  create button
      *
      *  @param {Object}  posObj  an object containing finger position
      *
-     ******************************/
+     */
     GamePad.prototype.addActionBtn = function( posObj ) {
 
         this.actionBtnObj.id = posObj.identifier;
@@ -263,13 +254,12 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  removeDirectionPad
      *
      *  reset direction pad
      *
-     ******************************/
+     */
     GamePad.prototype.removeDirectionPad = function() {
 
         this.directionPadObj.id = -1;
@@ -280,13 +270,12 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  removeActionBtn
      *
      *  reset direction pad
      *
-     ******************************/
+     */
     GamePad.prototype.removeActionBtn = function() {
 
         this.actionBtnObj.id = -1;
@@ -298,8 +287,7 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  directionPadPos
      *
      *  set new pos for the
@@ -308,7 +296,7 @@ var GamePad = (function() {
      *
      *  @param {event}  _event  the event containing the finger position
      *
-     ******************************/
+     */
     GamePad.prototype.directionPadPos = function( _event ) {
         var _this = this;
 
@@ -332,13 +320,12 @@ var GamePad = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  letsDraw
      *
      *  draw the canvas
      *
-     ******************************/
+     */
     GamePad.prototype.letsDraw = function() {
         var _this = this;
 
@@ -382,15 +369,14 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  wrapResults
      *
      *  gather the speed and direction
      *
      *  @return {Object}  an object wich contain the new position data
      *
-     ******************************/
+     */
     GamePad.prototype.wrapResults = function() {
 
         var dpo = this.directionPadObj;
@@ -414,14 +400,13 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  myDirection
      *
      *
      *  @return {float} in radian
      *
-     ******************************/
+     */
     GamePad.prototype.myDirection = function() {
 
         //direction vector
@@ -432,8 +417,7 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  mySpeed
      *
      *  calcul the speed given
@@ -443,7 +427,7 @@ var GamePad = (function() {
      *
      *  return {int} pourcentage 0-100
      *
-     ******************************/
+     */
     GamePad.prototype.mySpeed = function() {
 
         var maxSpeed = this.directionPadObj.r;
@@ -456,8 +440,7 @@ var GamePad = (function() {
         return Math.round( ( actualSpeed / maxSpeed ) * 100 );
     }
 
-    /******************************
-     *
+    /**
      *  assignPageSize
      *
      *  triggered when the page
@@ -466,7 +449,7 @@ var GamePad = (function() {
      *  the widh/heigth, center
      *  point of the GamePad
      *
-     ******************************/
+     */
     GamePad.prototype.assignPageSize = function() {
 
         this.pageWidth = this.canvas.width = window.innerWidth;
@@ -478,15 +461,14 @@ var GamePad = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  notSupported
      *
      *  add a visual element
      *  that inform the user that
      *  the gamepad will not work correctly
      *
-     ******************************/
+     */
     GamePad.prototype.notSupported = function() {
         var elem = document.createElement('div');
         elem.style.position = 'fixed';

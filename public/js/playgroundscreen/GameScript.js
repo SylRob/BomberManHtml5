@@ -10,35 +10,32 @@ var GameScript = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  init
      *
      *
-     ******************************/
+     */
     GameScript.prototype.init = function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  start
      *
      *  time to start
      *
-     ******************************/
+     */
     GameScript.prototype.start = function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  resetGameScripts
      *
      *  prepare the field for the
      *  next script
      *
-     ******************************/
+     */
     GameScript.prototype.resetGameScripts = function() {
 
 

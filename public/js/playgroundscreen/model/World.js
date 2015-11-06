@@ -8,15 +8,14 @@ var World = (function() {
         this.init();
     }
 
-    /******************************
-     *
+    /**
      *  init
      *
      *  create elements
      *
      *  @return {void}
      *
-     ******************************/
+     */
     World.prototype.init = function() {
 
         // Plane
@@ -48,28 +47,26 @@ var World = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  getGround
      *
      *  get ground Object
      *
      *  @return {THREE.Object3D}
      *
-     ******************************/
+     */
     World.prototype.getGround = function(){
         return this.groundGroup;
     }
 
-    /******************************
-     *
+    /**
      *  getGroundCoordinates
      *
      *  get ground coordiantes( normaly from 0 to size )
      *
      *  @return {Object}  { x1, y1, x2, y2 }
      *
-     ******************************/
+     */
     World.prototype.getGroundCoordinates = function(){
 
         return {
@@ -81,30 +78,28 @@ var World = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  addElem
      *
      *  add Object to the ground object3D
      *
      *  @param {THREE.Object3D}  object3D
      *
-     ******************************/
+     */
     World.prototype.addElem = function( object3D ){
 
         this.groundGroup.add( object3D );
 
     }
 
-    /******************************
-     *
+    /**
      *  removeElem
      *
      *  add Object to the ground object3D
      *
      *  @param {THREE.Object3D}  object3D
      *
-     ******************************/
+     */
     World.prototype.removeElem = function( object3D ){
 
         this.groundGroup.remove( object3D );

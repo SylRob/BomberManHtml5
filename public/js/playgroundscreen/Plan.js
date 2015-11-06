@@ -2,15 +2,14 @@
 
 var Plan = (function() {
 
-    /******************************
-     *
+    /**
      *  Plan
      *
      *  @param {HTMLElement}  elemParents
      *
      *  @return {Object}  Plan
      *
-     ******************************/
+     */
     function Plan(elemParents, game) {
 
         this.scene;
@@ -19,6 +18,7 @@ var Plan = (function() {
         this.elemParents = elemParents;
         this.game = game;
         this.collisionDetection;
+        this.bonusController;
 
         this.references = {
             world: { w: 1000, h: 20, d: 1000 },
@@ -31,15 +31,14 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  generate
      *  init the scene, camera, light2
      *  and all the elements
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Plan.prototype.generate = function() {
         var self = this;
 
@@ -51,6 +50,8 @@ var Plan = (function() {
         this.bombsController = new BombsController( this.world, this.references.world.w/this.references.boxPerLine, this.references.world.d/this.references.boxPerLine, this.references.world.w, this.references.world.d );
         this.boxsController = new BoxsController( this.world, this.references.world.w, this.references.world.d );
         this.letsPaint();
+        this.bonusController = new BonusController( this.boxsController.getDestructibleBoxList(), this.world );
+
 
         //this.scene.add( this.axisPaint() );
 
@@ -60,42 +61,39 @@ var Plan = (function() {
         }
     }
 
-    /******************************
-     *
+    /**
      *  setScene
      *
      *  create and set the Scene
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Plan.prototype.setScene = function() {
 
         this.scene = new THREE.Scene();
 
     }
 
-    /******************************
-     *
+    /**
      *  getScene
      *
      *  return (THREE.Scene)  this.scene
      *
-     ******************************/
+     */
     Plan.prototype.getScene = function() {
         return this.scene;
     }
 
 
-    /******************************
-     *
+    /**
      *  setCamera
      *
      *  create and set the camera
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Plan.prototype.setCamera = function() {
 
         this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 5000 );
@@ -104,15 +102,14 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  setLight
      *
      *  create and set the light
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Plan.prototype.setLight = function() {
 
         var ambientLight = new THREE.AmbientLight( 0x222222 );
@@ -132,15 +129,14 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  letsPaint
      *
      *  create elements
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Plan.prototype.letsPaint = function() {
 
 
@@ -153,15 +149,13 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  setStartPosition
      *
      *  set the 4 corners to
      *  empty cube
      *
-     *
-     ******************************/
+     */
     Plan.prototype.setStartPosition = function() {
 
         var boxWidth = this.references.world.w/this.references.boxPerLine;
@@ -220,15 +214,14 @@ var Plan = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  initPlayers
      *
      *  add player avatar to the scene
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Plan.prototype.initPlayers = function() {
 
         var boxWidth = this.references.world.w/this.references.boxPerLine;
@@ -256,15 +249,14 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  addPlayer
      *
      *  add player avatar to the scene
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Plan.prototype.addPlayer = function( playerController ) {
 
         var boxWidth = this.references.world.w/this.references.boxPerLine;
@@ -275,8 +267,7 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  removePlayer
      *
      *  remove player avatar in the scene
@@ -285,21 +276,20 @@ var Plan = (function() {
      *
      *  @return {void}
      *
-     ******************************/
+     */
     Plan.prototype.removePlayer = function( playerAvatar ) {
         this.world.removeElem( playerAvatar.getAvatar() );
     }
 
 
-    /******************************
-     *
+    /**
      *  axisPaint
      *
      *  paint the axis x,y,z
      *
      *  @return {THREE.Object3D}
      *
-     ******************************/
+     */
     Plan.prototype.axisPaint = function() {
 
         var axisYGeo = new THREE.CylinderGeometry( 2, 2, 150, 32 );
@@ -333,8 +323,7 @@ var Plan = (function() {
     }
 
 
-    /******************************
-     *
+    /**
      *  updatePlayerPos
      *
      *  update player position
@@ -344,7 +333,7 @@ var Plan = (function() {
      *
      *  @return {Boolean}  can return false if same position as before
      *
-     ******************************/
+     */
     Plan.prototype.updatePlayerPos = function( player ) {
 
         var updatedPos = null;
@@ -361,8 +350,7 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  lookForCollision
      *
      *  loop throught all the collisionable elemParents
@@ -373,7 +361,7 @@ var Plan = (function() {
      *
      *  @return {Object}  {x, y}  corrected Coodinates
      *
-     ******************************/
+     */
     Plan.prototype.lookForCollision = function( collidingPos, directionVector, avatarPos, player ) {
 
         var newPos = collidingPos;
@@ -447,15 +435,14 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  putABomb
      *
      *  check if the player can use a bomb
      *
      *  @param {PlayerController}  player  player instance
      *
-     ******************************/
+     */
     Plan.prototype.putABomb = function( player ) {
 
         //check if player didn't use all his bomb
@@ -499,15 +486,14 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  exoplodedBombHandeler
      *
      *  @param {Object}  bombExploded  all the info about the bomb
      *
      *  return {void}
      *
-     ******************************/
+     */
     Plan.prototype.exoplodedBombHandeler = function( bombExploded ) {
 
         var playerId = bombExploded.userId;
@@ -617,15 +603,14 @@ var Plan = (function() {
 
 
 
-    /******************************
-     *
+    /**
      *  renderer
      *
      *  set the canvas
      *
      *  return {void}
      *
-     ******************************/
+     */
     Plan.prototype.renderer = function() {
 
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -642,15 +627,14 @@ var Plan = (function() {
 
     }
 
-    /******************************
-     *
+    /**
      *  animate
      *
      *  lauch the interval
      *
      *  return {void}
      *
-     ******************************/
+     */
     Plan.prototype.animate = function() {
         var timeStamp = new Date().getTime();
         var self = this;
@@ -663,15 +647,14 @@ var Plan = (function() {
         window.requestAnimationFrame( this.animate.bind(this) );
     }
 
-    /******************************
-     *
+    /**
      *  render
      *
      *  render the scene
      *
      *  return {void}
      *
-     ******************************/
+     */
     Plan.prototype.render = function() {
         this.cameraControls.update();
         this.renderer.render( this.scene, this.camera );
