@@ -170,7 +170,6 @@ var PlayerController = (function() {
      *
      **/
     PlayerController.prototype.getBomb = function() {
-
         return this._bomb;
 
     }

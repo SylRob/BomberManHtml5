@@ -11,7 +11,6 @@ var Box = (function() {
         this.mesh = new THREE.Mesh();
         this.obj = new THREE.Object3D();
         this.init();
-
     }
 
     /**

@@ -3,7 +3,9 @@ var BonusController = (function() {
     function BonusController( boxsList, world ) {
 
         this._world = world;
-        this._bonusBoxList = new Array();
+        this._bonusBoxList = [
+            { id:-1, type: '', visible: false, position: [] }
+        ]
 
         this._bonusElem = {
             flamme: {
@@ -34,7 +36,7 @@ var BonusController = (function() {
      */
     BonusController.prototype.init = function( boxsList ) {
 
-        var duplicateArray = JSON.parse(JSON.stringify(boxsList));//unrelated copy
+        this._bonusBoxList.splice(0,1);//to clean it
 
         //setFlame
         for( var bonusName in this._bonusElem ) {
@@ -43,24 +45,20 @@ var BonusController = (function() {
 
             for( var i=0; i < occurence; i++ ) {
 
-                var randBlock = duplicateArray[Math.floor(Math.random()*(duplicateArray.length -1))];
-                duplicateArray.splice( duplicateArray.indexOf( randBlock ) , 1 );
+                var randBlockInt = this.getRandomBoxId(boxsList);
 
-                /*console.log( randBlock );
 
                 var bonusBlock = {
-                    name: bonusName,
+                    id: randBlockInt,
+                    type: bonusName,
                     visible: false,
-                    position: randBlock.get2DPosition()
+                    position: boxsList[randBlockInt].get2DPosition()
                 }
 
-                this._bonusBoxList.push( bonusBlock );*/
-
+                this._bonusBoxList.push( bonusBlock );
             }
 
         }
-
-        //console.log( this._bonusBoxList );
 
     }
 
@@ -76,6 +74,39 @@ var BonusController = (function() {
     BonusController.prototype.isBoxABonus = function( box ) {
 
         console.log( 'check if its a bonus box and then transform' );
+
+    }
+
+    /**
+     *   getRandomBoxId
+     *
+     *   check if the destroyed box need to be transform
+     *   in a bonus box
+     *
+     *   @param {array}  arr  the box list array
+     *
+     *  @return {int}
+     */
+    BonusController.prototype.getRandomBoxId = function( arr ) {
+        var self = this;
+        if( arr.length ==  this._bonusBoxList) {
+            throw new Error( 'to many bonus, too few blocks to hide them' );
+            return -1;
+        }
+
+        var r;
+        function rand( arr ) {
+            r = Math.floor(Math.random()*(arr.length -1));
+            for( var i = 0; i<self._bonusBoxList.length; i++ ) {
+                if( self._bonusBoxList[i].id == r ) {
+                    rand( arr );
+                    return false;
+                }
+            }
+        }
+        rand( arr );
+
+        return r;
 
     }
 

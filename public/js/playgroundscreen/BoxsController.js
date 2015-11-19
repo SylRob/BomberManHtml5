@@ -89,7 +89,6 @@ var BoxsController = (function() {
                     0,
                     boxZpos
                 );
-				console.log( box );
                 this._boxsDestructibleList.push( box );
             }
 
@@ -122,7 +121,7 @@ var BoxsController = (function() {
     /**
      *  getAllVisibleBoxsList
      *
-     *  get the bombs list
+     *  get the visible box list
      *
      *  return {array}
      *
@@ -136,8 +135,6 @@ var BoxsController = (function() {
     /**
      *  getUnvisibleBoxsList
      *
-     *  get the bombs list
-     *
      *  return {array}
      *
      */
@@ -148,14 +145,25 @@ var BoxsController = (function() {
     /**
      *  getDestructibleBoxList
      *
-     *  get the bombs list
-     *
      *  return {array}
      *
      */
 	BoxsController.prototype.getDestructibleBoxList = function() {
         return this._boxsDestructibleList;
 	}
+
+	/**
+     *  getDestructibleBoxId
+     *
+     *  return int;
+     *
+     */
+	BoxsController.prototype.getDestructibleBoxId = function( box ) {
+
+        return this._boxsDestructibleList.indexOf(box);
+
+	}
+
 
     /**
      *  destroyBoxsNoAnim

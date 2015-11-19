@@ -52,7 +52,6 @@ var Plan = (function() {
         this.letsPaint();
         this.bonusController = new BonusController( this.boxsController.getDestructibleBoxList(), this.world );
 
-
         //this.scene.add( this.axisPaint() );
 
         window.onload = function() {
@@ -447,7 +446,7 @@ var Plan = (function() {
 
         //check if player didn't use all his bomb
         var playerBomb = player.getBomb();
-        if( playerBomb+1 > player.getMaxBomb() )  return false;
+        if( playerBomb+1 > player.getMaxBomb() ) return false;
 
         var playerPos = [];
         playerPos[0] = player.playerAvatar.getPointPosition();
@@ -495,13 +494,11 @@ var Plan = (function() {
      *
      */
     Plan.prototype.exoplodedBombHandeler = function( bombExploded ) {
-
         var playerId = bombExploded.userId;
         var bombId = bombExploded.id;
 
         var player = this.game.getaPlayerById( playerId );
         if( !player ){
-
             //throw new Error( 'cannot find the player in the player list' );
         }
 
@@ -515,7 +512,8 @@ var Plan = (function() {
         var allVisibleBox = this.boxsController.getAllVisibleBoxsList();
         var willExplodeBox = {
             x: new Array(),
-            y: new Array()
+            y: new Array(),
+            id: -1
         };
 
         for( var boxId in allVisibleBox ) {
@@ -561,7 +559,10 @@ var Plan = (function() {
                     ( (posIndex === 2 &&  willExplodeBox[axis][side].get2DPosition()[posIndex][axis] < boxCoord[posIndex][axis]) ||
                       (posIndex === 0 &&  willExplodeBox[axis][side].get2DPosition()[posIndex][axis] > boxCoord[posIndex][axis]) )
                 ) {
-                    if( box.isDestructible() ) willExplodeBox[axis][side] = box;
+                    if( box.isDestructible() ) {
+                        willExplodeBox[axis][side] = box;
+                        willExplodeBoxid = this.boxsController.getDestructibleBoxId( box );
+                    }
                     else delete willExplodeBox[axis][side];
                 }
             }
@@ -570,6 +571,7 @@ var Plan = (function() {
 
         for( var axis in willExplodeBox ) {
             for( var side in willExplodeBox[axis] ) {
+                // add bonus checking system HERE
                 this.boxsController.destroyBoxNoAnim( willExplodeBox[axis][side] );
             }
         }
@@ -583,18 +585,19 @@ var Plan = (function() {
         //check for collision with player
         var players = this.game.getPlayerList();
         for( var pId in players ) {
-            var player = players[pId];
-            var playerCoord = player.playerAvatar.get2Dposition();
+            var deadPlayer = players[pId];
+            var playerCoord = deadPlayer.playerAvatar.get2Dposition();
             if( this.collisionDetection.isColliding( playerCoord, bombExploded.verticalCoor ) ||
                 this.collisionDetection.isColliding( playerCoord, bombExploded.horizontalCoor )
             ) {
-                player.iAmDead();
-                this.game.youAreDead( player.id );
+                deadPlayer.iAmDead();
+                this.game.youAreDead( deadPlayer.id );
             }
         }
 
         //check if the player already die
         if( !this.game.getaPlayerById( playerId ) ) return false;
+
         //remove the bomb from the player profile
         var bombNbr = player.getBomb() -1;
         bombNbr = bombNbr < 0 ? 0 : bombNbr;
