@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<g id="Layer_5" display="none">
+	
+		<image display="inline" overflow="visible" width="1000" height="966" xlink:href="A3B92F77.jpg"  transform="matrix(4.000000e-002 0 0 4.000000e-002 16 -7.82)">
+	</image>
+</g>
+<g id="Layer_1">
+	<g>
+		<rect fill="#71B063" width="16" height="16"/>
+	</g>
+</g>
+<g id="Cadre" display="none">
+	<g display="inline">
+		<rect x="0.5" y="0.5" fill="#FFFFFF" width="15" height="15"/>
+		<path fill="#FF0303" d="M15,1v14H1V1H15 M16,0H0v16h16V0L16,0z"/>
+	</g>
+</g>
+<g id="BombBGColor">
+	<polygon fill="#2E4846" points="12,6 12,4 4,4 4,12 6,12 6,13 10,13 10,12 12,12 12,10 13,10 13,6 	"/>
+</g>
+<g id="Contour">
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="2.5" y1="6" x2="2.5" y2="10"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="10" y1="13.5" x2="6" y2="13.5"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="10" y1="2.5" x2="6" y2="2.5"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="13.5" y1="10" x2="13.5" y2="6"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="12" y1="3.5" x2="4" y2="3.5"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="3.5" y1="6" x2="3.5" y2="4"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="12.5" y1="6" x2="12.5" y2="3"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="3.5" y1="12" x2="3.5" y2="10"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="12.5" y1="12" x2="12.5" y2="10"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="4" y1="12.5" x2="6" y2="12.5"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="10" y1="12.5" x2="12" y2="12.5"/>
+</g>
+<g id="BombBG">
+	<polygon fill="#386585" points="10,6 9,6 9,5 3,5 3,11 9,11 9,10 10,10 	"/>
+	<rect x="3" y="6" fill="#008AB6" width="6" height="3"/>
+	<rect x="4" y="6" fill="#79AED7" width="2" height="2"/>
+	<rect x="9" y="6" fill="#7BB5D9" width="2" height="1"/>
+	<rect x="10" y="5" fill="#7BB5D9" width="1" height="1"/>
+	<rect x="8" y="3" fill="#7BB5D9" width="1" height="1"/>
+	<rect x="11" y="4" fill="#7BB5D9" width="1" height="1"/>
+	<rect x="11" y="3" fill="#7BB5D9" width="1" height="1"/>
+	<rect x="10" y="4" width="1" height="1"/>
+	<rect x="11" y="5" width="1" height="1"/>
+	<rect x="11" y="2" width="2" height="1"/>
+	<rect x="3" y="5" width="1" height="1"/>
+	<rect x="3" y="10" width="1" height="1"/>
+</g>
+<g id="Layer_4">
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="8.5" y1="4" x2="8.5" y2="7"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="9" y1="7.5" x2="10" y2="7.5"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="10" y1="8.5" x2="12" y2="8.5"/>
+	<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="12" y1="7.5" x2="13" y2="7.5"/>
+</g>
+</svg>

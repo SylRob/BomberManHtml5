@@ -197,7 +197,7 @@ var BoxsController = (function() {
      *  just for debug
      *
      */
-	BoxsController.prototype.destroyBoxNoAnim = function( box ) {
+	BoxsController.prototype.destroyBoxNoAnim = function( box, callBack ) {
 
         var index = this._boxsDestructibleList.indexOf( box );
 
@@ -210,6 +210,9 @@ var BoxsController = (function() {
 
         this._boxsUnvisibleBoxsList.push(box);
         this._boxsDestructibleList.splice(index, 1);
+
+		if( callBack ) callBack( box );
+
 	}
 
     /**

@@ -523,7 +523,6 @@ var Plan = (function() {
             var side = false;
 
 
-
             //x collision
             if( this.collisionDetection.isColliding( boxCoord, bombExploded.horizontalCoor ) ) {
                 axis = 'x';
@@ -571,8 +570,13 @@ var Plan = (function() {
 
         for( var axis in willExplodeBox ) {
             for( var side in willExplodeBox[axis] ) {
-                // add bonus checking system HERE
-                this.boxsController.destroyBoxNoAnim( willExplodeBox[axis][side] );
+                var boxId = this.boxsController.getDestructibleBoxId( willExplodeBox[axis][side] );
+                var callBack = false;
+
+                if( this.bonusController.isBoxABonus( boxId ) ) {
+                    callBack = this.bonusController.transformToBonusBox.bind(this);
+                }
+                this.boxsController.destroyBoxNoAnim( willExplodeBox[axis][side], callBack );
             }
         }
 

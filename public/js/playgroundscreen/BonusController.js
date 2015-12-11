@@ -5,7 +5,7 @@ var BonusController = (function() {
         this._world = world;
         this._bonusBoxList = [
             { id:-1, type: '', visible: false, position: [] }
-        ]
+        ];
 
         this._bonusElem = {
             flamme: {
@@ -68,12 +68,22 @@ var BonusController = (function() {
      *   check if the destroyed box need to be transform
      *   in a bonus box
      *
-     *   @param {Object}  box
+     *   @param {Object}  box the box to check
+     *   @param {Object}  id the registered id
+     *
+     *  @return {boolean}  true/false
      *
      */
-    BonusController.prototype.isBoxABonus = function( box ) {
+    BonusController.prototype.isBoxABonus = function( id ) {
 
-        console.log( 'check if its a bonus box and then transform' );
+        for( var bonusId in this._bonusBoxList ) {
+
+            if( this._bonusBoxList[bonusId].id == id ) {
+                return true;
+            }
+
+        }
+        return false;
 
     }
 
@@ -117,9 +127,7 @@ var BonusController = (function() {
      *
      */
     BonusController.prototype.transformToBonusBox = function( box ) {
-
-        console.log( 'check if its a bonus box and then transform' );
-
+        
     }
 
 
