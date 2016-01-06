@@ -574,9 +574,9 @@ var Plan = (function() {
                 var callBack = false;
 
                 if( this.bonusController.isBoxABonus( boxId ) ) {
-                    callBack = this.bonusController.transformToBonusBox.bind(this);
+                    this.bonusController.transformToBonusBox( willExplodeBox[axis][side], boxId );
                 }
-                this.boxsController.destroyBoxNoAnim( willExplodeBox[axis][side], callBack );
+                this.boxsController.destroyBoxNoAnim( willExplodeBox[axis][side] );
             }
         }
 
@@ -649,6 +649,7 @@ var Plan = (function() {
 
         //deal with playerBomb
         this.bombsController.animationHandeler( timeStamp, this.exoplodedBombHandeler.bind(this) );
+        this.bonusController.animationHandeler( timeStamp );
 
         this.render();
         window.requestAnimationFrame( this.animate.bind(this) );

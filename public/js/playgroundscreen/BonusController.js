@@ -3,8 +3,10 @@ var BonusController = (function() {
     function BonusController( boxsList, world ) {
 
         this._world = world;
+        this.animationTime = 2000;//1seconds
+        this.variationPix = 2;
         this._bonusBoxList = [
-            { id:-1, type: '', visible: false, position: [] }
+            { id:-1, type: '', visible: false, position: [], obj: [], startTime: 0 }
         ];
 
         this._bonusElem = {
@@ -22,19 +24,19 @@ var BonusController = (function() {
             }
         }
 
-        this.init( boxsList );
+        this.generateBonusBox( boxsList );
 
     }
 
     /**
-     *   init
+     *   generateBonusBox
      *
-     *   init set randomly the bonus box
+     *   init set randomly the bonus box (3D box but not in the world yet)
      *
      *   @param {Object}  boxsList  the visible box list
      *
      */
-    BonusController.prototype.init = function( boxsList ) {
+    BonusController.prototype.generateBonusBox = function( boxsList ) {
 
         this._bonusBoxList.splice(0,1);//to clean it
 
@@ -46,13 +48,15 @@ var BonusController = (function() {
             for( var i=0; i < occurence; i++ ) {
 
                 var randBlockInt = this.getRandomBoxId(boxsList);
-
+                var previousBoxSize = boxsList[randBlockInt].size;
+                var bonusBox = new BonusBox( (previousBoxSize.w*70/100), (previousBoxSize.h*70/100), (previousBoxSize.d*70/100), true, randBlockInt, bonusName );
 
                 var bonusBlock = {
                     id: randBlockInt,
                     type: bonusName,
                     visible: false,
-                    position: boxsList[randBlockInt].get2DPosition()
+                    obj: bonusBox,
+                    startTime: 0
                 }
 
                 this._bonusBoxList.push( bonusBlock );
@@ -68,22 +72,24 @@ var BonusController = (function() {
      *   check if the destroyed box need to be transform
      *   in a bonus box
      *
-     *   @param {Object}  box the box to check
-     *   @param {Object}  id the registered id
+     *   @param {int}  id  the box id
      *
      *  @return {boolean}  true/false
      *
      */
     BonusController.prototype.isBoxABonus = function( id ) {
 
-        for( var bonusId in this._bonusBoxList ) {
+        /*for( var bonusId in this._bonusBoxList ) {
 
             if( this._bonusBoxList[bonusId].id == id ) {
-                return true;
+                console.log( 'is a bonus box', this._bonusBoxList[bonusId] );
+                break;
             }
 
-        }
-        return false;
+        }*/
+
+        var result = this._bonusBoxList.filter(function(o){ return o.id == id; } );
+        return result[0] ? true : false;
 
     }
 
@@ -115,7 +121,6 @@ var BonusController = (function() {
             }
         }
         rand( arr );
-
         return r;
 
     }
@@ -123,11 +128,66 @@ var BonusController = (function() {
     /**
      *   transformToBonusBox
      *
-     *   @param {Object}  box
+     *   @param {Object}  box  original box to replace with
+     *   @param {int}  int
      *
      */
-    BonusController.prototype.transformToBonusBox = function( box ) {
-        
+    BonusController.prototype.transformToBonusBox = function( box, id ) {
+        var bonusBox = false;
+
+        var bonusBox = this._bonusBoxList.filter(function(o){ return o.id == id; } );
+        if( !bonusBox[0] ) {
+            console.log( 'no bonus box founded' );
+            return false;
+        } else { console.log( 'HAVE IT!!!', bonusBox[0] ); }
+
+        bonusBoxObj = bonusBox[0].obj;
+
+        var boxPos = box.getCenterPosition();
+
+        bonusBoxObj.getObj().position.set(
+            boxPos.x - bonusBoxObj.size.w/2,
+            0,
+            boxPos.y - bonusBoxObj.size.d/2
+        );
+
+        this._world.addElem( bonusBoxObj.getObj() );
+
+        bonusBox[0].visible = true;
+    }
+
+    /**
+     *  animationHandeler
+     *
+     *	assign animation state to the bomb list
+     *
+     *	@param {int}  timeStamp
+     *	@param {function}  explodedBombCallBack  send explodedBombObj
+     *
+     */
+	BonusController.prototype.animationHandeler = function( timeStamp ) {
+
+        var bonusVisibleBox = this._bonusBoxList.filter(function(o){ return o.visible == true; } );
+
+        for( var id in bonusVisibleBox ) {
+            if( bonusVisibleBox[id].startTime == 0 ) bonusVisibleBox[id].startTime = new Date().getTime();
+            var box = bonusVisibleBox[id].obj.getObj();
+
+            var timeSpent = timeStamp - bonusVisibleBox[id].startTime;
+            var animPercentage = Math.round( timeSpent / this.animationTime * 100 )/100;
+
+            if( animPercentage <= 0.5 ) {
+                console.log( 'avant', animPercentage, animPercentage*this.variationPix, this.variationPix  )
+                box.translateY( animPercentage*this.variationPix )
+            } else {
+                console.log( 'apres', animPercentage, this.variationPix - (animPercentage*this.variationPix), this.variationPix )
+                box.translateY( (animPercentage*this.variationPix) - this.variationPix )
+            }
+
+            if( animPercentage >= 1 ) bonusVisibleBox[id].startTime = 0;
+
+        }
+
     }
 
 

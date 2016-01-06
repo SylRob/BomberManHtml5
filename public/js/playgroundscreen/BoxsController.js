@@ -29,9 +29,8 @@ var BoxsController = (function() {
      *
      */
 	BoxsController.prototype.newBox = function( position, size, destroyed, destroyable ) {
-        var box = new Box();
 
-        var box = new Box( boxWidth, boxHeight, boxDepth, 0x000FFF, false );
+        var box = new Box( boxWidth, boxHeight, boxDepth, false );
         box.getObj().position.set(
             boxXpos,
             0,
@@ -71,7 +70,7 @@ var BoxsController = (function() {
             // not destructible
             if( !(i%4) && !(line%4) ) {
 
-                var box = new Box( boxWidth, boxHeight, boxDepth, 0x000FFF, false );
+                var box = new Box( boxWidth, boxHeight, boxDepth, false );
                 box.getObj().position.set(
                     boxXpos,
                     0,
@@ -83,7 +82,7 @@ var BoxsController = (function() {
 
             } else {
             // destructible
-                var box = new Box( boxWidth, boxHeight, boxDepth, 0x8A2BE2, true );
+                var box = new Box( boxWidth, boxHeight, boxDepth, true, this._boxsDestructibleList.length );
                 box.getObj().position.set(
                     boxXpos,
                     0,
@@ -159,9 +158,10 @@ var BoxsController = (function() {
      *
      */
 	BoxsController.prototype.getDestructibleBoxId = function( box ) {
-
-        return this._boxsDestructibleList.indexOf(box);
-
+		var index = this._boxsDestructibleList.indexOf(box);
+        if( index > -1 ) {
+			return this._boxsDestructibleList[index].id;
+		} else return false;
 	}
 
 
@@ -197,7 +197,7 @@ var BoxsController = (function() {
      *  just for debug
      *
      */
-	BoxsController.prototype.destroyBoxNoAnim = function( box, callBack ) {
+	BoxsController.prototype.destroyBoxNoAnim = function( box ) {
 
         var index = this._boxsDestructibleList.indexOf( box );
 
@@ -210,8 +210,6 @@ var BoxsController = (function() {
 
         this._boxsUnvisibleBoxsList.push(box);
         this._boxsDestructibleList.splice(index, 1);
-
-		if( callBack ) callBack( box );
 
 	}
 
