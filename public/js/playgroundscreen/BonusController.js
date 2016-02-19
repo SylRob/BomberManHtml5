@@ -6,7 +6,7 @@ var BonusController = (function() {
         this.animationTime = 2000;//1seconds
         this.variationPix = 2;
         this._bonusBoxList = [
-            { id:-1, type: '', visible: false, position: [], obj: [], startTime: 0 }
+            { id:-1, type: '', visible: false, obj: [], startTime: 0 }
         ];
 
         this._bonusElem = {
@@ -136,10 +136,7 @@ var BonusController = (function() {
         var bonusBox = false;
 
         var bonusBox = this._bonusBoxList.filter(function(o){ return o.id == id; } );
-        if( !bonusBox[0] ) {
-            console.log( 'no bonus box founded' );
-            return false;
-        } else { console.log( 'HAVE IT!!!', bonusBox[0] ); }
+        if( !bonusBox[0] ) return false;
 
         bonusBoxObj = bonusBox[0].obj;
 
@@ -157,6 +154,25 @@ var BonusController = (function() {
     }
 
     /**
+     *   getVisibleBonusList
+     *
+     *   @return {Array}  the list of the visible bonus box
+     *
+     */
+    BonusController.prototype.getVisibleBonusList = function() {
+
+        var res = [];
+
+        for( var i in this._bonusBoxList ) {
+            var bonus = this._bonusBoxList[i];
+
+            if( bonus.visible ) res.push( bonus );
+        }
+
+        return res;
+    }
+
+    /**
      *  animationHandeler
      *
      *	assign animation state to the bomb list
@@ -167,7 +183,7 @@ var BonusController = (function() {
      */
 	BonusController.prototype.animationHandeler = function( timeStamp ) {
 
-        var bonusVisibleBox = this._bonusBoxList.filter(function(o){ return o.visible == true; } );
+        /*var bonusVisibleBox = this._bonusBoxList.filter(function(o){ return o.visible == true; } );
 
         for( var id in bonusVisibleBox ) {
             if( bonusVisibleBox[id].startTime == 0 ) bonusVisibleBox[id].startTime = new Date().getTime();
@@ -186,7 +202,7 @@ var BonusController = (function() {
 
             if( animPercentage >= 1 ) bonusVisibleBox[id].startTime = 0;
 
-        }
+        }*/
 
     }
 

@@ -1,170 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 19.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<g id="Bomb" display="none">
-	<g id="Layer_1" display="inline">
-		<g>
-			<rect fill="#71B063" width="16" height="16"/>
-		</g>
-	</g>
-	<g id="Cadre">
-		<g display="inline">
-			<rect x="0.5" y="0.5" fill="#FFFFFF" width="15" height="15"/>
-			<path fill="#FF0303" d="M15,1v14H1V1H15 M16,0H0v16h16V0L16,0z"/>
-		</g>
-	</g>
-	<g id="BombBGColor" display="inline">
-		<polygon fill="#2E4846" points="12,6 12,4 4,4 4,12 6,12 6,13 10,13 10,12 12,12 12,10 13,10 13,6 		"/>
-	</g>
-	<g id="Contour" display="inline">
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="2.5" y1="6" x2="2.5" y2="10"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="10" y1="13.5" x2="6" y2="13.5"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="10" y1="2.5" x2="6" y2="2.5"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="13.5" y1="10" x2="13.5" y2="6"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="12" y1="3.5" x2="4" y2="3.5"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="3.5" y1="6" x2="3.5" y2="4"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="12.5" y1="6" x2="12.5" y2="3"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="3.5" y1="12" x2="3.5" y2="10"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="12.5" y1="12" x2="12.5" y2="10"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="4" y1="12.5" x2="6" y2="12.5"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="10" y1="12.5" x2="12" y2="12.5"/>
-	</g>
-	<g id="BombBG" display="inline">
-		<polygon fill="#386585" points="10,6 9,6 9,5 3,5 3,11 9,11 9,10 10,10 		"/>
-		<rect x="3" y="6" fill="#008AB6" width="6" height="3"/>
-		<rect x="4" y="6" fill="#79AED7" width="2" height="2"/>
-		<rect x="9" y="6" fill="#7BB5D9" width="2" height="1"/>
-		<rect x="10" y="5" fill="#7BB5D9" width="1" height="1"/>
-		<rect x="8" y="3" fill="#7BB5D9" width="1" height="1"/>
-		<rect x="11" y="4" fill="#7BB5D9" width="1" height="1"/>
-		<rect x="11" y="3" fill="#7BB5D9" width="1" height="1"/>
-		<rect x="10" y="4" width="1" height="1"/>
-		<rect x="11" y="5" width="1" height="1"/>
-		<rect x="11" y="2" width="2" height="1"/>
-		<rect x="3" y="5" width="1" height="1"/>
-		<rect x="3" y="10" width="1" height="1"/>
-	</g>
-	<g id="Layer_4" display="inline">
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="8.5" y1="4" x2="8.5" y2="7"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="9" y1="7.5" x2="10" y2="7.5"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="10" y1="8.5" x2="12" y2="8.5"/>
-		<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="12" y1="7.5" x2="13" y2="7.5"/>
-	</g>
-</g>
-<g id="Feu" display="none">
-	<g id="Bg" display="inline">
-		<rect y="0" fill="#4AA5E0" width="16" height="16"/>
-	</g>
-	<g id="YellowFill" display="inline">
-		<polygon fill="#F7BA3B" points="13,2 13,3 12,3 12,4 11,4 11,3 11,2 10,2 10,3 9,3 9,4 8,4 8,3 8,2 7,2 7,3 6,3 6,4 4,4 4,5 3,5 
-			3,6 3,6 2,6 2,12 3,12 3,13 5,13 5,14 10,14 10,13 12,13 12,12 13,12 13,10 14,10 14,2 		"/>
-	</g>
-	<g id="Orange" display="inline">
-		<rect x="13" y="3" fill="#F96838" width="1" height="7"/>
-		<rect x="12" y="6" fill="#F96838" width="1" height="6"/>
-		<rect x="11" y="8" fill="#F96838" width="1" height="5"/>
-		<rect x="5" y="10" fill="#F96838" width="6" height="3"/>
-		<rect x="3" y="12" fill="#F96838" width="2" height="1"/>
-		<rect x="5" y="13" fill="#F96838" width="5" height="1"/>
-		<rect x="9" y="10" fill="#9F131F" width="1" height="1"/>
-		<rect x="4" y="10" fill="#9F131F" width="1" height="1"/>
-		<rect x="2" y="6" fill="#F9773B" width="1" height="1"/>
-		<rect x="2" y="11" fill="#F9773B" width="1" height="1"/>
-		<rect x="3" y="5" fill="#F9773B" width="1" height="1"/>
-		<rect x="4" y="4" fill="#F9773B" width="1" height="1"/>
-		<rect x="7" y="3" fill="#F9773B" width="1" height="1"/>
-		<rect x="10" y="3" fill="#F9773B" width="1" height="1"/>
-	</g>
-	<g id="Contour_1_" display="inline">
-		<polygon points="14,2 14,10 15,10 15,10 15,2 15,2 		"/>
-		<rect x="2" y="12" width="1" height="1"/>
-		<rect x="12" y="12" width="1" height="1"/>
-		<polygon points="11,4 12,4 12,3 13,3 13,2 11,2 11,3 		"/>
-		<rect x="10" y="1" width="1" height="1"/>
-		<rect x="3" y="4" width="1" height="1"/>
-		<polygon points="1,6 1,12 2,12 2,12 2,6 		"/>
-		<polygon points="3,6 3,5 3,5 2,5 2,6 3,6 		"/>
-		<rect x="13" y="1" width="1" height="1"/>
-		<polygon points="8,4 9,4 9,3 10,3 10,2 8,2 8,3 		"/>
-		<rect x="7" y="1" width="1" height="1"/>
-		<rect x="6" y="2" width="1" height="1"/>
-		<rect x="4" y="3" width="2" height="1"/>
-		<rect x="3" y="13" width="2" height="1"/>
-		<rect x="10" y="13" width="2" height="1"/>
-		<rect x="5" y="14" width="5" height="1"/>
-		<rect x="13" y="10" width="1" height="2"/>
-	</g>
-	<g id="Face" display="inline">
-		<rect x="5" y="6" width="1" height="3"/>
-		<rect x="6" y="6" fill="#E8E6DC" width="1" height="3"/>
-		<rect x="9" y="6" fill="#E8E6DC" width="1" height="3"/>
-		<rect x="8" y="6" width="1" height="3"/>
-		<rect x="5" y="10" width="4" height="1"/>
-		<rect x="5" y="11" width="1" height="1"/>
-		<rect x="8" y="11" width="1" height="1"/>
-		<rect x="8" y="5" fill="#EDEADF" width="1" height="1"/>
-		<rect x="5" y="4" fill="#EDEADF" width="1" height="2"/>
-		<rect x="4" y="5" fill="#EDEADF" width="1" height="1"/>
-		<rect x="3" y="6" fill="#EDEADF" width="1" height="1"/>
-	</g>
-</g>
-<g id="Layer_15">
-	<rect id="Bg_1_" x="0" y="0" fill="#71B063" width="16" height="16"/>
-	<g id="Bleu">
-		<polygon fill="#2796D6" points="3,10 4,10 4,9 6,9 6,10 6,10 7,10 7,10 7,11 9,11 9,10 9,10 10,10 10,10 10,9 12,9 12,10 13,10 
-			13,11 14,11 14,8 13,8 13,2 7,2 7,7 6,7 3,7 3,8 2,8 2,11 3,11 		"/>
-	</g>
-	<g id="ligth">
-		<rect x="9" y="2" fill="#FFFFFF" width="1" height="6"/>
-		<rect x="8" y="7" fill="#FFFFFF" width="1" height="1"/>
-		<rect x="4" y="7" fill="#FFFFFF" width="2" height="1"/>
-	</g>
-	<g id="Shadow">
-		<rect x="12" y="2" fill="#007F99" width="1" height="6"/>
-		<rect x="13" y="8" fill="#007F99" width="1" height="3"/>
-	</g>
-	<g id="Contour_2_">
-		<rect x="13" y="1" width="1" height="7"/>
-		<rect x="6" y="1" width="1" height="6"/>
-		<rect x="14" y="8" width="1" height="4"/>
-		<rect x="13" y="11" width="1" height="2"/>
-		<rect x="2" y="11" width="1" height="2"/>
-		<rect x="12" y="13" width="1" height="1"/>
-		<rect x="12" y="10" width="1" height="1"/>
-		<rect x="9" y="13" width="1" height="1"/>
-		<rect x="9" y="10" width="1" height="1"/>
-		<rect x="6" y="13" width="1" height="1"/>
-		<rect x="3" y="13" width="1" height="1"/>
-		<rect x="3" y="10" width="1" height="1"/>
-		<rect x="2" y="7" fill="#01474F" width="1" height="1"/>
-		<rect x="1" y="8" fill="#01474F" width="1" height="3"/>
-		<rect x="6" y="10" width="1" height="1"/>
-		<rect x="4" y="14" width="2" height="1"/>
-		<rect x="4" y="9" width="2" height="1"/>
-		<rect x="10" y="14" width="2" height="1"/>
-		<rect x="10" y="9" width="2" height="1"/>
-		<rect x="7" y="11" width="2" height="2"/>
-		<rect x="3" y="6" width="3" height="1"/>
-		<rect x="5" y="5" width="1" height="1"/>
-		<rect x="5" y="3" width="1" height="1"/>
-	</g>
-	<g id="Roue">
-		<rect x="10" y="10" fill="#EAA431" width="2" height="1"/>
-		<rect x="10" y="13" fill="#EAA431" width="2" height="1"/>
-		<rect x="9" y="11" fill="#EAA431" width="1" height="2"/>
-		<rect x="12" y="11" fill="#EAA431" width="1" height="2"/>
-		<rect x="4" y="10" fill="#EAA431" width="2" height="1"/>
-		<rect x="4" y="13" fill="#EAA431" width="2" height="1"/>
-		<rect x="3" y="11" fill="#EAA431" width="1" height="2"/>
-		<rect x="6" y="11" fill="#EAA431" width="1" height="2"/>
-		<rect x="4" y="11" fill="#1A372F" width="2" height="2"/>
-		<rect x="10" y="11" fill="#1A372F" width="2" height="2"/>
-	</g>
-	<g id="Lacet">
-		<rect x="7" y="1" fill="#C8120F" width="6" height="1"/>
-		<rect x="6" y="3" fill="#C8120F" width="4" height="1"/>
-		<rect x="6" y="5" fill="#C8120F" width="4" height="1"/>
-	</g>
-</g>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="16px" height="16px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+<style type="text/css">
+<![CDATA[
+	.st0{fill:#4AA5E0;}
+	.st1{fill:#E8E6DC;}
+	.st2{fill:#EDEADF;}
+	.st3{fill:#F7BA3B;}
+	.st4{fill:#F96838;}
+	.st5{fill:#9F131F;}
+]]>
+</style>
+<rect class="st0" width="16" height="16"/>
+<polygon class="st3" points="13,2 13,3 12,3 12,4 11,4 11,3 11,2 10,2 10,3 9,3 9,4 8,4 8,3 8,2 7,2 7,3 6,3 6,4 4,4 4,5 3,5 3,6 
+	3,6 2,6 2,12 3,12 3,13 5,13 5,14 10,14 10,13 12,13 12,12 13,12 13,10 14,10 14,2 "/>
+<rect x="13" y="3" class="st4" width="1" height="7"/>
+<rect x="12" y="6" class="st4" width="1" height="6"/>
+<rect x="11" y="8" class="st4" width="1" height="5"/>
+<rect x="5" y="10" class="st4" width="6" height="3"/>
+<rect x="3" y="12" class="st4" width="2" height="1"/>
+<rect x="5" y="13" class="st4" width="5" height="1"/>
+<rect x="9" y="10" class="st5" width="1" height="1"/>
+<rect x="4" y="10" class="st5" width="1" height="1"/>
+<polygon points="15,2 14,2 14,10 15,10 15,10 15,2 "/>
+<rect x="2" y="12" width="1" height="1"/>
+<rect x="12" y="12" width="1" height="1"/>
+<polygon points="11,4 12,4 12,3 13,3 13,2 11,2 11,3 "/>
+<rect x="10" y="1" width="1" height="1"/>
+<rect x="3" y="4" width="1" height="1"/>
+<polygon points="1,6 1,12 2,12 2,12 2,6 "/>
+<polygon points="3,5 2,5 2,6 3,6 3,6 3,5 "/>
+<rect x="13" y="1" width="1" height="1"/>
+<polygon points="8,4 9,4 9,3 10,3 10,2 8,2 8,3 "/>
+<rect x="7" y="1" width="1" height="1"/>
+<rect x="6" y="2" width="1" height="1"/>
+<rect x="4" y="3" width="2" height="1"/>
+<rect x="3" y="13" width="2" height="1"/>
+<rect x="10" y="13" width="2" height="1"/>
+<rect x="5" y="14" width="5" height="1"/>
+<rect x="13" y="10" width="1" height="2"/>
+<rect x="5" y="6" width="1" height="3"/>
+<rect x="6" y="6" class="st1" width="1" height="3"/>
+<rect x="9" y="6" class="st1" width="1" height="3"/>
+<rect x="8" y="6" width="1" height="3"/>
+<rect x="5" y="10" width="4" height="1"/>
+<rect x="5" y="11" width="1" height="1"/>
+<rect x="8" y="11" width="1" height="1"/>
+<rect x="8" y="5" class="st2" width="1" height="1"/>
+<rect x="5" y="4" class="st2" width="1" height="2"/>
+<rect x="4" y="5" class="st2" width="1" height="1"/>
+<rect x="3" y="6" class="st2" width="1" height="1"/>
 </svg>

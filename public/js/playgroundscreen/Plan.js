@@ -407,6 +407,27 @@ var Plan = (function() {
 
         }
 
+        //collision with bonus ?
+        var visibleBonusList = this.bonusController.getVisibleBonusList();
+        for( var i in visibleBonusList ) {
+            var bonusBoxObj = visibleBonusList[i];
+
+             if( !this.collisionDetection.isColliding( newPos, bonusBoxObj.obj.get2DPosition() ) ) continue;
+
+            switch( bonusBoxObj.type ) {
+                case "bomb":
+                console.log('plus bomb');
+                    player.plusOneBomb();
+                break;
+                case "roller":
+                    console.log('plus roller');
+                    player.moreSpeed();
+                break;
+                default: console.log('no type founded !!', bonusBoxObj.type)
+            }
+        }
+
+
         //collision with exploded bomb ?
         var explodedList = this.bombsController.getExplodedList();
         for( var playerId in explodedList ) {
