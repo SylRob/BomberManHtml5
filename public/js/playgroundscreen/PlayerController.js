@@ -187,7 +187,6 @@ var PlayerController = (function() {
             return false;
         }
 
-        if( numberBomb > this._maxBomb ) this._bomb = this._maxBomb;
         this._bomb = numberBomb;
 
     }
@@ -198,10 +197,7 @@ var PlayerController = (function() {
      */
     PlayerController.prototype.plusOneBomb = function() {
 
-        this.setMaxBomb(this.getBomb()+1);
-        console.log( "new max bomb", this._maxBomb );
-        console.log( "plus one bomb ", this.getBomb(), this.getBomb()+1 );
-        console.log( "world max bomb ", this._worldMaxBomb );
+        this.setMaxBomb(this.getMaxBomb()+1);
 
     }
 
@@ -231,6 +227,7 @@ var PlayerController = (function() {
         }
 
         if( numberBomb > this._worldMaxBomb ) return false;
+
         this._maxBomb = numberBomb;
 
     }
@@ -305,6 +302,18 @@ var PlayerController = (function() {
 
         if( power > this._maxBombPower ) this._bombPower = this._maxBombPower;
         else this._bombPower = power;
+
+    }
+
+    /**
+     *  moreBombPower
+     *
+     *  @return {int}
+     *
+     */
+    PlayerController.prototype.moreBombPower = function() {
+
+        this.setBombPower( this.getBombPower()+1 );
 
     }
 

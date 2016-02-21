@@ -423,6 +423,10 @@ var Plan = (function() {
                     console.log('plus roller');
                     player.moreSpeed();
                 break;
+                case "flame":
+                    console.log('plus flame');
+                    player.moreBombPower();
+                break;
                 default: console.log('no type founded !!', bonusBoxObj.type)
             }
         }

@@ -270,13 +270,16 @@ var BombsController = (function() {
 			for( var i in this._bombList[playerId] ) {
 				var bomb = this._bombList[playerId][i].bomb;
 
-				if( bombExoplodedObj.userId == playerId && bombExoplodedObj.id == i ) continue;
+				if( (bombExoplodedObj.userId == playerId && bombExoplodedObj.id == i) || bomb.isExploded ) continue;
 
 				var bombPosition = bomb.get2DPosition();
 
 				if( !this.collisionDetection.isColliding( bombExoplodedObj.horizontalCoor, bombPosition ) &&
 			 	!this.collisionDetection.isColliding( bombExoplodedObj.verticalCoor, bombPosition ) ) continue;
-				else this.removeBomb( playerId, i );
+				else {
+					// lets put the start time to 1 so the next animation frame will make the bomb explod
+					this._bombList[playerId][i].startTime = 1;
+				}
 			}
 		}
 

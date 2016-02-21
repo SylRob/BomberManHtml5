@@ -30,7 +30,7 @@ var BonusBox = (function(_super) {
         this.boxTypeImage = {
             'bomb' : 'img/ico_bomb01.svg',
             'roller' : 'img/ico_roller01.svg',
-            'flamme' : 'img/ico_flamme01.svg'
+            'flame' : 'img/ico_flame01.svg'
         }
 
         if( !this.boxTypeImage[bonusType] ) throw new Error("Bonus box type does not exist");

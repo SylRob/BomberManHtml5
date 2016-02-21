@@ -10,7 +10,7 @@ var BonusController = (function() {
         ];
 
         this._bonusElem = {
-            flamme: {
+            flame: {
                 total: 10,
                 texture : ''
             },
