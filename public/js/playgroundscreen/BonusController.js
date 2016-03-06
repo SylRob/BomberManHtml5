@@ -173,6 +173,23 @@ var BonusController = (function() {
     }
 
     /**
+     *   removeBonusBox
+     *
+     *   @return {Array}  the list of the visible bonus box
+     *
+     */
+    BonusController.prototype.removeBonusBox = function( bb ) {
+
+        for( var i in this._bonusBoxList ) {
+            var bonus = this._bonusBoxList[i];
+
+            if( bonus.id === bb.id ) delete this._bonusBoxList[i];
+        }
+
+        this._world.removeElem( bb.obj.obj );
+    }
+
+    /**
      *  animationHandeler
      *
      *	assign animation state to the bomb list

@@ -429,6 +429,8 @@ var Plan = (function() {
                 break;
                 default: console.log('no type founded !!', bonusBoxObj.type)
             }
+
+            this.bonusController.removeBonusBox( bonusBoxObj );
         }
 
 
