@@ -24,7 +24,54 @@ var BonusController = (function() {
             }
         }
 
+        this._soundList = {
+            itemGet: new Howl({
+                    urls: ['/sound/ITEM_GET.mp3'],
+                    volume: 0.3
+                }),
+            bomb: new Howl({
+                    urls: ['/sound/bonus_bomb.mp3'],
+                    volume: 0.3
+                }),
+            flame: new Howl({
+                    urls: ['/sound/bonus_flame.mp3'],
+                    volume: 0.3
+                }),
+            roller: new Howl({
+                    urls: ['/sound/bonus_roller.mp3'],
+                    volume: 0.3
+                })
+        }
+
+        this.initBonus();
         this.generateBonusBox( boxsList );
+
+    }
+
+    /**
+     *   initBonus
+     *
+     *   preload the bonus sound
+     *
+     */
+    BonusController.prototype.initBonus = function() {
+        var self = this;
+
+        for( var id in this._soundList ) {
+            (function(id){
+                var sound = self._soundList[id];
+                if( sound.length > 0 )
+                    for( var i = 0; i<sound.length; i++ ) {
+                        sound[i].on('load', function() {
+                        })
+                    }
+                else {
+                    sound.on('load', function() {
+                        //sound.play();
+                    })
+                }
+            })(id)
+        }
 
     }
 
@@ -170,6 +217,21 @@ var BonusController = (function() {
         }
 
         return res;
+    }
+
+    /**
+     *   gotABonusBox
+     *
+     *   @return {Array}  the list of the visible bonus box
+     *
+     */
+    BonusController.prototype.gotABonusBox = function( bb ) {
+
+        this._soundList.itemGet.play();
+
+        this._soundList[ bb.type ].play();
+
+        this.removeBonusBox(bb);
     }
 
     /**

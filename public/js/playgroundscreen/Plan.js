@@ -416,21 +416,18 @@ var Plan = (function() {
 
             switch( bonusBoxObj.type ) {
                 case "bomb":
-                console.log('plus bomb');
                     player.plusOneBomb();
                 break;
                 case "roller":
-                    console.log('plus roller');
                     player.moreSpeed();
                 break;
                 case "flame":
-                    console.log('plus flame');
                     player.moreBombPower();
                 break;
                 default: console.log('no type founded !!', bonusBoxObj.type)
             }
 
-            this.bonusController.removeBonusBox( bonusBoxObj );
+            this.bonusController.gotABonusBox( bonusBoxObj );
         }
 
 

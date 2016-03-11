@@ -34,12 +34,22 @@ var PlayerController = (function() {
 
         this._soundList = {
             run: new Howl({
-                    urls: ['/sound/PLAYER_WALK.wav'],
+                    urls: ['/sound/PLAYER_WALK.mp3'],
                     volume: 0.05
                 }),
-            die: new Howl({
-                    urls: ['/sound/PLAYER_OUT.mp3'],
-                    volume: 1
+            die: [
+                    new Howl({
+                        urls: ['/sound/player_die_ouch.mp3'],
+                        volume: 1
+                    }),
+                    new Howl({
+                        urls: ['/sound/player_die_no.mp3'],
+                        volume: 1
+                    })
+                ],
+            dieBg: new Howl({
+                    urls: ['/sound/player_die_song.mp3'],
+                    volume: 0.2
                 }),
         }
 
@@ -64,9 +74,16 @@ var PlayerController = (function() {
         for( var id in this._soundList ) {
             (function(id){
                 var sound = self._soundList[id];
-                sound.on('load', function() {
-                    //sound.play();
-                })
+                if( sound.length > 0 )
+                    for( var i = 0; i<sound.length; i++ ) {
+                        sound[i].on('load', function() {
+                        })
+                    }
+                else {
+                    sound.on('load', function() {
+                        //sound.play();
+                    })
+                }
             })(id)
         }
 
@@ -380,7 +397,12 @@ var PlayerController = (function() {
      */
     PlayerController.prototype.iAmDead = function() {
 
-        this._soundList.die.play();
+        this._soundList.dieBg.play();
+
+        setTimeout(() => {
+            this._soundList.die[Math.floor(Math.random()*(this._soundList.die.length-1))].play();
+        }, 1000);
+
         this.playerAvatar.dyingAvatarAnimation((function(){
             this._world.removeElem( this.playerAvatar.getAvatar() );
         }).bind(this));
