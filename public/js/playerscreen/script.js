@@ -1,4 +1,4 @@
-var socket = io.connect('192.168.1.103:8890');
+var socket = io.connect(window.location.host);
 //var socket = io.connect('http://169.254.69.173:8090');
 
 var player;

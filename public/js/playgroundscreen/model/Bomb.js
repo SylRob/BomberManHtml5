@@ -23,11 +23,13 @@ var Bomb = (function() {
         this._topPart = new THREE.Object3D();
         this._corp = new THREE.Mesh();
 
+        this.explodedTexture = null;
         this.explodedPart = {
             h: new THREE.Object3D(),
             v: new THREE.Object3D()
         }
-
+        this.explodedTextureH = THREE.ImageUtils.loadTexture( "img/lava.png");
+        this.explodedTextureV = THREE.ImageUtils.loadTexture( "img/lava.png");
     }
 
     /**
@@ -45,7 +47,9 @@ var Bomb = (function() {
         this.size = size;
         this.size.w -= 0.01;
         this.size.d -= 0.01;
+
         this.buildMesh();
+
     }
 
     /**
@@ -100,7 +104,7 @@ var Bomb = (function() {
      *
      */
      Bomb.prototype.destroyAnimation = function( horizontalCoor, verticalCoor ) {
-
+         var self = this;
          var sizeH = {
              w: horizontalCoor[0].x - horizontalCoor[1].x,
              d: horizontalCoor[0].y - horizontalCoor[3].y
@@ -112,31 +116,44 @@ var Bomb = (function() {
 
          var objXGeo =  new THREE.BoxGeometry(
              sizeH.w,
-             2,
+             Math.round( this.size.h*30/100 ),
              sizeH.d
          );
+         //texture.minFilter = THREE.LinearFilter;
+         //texture.wrapS = THREE.RepeatWrapping;
+         //texture.wrapT = THREE.RepeatWrapping;
 
-         var texture = THREE.ImageUtils.loadTexture( "img/lava-w256-space1px.png" );
-         texture.minFilter = THREE.LinearFilter;
-         texture.wrapS = THREE.ClampToEdgeWrapping;
-         texture.wrapT = THREE.ClampToEdgeWrapping;
-         texture.repeat.set( 1, 1 );
+         var txt01 = this.explodedTextureV;
+         txt01.needUpdate = true;
+         txt01.minFilter = THREE.LinearFilter;
+         txt01.wrapS = THREE.RepeatWrapping;
+         txt01.wrapT = THREE.RepeatWrapping;
+         txt01.repeat.set( Math.round(Math.abs(sizeH.w)/this.size.d), 1 );
 
          //var objXMat = new THREE.MeshPhongMaterial(  {color: 0xFFFF00}  );
-         var objXMat = new THREE.MeshPhongMaterial( { map: texture } );
+         var objXMat = new THREE.MeshPhongMaterial( { map: txt01 } );
          objX = new THREE.Mesh(　objXGeo, objXMat　);
-         objX.position.set( horizontalCoor[0].x - sizeH.w/2, 50, horizontalCoor[0].y - sizeH.d/2 )
+         objX.position.set( horizontalCoor[0].x - sizeH.w/2, Math.round( this.size.h*55/100 ), horizontalCoor[0].y - sizeH.d/2 )
 
          var objYGeo =  new THREE.BoxGeometry(
              sizeV.w,
-             2,
+             Math.round( this.size.h*30/100 ),
              sizeV.d
          );
 
+         console.log( this.size );
+
+         var texture2 = this.explodedTextureH;
+         texture2.needUpdate = true;
+         texture2.minFilter = THREE.LinearFilter;
+         texture2.wrapS = THREE.RepeatWrapping;
+         texture2.wrapT = THREE.RepeatWrapping;
+         texture2.repeat.set(1, Math.round(Math.abs(sizeH.w)/this.size.d) );
+
          //var objYMat = new THREE.MeshPhongMaterial( {color: 0xFFFF00} );
-         var objYMat = new THREE.MeshPhongMaterial( { map: texture } );
+         var objYMat = new THREE.MeshPhongMaterial( { map: texture2 } );
          objY = new THREE.Mesh(　objYGeo, objYMat　);
-         objY.position.set( verticalCoor[0].x - sizeV.w/2, 50, verticalCoor[0].y - sizeV.d/2 );
+         objY.position.set( verticalCoor[0].x - sizeV.w/2, Math.round( this.size.h*55/100 ), verticalCoor[0].y - sizeV.d/2 );
 
          this.explodedPart.v = objY;
          this.explodedPart.h = objX;
